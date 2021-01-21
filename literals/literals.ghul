@@ -1,0 +1,24 @@
+use IO.Std.write_line;
+
+entry() is
+    @entry()
+    
+    assert "string literal".get_type() == typeof string;
+
+    write_line("string literal");
+
+    assert 'c'.get_type() == typeof char;
+    write_line("char literal: " + 'c');
+
+    assert 123 .get_type() == typeof int;
+    write_line("integer literal: " + 123);
+
+    assert 123_456.789e6D .get_type() == typeof double;
+    write_line("double literal: " + 123_456.789e6D);
+
+    assert ("three", "string", "tuple").get_type() == typeof (string,string,string);
+    write_line("tuple literal: " + ("three", "string", "tuple"));
+
+    assert ["a", "four", "element", "list"].get_type() == typeof string[];
+    write_line("list literal: " + ["a", "four", "element", "list"]|);
+si

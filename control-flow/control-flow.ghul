@@ -1,0 +1,88 @@
+use IO.Std.write_line;
+
+entry() is
+    @entry()
+
+    // ghul has basic flow control statements
+
+    // assert tests a condition, and throws an exception if the condition does not hold:
+    assert 1 == 1;
+    assert 3 > 2;
+
+    // the optional assert else clause supplies a message to include in any thrown exception:
+    assert true else "who knows what to believe?";
+
+    // or a specific object to throw:
+    assert 1 < "hello".length else new System.IndexOutOfRangeException();
+    
+    if true then
+        assert true;
+        write_line("");
+    fi    
+
+    if false \/ true then
+        write_line("false or-else true");
+    else
+        assert false;
+    fi
+    
+    let i = 0;
+    while i < 10 do
+        assert i < 10;
+        i = i + 1;
+    od
+
+    assert i == 10;
+
+    let count = 0;
+
+    for i in 0..10 do
+        assert i >= 0 /\ i < 10;
+
+        count = count + 1;
+    od
+
+    assert count == 10;
+
+    // 0..10 is not for loop specific syntax, '..' is just an operator that constructs
+    // an iterable integer range:
+
+    let range = 0..100;
+
+    assert range.from == 0;
+    assert range.to == 100;
+
+    assert range | .count() == 100;
+
+    // for can iterate over anything that implements Iterable[T], Iterator[T], or move_next() and current:
+    for ci in "hello" | .index() do
+        write_line("char {0} of 'hello' is {1}", [ci.index, ci.value]);
+    od    
+    
+    try
+        assert "wombat" =~ "elephant";
+    catch ex: System.Exception
+        assert ex.to_string().contains("control-flow.ghul");
+
+        write_line("caught: " + ex);
+    yrt
+
+    // try finally for ensuring clean-up code is run:
+
+    let is_resource_in_use = false;
+    try
+        is_resource_in_use = true;
+        write_line("resource acquired");
+        throw new System.Exception("oops: exception with resource held");
+    catch ex: System.Exception
+        write_line("caught: " + ex);
+    finally
+        is_resource_in_use = false;
+        write_line("resource released");
+    yrt
+
+    assert !is_resource_in_use;
+    
+
+    IO.Std.write_line("hello world");
+si
