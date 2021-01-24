@@ -1,8 +1,6 @@
 use IO.Std.write_line;
 
 entry() is
-    @entry()
-
     // ghul has basic flow control statements
 
     // assert tests a condition, and throws an exception if the condition does not hold:

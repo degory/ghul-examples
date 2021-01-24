@@ -1,10 +1,2 @@
-// this is a minimal ghūl example
-
-use IO.Std.write_line;
-
-// this is a global function:
-entry() is
-    @entry() // this is the program's entrypoint
-
-    write_line("hello world");   
-si
+entry() =>
+    IO.Std.write_line("hello world");   

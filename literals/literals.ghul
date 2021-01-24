@@ -1,10 +1,7 @@
 use IO.Std.write_line;
 
 entry() is
-    @entry()
-    
     assert "string literal".get_type() == typeof string;
-
     write_line("string literal");
 
     assert 'c'.get_type() == typeof char;
