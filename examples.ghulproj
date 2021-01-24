@@ -12,7 +12,7 @@
     <PackageReference Include="ghul.runtime" Version="*" />
     <PackageReference Include="ghul.pipes" Version="*" />
 
-    <!-- <Compile Include="**\*.ghul" /> -->
+    <Compile Include="*.ghul" />
   </ItemGroup>
   
   <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)"

@@ -2,8 +2,6 @@ use IO.Std.write_line;
 use Collections.LIST;
 
 entry() is
-    @entry()
-
     // f is an anonymous function:
     let f = (i: int) => i * 2;
 
