@@ -60,7 +60,7 @@ entry() is
     try
         assert "wombat" =~ "elephant";
     catch ex: System.Exception
-        assert ex.to_string().contains("control-flow.ghul");
+        assert ex.get_type() == typeof Ghul.AssertFailedException;
 
         write_line("caught: " + ex);
     yrt
@@ -81,6 +81,5 @@ entry() is
 
     assert !is_resource_in_use;
     
-
-    IO.Std.write_line("hello world");
+    IO.Std.write_line("done");
 si
