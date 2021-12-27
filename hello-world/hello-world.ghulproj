@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ghul.runtime" Version="1.0.0" />
-    <PackageReference Include="ghul.pipes" Version="1.0.0" />
-    <PackageReference Include="ghul.targets" Version="1.0.0" />
+    <PackageReference Include="ghul.runtime" />
+    <PackageReference Include="ghul.pipes" />
+    <PackageReference Include="ghul.targets" />
 
     <GhulSources Include="**/*.ghul" />
   </ItemGroup>  

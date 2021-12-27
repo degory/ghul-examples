@@ -42,5 +42,4 @@ entry() is
 
         write_line("g that captured i when it was {0} is a {1} that returns {2}", [ig.i, ig.g, ig.g()]);
     od
-
 si
