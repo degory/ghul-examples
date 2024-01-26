@@ -1,0 +1,7 @@
+use IO.Std.write_line;
+
+root_entry() =>
+    write_line(
+        "this root project is a dummy to allow all the examples to be loaded in the same VSCode workspace.\n" +
+        "build and run each example subproject individually: dotnet run ./hello-world"
+    );

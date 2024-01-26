@@ -3,13 +3,11 @@
   
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <GhulCompiler>dotnet ghul-compiler</GhulCompiler>
+    <TargetFramework>net8.0</TargetFramework>
+    <GhulCompiler>dotnet ghul-compiler --entry root_entry</GhulCompiler>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ghul.runtime" />
-    <PackageReference Include="ghul.pipes" />
-    <PackageReference Include="ghul.targets" />
-  </ItemGroup>  
+       <GhulSources Include="**/*.ghul" />
+  </ItemGroup>
 </Project>
