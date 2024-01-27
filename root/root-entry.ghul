@@ -1,0 +1,15 @@
+use IO.Std.write_line;
+
+// This is the entry point for the root project. It is a dummy project that allows all the examples to be loaded
+// in the same VSCode workspace without giving errors about duplicate entry points. If you do `dotnet run` in the
+// project root, this function will be called and it will print a message telling you to run each example
+// individually.
+
+// to run an example, do `dotnet run ./hello-world` or `dotnet run ./control-flow` etc. or cd into the example
+// directory and do `dotnet run`
+
+root_entry() =>
+    write_line(
+        "this root project is a dummy to allow all the examples to be loaded in the same VSCode workspace.\n" +
+        "build and run each example subproject individually: dotnet run ./hello-world"
+    );
