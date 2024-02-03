@@ -4,7 +4,7 @@ This repository contains examples of the ghūl programming language.
 
 ## prerequisites
 
-To use the examples project you need either [GitHub Codespaces](https://github.com/features/codespaces) or [Visual Studio Code](https://code.visualstudio.com/)
+To use this examples project you need either [GitHub Codespaces](https://github.com/features/codespaces) or else [Visual Studio Code](https://code.visualstudio.com/) with Docker or the .NET 8 SDK
 
 ## opening the examples project
 
@@ -16,8 +16,9 @@ To open the examples in a GitHub Codespace in your browser or in VS Code Desktop
 - click the `Code` link at the top right corner of the page
 - click the `+` icon to create a new Codespace on the `main` branch
 - wait for a few moments while GitHub sets up the Codespace
-- when VSCode opens in your browser either:
+- when VSCode opens in your browser, you have two options, either:
   - continue to use the examples directly in the browser
+- or, if you prefer to open the examples in VSCode Desktop:
   - click on the rectangle in the bottom left of the page labelled 'Codespaces'
   - select `Open in VS Code Desktop` from the menu that pops up
 
