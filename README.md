@@ -1,6 +1,8 @@
 # ghūl programming language examples
 
-This repository contains examples of the ghūl programming language. 
+This repository contains examples of the [ghūl programming language](https://ghul.dev).
+
+[![ghūl logo icon small](https://raw.githubusercontent.com/degory/ghul-dev/035cc6d3997514d03cbbd7b15133c37bf2a79f4e/src/.vuepress/public/ghul-logo-icon-128.png)](https://ghul.dev)
 
 ## prerequisites
 
