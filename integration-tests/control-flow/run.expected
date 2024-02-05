@@ -1,0 +1,12 @@
+
+false or-else true
+char 0 of 'hello' is h
+char 1 of 'hello' is e
+char 2 of 'hello' is l
+char 3 of 'hello' is l
+char 4 of 'hello' is o
+caught: /home/degory/src/ghul-examples/integration-tests/control-flow/control-flow.ghul 61,9..61,37: "wombat" =~ "elephant"
+resource acquired
+caught: oops: exception with resource held
+resource released
+done

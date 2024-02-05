@@ -12,7 +12,7 @@ entry() is
 
     // or a specific object to throw:
     assert 1 < "hello".length else new System.IndexOutOfRangeException();
-    
+
     if true then
         assert true;
         write_line("");
@@ -62,7 +62,7 @@ entry() is
     catch ex: System.Exception
         assert ex.get_type() == typeof Ghul.AssertFailedException;
 
-        write_line("caught: " + ex);
+        write_line("caught: " + ex.message);
     yrt
 
     // try finally for ensuring clean-up code is run:
@@ -73,7 +73,7 @@ entry() is
         write_line("resource acquired");
         throw new System.Exception("oops: exception with resource held");
     catch ex: System.Exception
-        write_line("caught: " + ex);
+        write_line("caught: " + ex.message);
     finally
         is_resource_in_use = false;
         write_line("resource released");

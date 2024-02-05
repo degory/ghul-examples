@@ -1,0 +1,6 @@
+string literal
+char literal: c
+integer literal: 123
+double literal: 123456789000
+tuple literal: (three, string, tuple)
+list literal: a, four, element, list
