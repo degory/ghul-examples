@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-       <GhulSources Include="**/*.ghul" />
+       <GhulSources Include="examples/**/*.ghul" />
+       <GhulSources Include="root/**/*.ghul" />
   </ItemGroup>
 </Project>
