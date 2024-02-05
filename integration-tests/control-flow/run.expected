@@ -5,10 +5,8 @@ char 1 of 'hello' is e
 char 2 of 'hello' is l
 char 3 of 'hello' is l
 char 4 of 'hello' is o
-caught: Ghul.AssertFailedException: C:\Users\degory\src\ghul-examples\integration-tests\control-flow\control-flow.ghul 61,9..61,37: "wombat" =~ "elephant"
-   at control_flow__control_flow.entry()
+caught: /home/degory/src/ghul-examples/integration-tests/control-flow/control-flow.ghul 61,9..61,37: "wombat" =~ "elephant"
 resource acquired
-caught: System.Exception: oops: exception with resource held
-   at control_flow__control_flow.entry()
+caught: oops: exception with resource held
 resource released
 done
