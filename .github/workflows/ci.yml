@@ -22,4 +22,4 @@ jobs:
       run: dotnet build
 
     - name: Run Integration Tests
-      run: dotnet ghul-test --use-dotnot-build integration-tests
+      run: dotnet ghul-test --use-dotnet-build integration-tests
