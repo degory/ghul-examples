@@ -31,7 +31,8 @@ To open the examples in a devcontainer in VS Code Desktop using Docker:
 - clone this repository to your development machine
 - open the project folder in Visual Studio Code 
 - either:
-  - click the `Reopen in Container` button, when it pops up in the bottom right of the window, OR
+  - click the `Reopen in Container` button, when it pops up in the bottom right of the window
+- or
   - press `Ctrl` + `Shift` + `P` and then select `Dev Containers: Reopen in Container` 
 
 ### open in VSCode locally
@@ -41,29 +42,37 @@ To open the examples directly in your local VSCode development environment:
 - clone this repository to your local machine
 - open the cloned project folder in Visual Studio Code
 
+## using the examples
+
 ### check the language extension is running
 
 Make sure the [ghūl Visual Studio Code language extension](https://marketplace.visualstudio.com/items?itemName=degory.ghul) is installed and running: if you open any `.ghul` source file, the code should be highlighted, and you should see definition information when you hover the cursor over symbols.
 
 If you're using VSCode Desktop and the extension is not running, either install it from the [marketplace](https://marketplace.visualstudio.com/items?itemName=degory.ghul) or install it using the extensions view (click on the extensions icon to the left of the Activity Bar, and then enter 'degory ghul' in the search box)
 
-If you're using a Codespace in your browser and the extension is not running, try deleting and recreating the codespace.
+If you're using a Codespace in your browser and the extension is not running, try reloading the window (press `Ctrl` + `Shift` + `P` and then select `Developer: Reload Window`)
 
-## using the examples
-
-## getting around the project
+### getting around the project
 The project consists of:
 - this document
+- the examples folder, which contains a subfolder for each example project
 - the MIT license
 - the root MSBuild project file `examples.ghulproj`
 - `Directory.Build.props`, which contains package references for some standard ghūl libraries
 - config folders for VSCode and the development container
-- folders for the various examples
 
 ### viewing and editing an example
-You can drill down into the different example folders to view and edit the code.
+You can drill down into the different examples projects within the examples folder to view and edit the code.
 
-Try browsing to `hello-world.ghul` by either expanding the `hello-world` folder in the Project Explorer view and then clicking on the `hello-world.ghul` source file, or by searching for it with `<ctrl>` + `P` and typing `hello-world`.
+Try browsing to `hello-world.ghul`:
+- expand `examples` then `hello-world` in the Project Explorer view
+- then click on the `hello-world.ghul` source file
+
+Or search for `hello-world.ghul` by file name:
+- press `<ctrl>` + `P` to start searching by file name
+- type `hello-world`
+
+Alternatively you can open an example's folder in a separate workspace / window in Visual Studio Code (see below)
 
 ### running an example
 To run an example:
