@@ -1,6 +1,8 @@
 use IO.Std.write_line;
 use Collections.LIST;
 
+// note the various 'i's and 'g's in this example - there are no name clashes
+// because each 'i' and 'g' is in a different scope.
 entry() is
     // f is an anonymous function:
     let f = (i: int) => i * 2;
@@ -12,11 +14,11 @@ entry() is
     assert f(123) == 123 * 2;
 
     for i in 1::10 do
-        write_line("f({0}) = {1}", [i, f(i)]: object);
+        write_line("f({i}) = {f(i)}");
     od
 
     // list_of_gs is a list of 2-tuples, each one having an integer and a function element:
-    let list_of_gs = new LIST[(i: int, g: () -> int)]();
+    let list_of_gs = LIST[(i: int, g: () -> int)]();
 
     for i in 1::10 do
         // create a function that captures a value - in this case the loop variable i
@@ -35,11 +37,11 @@ entry() is
         assert list_of_gs[list_of_gs.count-1] == (i, g);
     od
 
-    for ig in list_of_gs do
+    for (i, g) in list_of_gs do
         // each saved g still returns the same value of i that
         // it captured when it was created:
-        assert ig.i == ig.g();
+        assert i == g();
 
-        write_line("g that captured i when it was {0} is a {1} that returns {2}", [ig.i, ig.g, ig.g()]);
+        write_line("g that captured i when it was {i} is a {g} that returns {g()}");
     od
 si
