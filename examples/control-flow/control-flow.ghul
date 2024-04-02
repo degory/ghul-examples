@@ -129,8 +129,6 @@ try_examples() is
 si
 
 let_use_examples() is
-    write_line("working directory is {IO.Directory.get_current_directory()}");
-
     let use reader = IO.File.open_text("greeting.txt");
     
     write_line(reader.read_line());

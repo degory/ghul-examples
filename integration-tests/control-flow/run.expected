@@ -32,5 +32,4 @@ resource acquired
 caught: oops: exception with resource held
 resource released
 done
-working directory is C:\Users\degory\src\ghul-examples\integration-tests\control-flow
 Hello, World!
