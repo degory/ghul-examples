@@ -14,7 +14,7 @@ strings with lengths: (one, 3), (two, 3), (three, 5), (four, 4), (horse, 5), (we
 result #1 is 3
 result #2 is 6
 result #3 is 9
-upper cased: HELLO WORLD
+upper cased: 'HELLO WORLD'
 sum is: 36
 count of elements > 3 is: 5
 sum of doubled odd numbers is: 32

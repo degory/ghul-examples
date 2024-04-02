@@ -1,4 +1,5 @@
 string literal
+string literal with interpolated expressions: 579 and 789
 char literal: c
 integer literal: 123
 double literal: 123456789000

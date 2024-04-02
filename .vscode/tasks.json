@@ -4,7 +4,10 @@
         {
             "label": "Run hello-world",
             "type": "shell",
-            "command": "dotnet run --project ./hello-world",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/hello-world"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -17,7 +20,10 @@
         {
             "label": "Run closures",
             "type": "shell",
-            "command": "dotnet run --project ./closures",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/closures"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -30,7 +36,10 @@
         {
             "label": "Run control-flow",
             "type": "shell",
-            "command": "dotnet run --project ./control-flow",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/control-flow"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -43,7 +52,10 @@
         {
             "label": "Run generics",
             "type": "shell",
-            "command": "dotnet run --project ./generics",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/generics"
+            },            
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -56,7 +68,10 @@
         {
             "label": "Run literals",
             "type": "shell",
-            "command": "dotnet run --project ./literals",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/literals"
+            },            
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -69,7 +84,10 @@
         {
             "label": "Run pipes",
             "type": "shell",
-            "command": "dotnet run --project ./pipes",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "examples/pipes"
+            },            
             "group": {
                 "kind": "build",
                 "isDefault": false

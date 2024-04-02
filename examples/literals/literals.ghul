@@ -4,6 +4,9 @@ entry() is
     assert "string literal".get_type() == typeof string;
     write_line("string literal");
 
+    assert "string literal with interpolated expressions: {123 + 456} and {789}".get_type() == typeof string;
+    write_line("string literal with interpolated expressions: {123 + 456} and {789}");
+
     assert 'c'.get_type() == typeof char;
     write_line("char literal: " + 'c');
 
