@@ -1,6 +1,6 @@
 true is True
 false or-else true is True
-Tuesday
+Wednesday
 loop iteration 1 out of 10
 loop iteration 2 out of 10
 loop iteration 3 out of 10
@@ -27,7 +27,7 @@ char 2 of 'hello' is l
 char 3 of 'hello' is l
 char 4 of 'hello' is o
 we're pretty sure a wombat is the same as an elephant, right?
-err, maybe not: Ghul.AssertFailedException
+err, maybe not: /workspaces/ghul-examples/integration-tests/control-flow/control-flow.ghul 105,9..105,33: wombat =~ elephant
 resource acquired
 caught: oops: exception with resource held
 resource released

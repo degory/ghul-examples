@@ -79,7 +79,7 @@ entry() is
         ["one", "two", "three", "four", "horse", "weevil", "six"] |
             .map(s => (s, s.length));
 
-    write_line("strings with lengths: " + strings_with_lengths);
+    write_line("strings with lengths: {strings_with_lengths}");
 
     // pipes are iterable, so you can loop over them with 'for':
     for (index, value) in [1, 2, 3] | .map(i => i * 3) .index() do
@@ -114,14 +114,14 @@ entry() is
     write_line("take first 3: {first_3}");
 
     let skip_3 = [1, 2, 3, 4, 5, 6, 7, 8] | .skip(3);
-    write_line("skip first 3: " + skip_3);
+    write_line("skip first 3: {skip_3}");
 
     let three_from_middle = 
         [1, 2, 3, 4, 5, 6, 7, 8] | 
             .skip(3)
             .take(3);
 
-    write_line("take 3 from the middle: " + three_from_middle);
+    write_line("take 3 from the middle: {three_from_middle}");
 
     let sum_three_from_middle = 
         [1, 2, 3, 4, 5, 6, 7, 8] | 
@@ -129,14 +129,14 @@ entry() is
             .take(3)
             .reduce(0, (r, e) => r + e);
 
-    write_line("sum of 3 from the middle: " + sum_three_from_middle);
+    write_line("sum of 3 from the middle: {sum_three_from_middle}");
 
     // zip combines two sequences into a single sequence of pairs/2-tuples
     let zip = 
         [1, 2, 3, 4, 5, 6, 7, 8] | 
             .zip([8, 7, 6, 5, 4, 3, 2, 1]);
 
-    write_line("zip of two sequences is: " + zip);
+    write_line("zip of two sequences is: {zip}");
 
     // or into a sequence where each element is derived by passing the
     // left + right elements to a supplied function:
@@ -144,19 +144,19 @@ entry() is
         [1, 2, 3, 4, 5, 6, 7, 8] | 
             .zip([8, 7, 6, 5, 4, 3, 2, 1], (l, r) => l + r);
 
-    write_line("sum of zipped is: " + zip_map); 
+    write_line("sum of zipped is: {zip_map}"); 
 
     // cat concatenates two pipes into a single sequence
     let cat =
         [1, 2, 3, 4, 5, 6, 7, 8] |
             .cat([8, 7, 6, 5, 4, 3, 2, 1]);
 
-    write_line("concatenated is: " + cat);
+    write_line("concatenated is: {cat}");
 
     // .index() tags each element with its 0-based index in the sequence:
     let indexed = ["cat", "dog", "fish", "zebra", "ameoba"] | .index();
 
-    write_line("indexed: " + indexed);
+    write_line("indexed: {indexed}");
 si
 
 is_odd(i: int) -> bool => i ∩ 1 != 0;
