@@ -1,1 +1,1 @@
-Hello, World!
+../../examples/control-flow/greeting.txt

@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/hello-world"
+                "cwd": "${workspaceFolder}/examples/hello-world"
             },
             "group": {
                 "kind": "build",
@@ -22,7 +22,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/closures"
+                "cwd": "${workspaceFolder}/examples/closures"
             },
             "group": {
                 "kind": "build",
@@ -38,7 +38,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/control-flow"
+                "cwd": "${workspaceFolder}/examples/control-flow"
             },
             "group": {
                 "kind": "build",
@@ -54,7 +54,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/generics"
+                "cwd": "${workspaceFolder}/examples/generics"
             },            
             "group": {
                 "kind": "build",
@@ -70,7 +70,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/literals"
+                "cwd": "${workspaceFolder}/examples/literals"
             },            
             "group": {
                 "kind": "build",
@@ -86,7 +86,7 @@
             "type": "shell",
             "command": "dotnet run",
             "options": {
-                "cwd": "examples/pipes"
+                "cwd": "${workspaceFolder}/examples/pipes"
             },            
             "group": {
                 "kind": "build",
@@ -97,7 +97,21 @@
             },
             "problemMatcher": "$msCompile"
         },
-
-        // Add more tasks for other example folders
+        {
+            "label": "Run functional",
+            "type": "shell",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/functional"
+            },            
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        }
     ]
 }

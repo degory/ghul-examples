@@ -10,3 +10,12 @@ bin/
 
 .assemblies.json
 .build.rsp
+
+**/*.diff
+**/*.out
+**/failed
+**/*.grep
+**/*.sort
+**/*.err
+**/*.warn
+

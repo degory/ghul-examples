@@ -6,7 +6,7 @@ This repository contains examples of the [ghūl programming language](https://gh
 
 ## prerequisites
 
-To use this examples project you need either [GitHub Codespaces](https://github.com/features/codespaces) or else [Visual Studio Code](https://code.visualstudio.com/) with Docker or the .NET 8 SDK
+To use this examples project you need either [GitHub Codespaces](https://github.com/features/codespaces), or else [Visual Studio Code](https://code.visualstudio.com/) plus Docker or the .NET 8 SDK
 
 ## opening the examples project
 
@@ -24,8 +24,7 @@ To open the examples in a GitHub Codespace in your browser or in VS Code Desktop
   - click on the rectangle in the bottom left of the page labelled 'Codespaces'
   - select `Open in VS Code Desktop` from the menu that pops up
 
-### devcontainer
-
+### open in devcontainer in VSCode
 To open the examples in a devcontainer in VS Code Desktop using Docker:
 - ensure you have Docker installed and working
 - clone this repository to your development machine
@@ -46,7 +45,7 @@ To open the examples directly in your local VSCode development environment:
 
 ### check the language extension is running
 
-Make sure the [ghūl Visual Studio Code language extension](https://marketplace.visualstudio.com/items?itemName=degory.ghul) is installed and running: if you open any `.ghul` source file, the code should be highlighted, and you should see definition information when you hover the cursor over symbols.
+Make sure the [ghūl Visual Studio Code language extension](https://marketplace.visualstudio.com/items?itemName=degory.ghul) is installed and running: if you open any `.ghul` source file, the source code should be highlighted, and you should see definition information when you hover the cursor over symbols.
 
 If you're using VSCode Desktop and the extension is not running, either install it from the [marketplace](https://marketplace.visualstudio.com/items?itemName=degory.ghul) or install it using the extensions view (click on the extensions icon to the left of the Activity Bar, and then enter 'degory ghul' in the search box)
 
@@ -60,6 +59,7 @@ The project consists of:
 - the root MSBuild project file `examples.ghulproj`
 - `Directory.Build.props`, which contains package references for some standard ghūl libraries
 - config folders for VSCode and the development container
+- integration tests folder
 
 ### viewing and editing an example
 You can drill down into the different examples projects within the examples folder to view and edit the code.
