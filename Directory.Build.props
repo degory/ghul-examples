@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <Version>0.3.5-alpha.107</Version>
     <NoWarn>NU1507</NoWarn>
-    <GhulCompiler>dotnet ghul-compiler</GhulCompiler>
+    <GhulCompiler>dotnet ghul-compiler --keep-out-il</GhulCompiler>
   </PropertyGroup>
 
   <ItemGroup>
