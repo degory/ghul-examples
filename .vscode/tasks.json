@@ -98,6 +98,22 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "Run object-oriented",
+            "type": "shell",
+            "command": "dotnet run",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/object-oriented"
+            },            
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "Run functional",
             "type": "shell",
             "command": "dotnet run",

@@ -10,6 +10,7 @@ entry() is
     mutual_recursion_example();
     immutable_data_structures_and_pure_functions();
     higher_order_functions_examples();
+    union_examples();
     currying_examples();
     partial_application_examples();
     generator_examples();
@@ -30,7 +31,7 @@ map_filter_reduce_examples() is
     // map
     let doubled = [1, 2, 3, 4, 5] | .map(x => x * 2);
     write_line("doubled: {doubled}");
-
+ 
     // filter
     let evens = [1, 2, 3, 4, 5] | .filter(x => x % 2 == 0);
     write_line("evens: {evens}");
@@ -228,6 +229,103 @@ if_expressions() is
     write_line("parity(11): {parity(11)}");
 si
 
+// unions
+union_examples() is
+    option_example();
+    list_example([1, 2, 3]);
+    list_example(["A", "B", "C"]);
+    tree_example([1, 2, 3, 4]);
+    tree_example(["A", "B", "C", "D"]);
+si
+
+union Option[T] is
+    NONE;
+    SOME(value: T);
+si
+
+union List[T] is
+    NIL;
+    CONS(head: T, tail: List[T]);
+si
+
+union Tree[T] is
+    LEAF(value: T);
+    NODE(left: Tree[T], right: Tree[T]);
+si
+
+option_example() is
+    let some_int = some(42);
+    let none_int = none[int]();
+
+    let stringify_option = (o: Option[int]) rec =>
+        if o.is_some then
+            "{o.some}"
+        else
+            "none"
+        fi;
+
+    write_line(stringify_option(some_int));
+    write_line(stringify_option(none_int));
+si
+
+list_example[T](elements: Collections.List[T]) is
+    assert elements.count == 3 else "expected 3 elements";
+
+    let list = cons(elements[0], cons(elements[1], cons(elements[2], nil[T]())));
+
+    let stringify_list = (l: List[T]) rec =>
+        if l.is_cons then
+            let (head, tail) = l.cons in
+            "{head}, {rec(tail)}"
+        else
+            "nil"
+        fi;
+
+    write_line(stringify_list(list));
+si
+
+tree_example[T](leaves: Collections.List[T]) is
+    assert leaves.count == 4 else "expected 4 leaves";
+
+    let tree = node(
+        node(
+            leaf(leaves[0]),
+            leaf(leaves[1])
+        ),
+        node(
+            leaf(leaves[2]),
+            leaf(leaves[3])
+        )
+    );
+
+    let stringify_tree = (t: Tree[T]) rec =>
+        if t.is_node then
+            let (left, right) = t.node in
+            "({rec(left)}, {rec(right)})"
+        else
+            "{t.leaf}"
+        fi;
+
+    write_line(stringify_tree(tree));
+si
+
+next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
+    if iterator.move_next() then
+        some(iterator.current)
+    else
+        none[T]()
+    fi;
+
+some[T](value: T) -> Option[T] => new Option.SOME[T](value);
+none[T]() -> Option[T] => new Option[T].NONE();
+
+node[T](left: Tree[T], right: Tree[T]) -> Tree[T] => new Tree.NODE[T](left, right);
+leaf[T](value: T) -> Tree[T] => new Tree.LEAF[T](value);
+
+cons[T](head: T, tail: List[T]) -> List[T] => new List.CONS[T](head, tail);
+nil[T]() -> List[T] => new List.NIL[T]();
+
+
 // currying
 currying_examples() is
     let curryed_add = (x: int) => (y: int) => x + y;
@@ -253,7 +351,7 @@ partial_application_examples() is
     write_line("add_10(3): {add_10(3)}");
 si
 
-// lazy evaluation
+// we don't have true lazy evaluation but we can try to approximate it
 
 // a generic infinite sequence generator with arbitrary state
 class GENERATOR[T, S]: Collections.Iterator[T], Collections.Iterable[T] is
@@ -291,13 +389,11 @@ si
 generate[T, S](initial: S, generator: S -> (S, T)) -> GENERATOR[T, S] =>
     GENERATOR[T, S](initial, generator);
 
-use IO.Std.write_line;
-
 generator_examples() is
     // generates an infinite sequence of fibonacci numbers:
     let fibonacci_sequence = generate(
         (0, 1),
-        state: (int, int) =>
+        (state: (int, int)) =>
             let 
                 (prev, current) = state,
                 next = prev + current
@@ -308,7 +404,7 @@ generator_examples() is
     // generates an infinite sequence of factorials:
     let factorial_sequence = generate(
         (1, 1),
-        state: (int, int) =>
+        (state) =>
             let
                 (p, prev) = state,
                 n = p + 1,
