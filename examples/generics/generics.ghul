@@ -34,13 +34,11 @@ class SACK[T]: Sack[T] is
         _things = LIST[T]();
     si
 
-    add(thing: T) is
+    add(thing: T) =>
         _things.add(thing);
-    si
 
-    count() -> int is
-        return _things.count;
-    si
+    count() -> int =>
+        _things.count;
 si
 
 demonstrate_sack[T](sack: Sack[T], things: Iterable[T]) is

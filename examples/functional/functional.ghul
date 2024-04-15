@@ -253,9 +253,16 @@ union Tree[T] is
     NODE(left: Tree[T], right: Tree[T]);
 si
 
+use Option.SOME;
+use Option.NONE;
+use List.NIL;
+use List.CONS;
+use Tree.LEAF;
+use Tree.NODE;
+
 option_example() is
-    let some_int = some(42);
-    let none_int = none[int]();
+    let some_int = SOME(42);
+    let none_int = NONE[int]();
 
     let stringify_option = (o: Option[int]) rec =>
         if o.is_some then
@@ -271,7 +278,7 @@ si
 list_example[T](elements: Collections.List[T]) is
     assert elements.count == 3 else "expected 3 elements";
 
-    let list = cons(elements[0], cons(elements[1], cons(elements[2], nil[T]())));
+    let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL[T]())));
 
     let stringify_list = (l: List[T]) rec =>
         if l.is_cons then
@@ -287,16 +294,17 @@ si
 tree_example[T](leaves: Collections.List[T]) is
     assert leaves.count == 4 else "expected 4 leaves";
 
-    let tree = node(
-        node(
-            leaf(leaves[0]),
-            leaf(leaves[1])
-        ),
-        node(
-            leaf(leaves[2]),
-            leaf(leaves[3])
-        )
-    );
+    let tree = 
+        NODE(
+            NODE(
+                LEAF(leaves[0]),
+                LEAF(leaves[1])
+            ),
+            NODE(
+                LEAF(leaves[2]),
+                LEAF(leaves[3])
+            )
+        );
 
     let stringify_tree = (t: Tree[T]) rec =>
         if t.is_node then
@@ -311,19 +319,10 @@ si
 
 next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
     if iterator.move_next() then
-        some(iterator.current)
+        SOME(iterator.current)
     else
-        none[T]()
+        NONE[T]()
     fi;
-
-some[T](value: T) -> Option[T] => new Option.SOME[T](value);
-none[T]() -> Option[T] => new Option[T].NONE();
-
-node[T](left: Tree[T], right: Tree[T]) -> Tree[T] => new Tree.NODE[T](left, right);
-leaf[T](value: T) -> Tree[T] => new Tree.LEAF[T](value);
-
-cons[T](head: T, tail: List[T]) -> List[T] => new List.CONS[T](head, tail);
-nil[T]() -> List[T] => new List.NIL[T]();
 
 
 // currying
@@ -340,7 +339,6 @@ currying_examples() is
 si
 
 // partial application
-
 partial_application_examples() is
     let add = (x: int, y: int) => x + y;
 
@@ -385,13 +383,9 @@ class GENERATOR[T, S]: Collections.Iterator[T], Collections.Iterable[T] is
     si
 si
 
-// generator constructor helper so we don't have to specify types
-generate[T, S](initial: S, generator: S -> (S, T)) -> GENERATOR[T, S] =>
-    GENERATOR[T, S](initial, generator);
-
 generator_examples() is
     // generates an infinite sequence of fibonacci numbers:
-    let fibonacci_sequence = generate(
+    let fibonacci_sequence = GENERATOR(
         (0, 1),
         (state: (int, int)) =>
             let 
@@ -402,7 +396,7 @@ generator_examples() is
     );
 
     // generates an infinite sequence of factorials:
-    let factorial_sequence = generate(
+    let factorial_sequence = GENERATOR(
         (1, 1),
         (state) =>
             let
@@ -422,4 +416,3 @@ generator_examples() is
         write_line("factorial {i} is {fact}");
     od;
 si
-
