@@ -17,7 +17,7 @@ entry() is
 si
 
 first_class_functions() is
-    let f = (i: int) => i * 2;
+    let f = (i) => i * 2;
 
     let g = f;
 
@@ -74,7 +74,7 @@ pure_examples() is
     // but tuples are immutable, so members cannot be assigned to:
     // tuple.`1 = 10; // compile time error
 
-    let classify = (n: int) =>
+    let classify = (n) =>
         if n == 0 then
             "Zero"
         elif n % 2 == 0 /\ n < 0 then
@@ -102,7 +102,7 @@ si
 self_recursion_examples() is
     // factorial
     let factorial = 
-        (n: int) rec => 
+        n rec => 
             if n == 0 then
                 1 
             else 
@@ -113,7 +113,7 @@ self_recursion_examples() is
 
     // fibonacci
     let fibonacci = 
-        (n: int) rec => 
+        n rec => 
             if n <= 1 then
                 n 
             else 
@@ -129,7 +129,7 @@ mutual_recursion_example() is
     // by passing one function into the other as an argument:
 
     let is_even = (n: int, is_odd: int -> bool) => if n == 0 then true else is_odd(n - 1) fi;
-    let is_odd = (n: int) rec => if n == 0 then false else is_even(n - 1, rec) fi;
+    let is_odd = (n) rec => if n == 0 then false else is_even(n - 1, rec) fi;
 
     write_line("even(10): {is_even(10, is_odd)}");
     write_line("odd(10): {is_odd(10)}");
@@ -155,7 +155,7 @@ immutable_data_structures_and_pure_functions() is
     write_line("list: {list | }");
 
     // pure functions
-    let add = (x: int, y: int) => x + y;
+    let add = (x, y) => x + y;
     write_line("add(5, 3): {add(5, 3)}");
 si
 
@@ -179,18 +179,18 @@ si
 
 // higher order non-genericly typed anonymous functions:
 higher_order_functions_examples() is
-    let times_2 = (x: int) => x * 2;
+    let times_2 = x => x * 2;
     write_line("apply(times_2, 5): {apply(times_2, 5)}");
 
-    let square = (x: int) => x * x;
+    let square = (x) => x * x;
     write_line("apply(square, 5): {apply(square, 5)}");
 
     // higher order function consumes another function:
-    let apply_twice = (f: int -> int, x: int) => f(f(x));
+    let apply_twice = (f: int -> int, x) => f(f(x));
     write_line("apply_twice(times_2, 5): {apply_twice(times_2, 5)}");
 
     // higher order function returns another function:
-    let create_apply_twice = (f: int -> int) => (x: int) => f(f(x));
+    let create_apply_twice = (f: int -> int) => (x) => f(f(x));
     let apply_twice_times_2 = create_apply_twice(times_2);
 
     write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}");
@@ -202,7 +202,7 @@ if_expressions() is
     // go some way to providing similar functionality:
 
     let is_even =
-        (n: int) => 
+        (n) => 
             if n % 2 == 0 then 
                 true 
             else 
@@ -210,7 +210,7 @@ if_expressions() is
             fi;
 
     let is_odd = 
-        (n: int) => 
+        (n) => 
             if n % 2 != 0 then
                 true 
             else 
@@ -218,7 +218,7 @@ if_expressions() is
             fi;
 
     let parity = 
-        (n: int) => 
+        (n) => 
             if is_even(n) then
                 "even" 
             else
@@ -327,7 +327,7 @@ next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
 
 // currying
 currying_examples() is
-    let curryed_add = (x: int) => (y: int) => x + y;
+    let curryed_add = (x) => (y) => x + y;
 
     write_line("curryed_add(5)(3): {curryed_add(5)(3)}");
 
