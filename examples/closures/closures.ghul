@@ -5,7 +5,7 @@ use Collections.LIST;
 // because each 'i' and 'g' is in a different scope.
 entry() is
     // f is an anonymous function:
-    let f = (i: int) => i * 2;
+    let f = (i) => i * 2;
 
     // its type is int -> int
     assert f.get_type() == typeof int -> int;
