@@ -8,7 +8,7 @@ entry() is
     // ghūl has anonymous functions:
     let f = (i: int) -> string => "i is {i}";
     write_line("f(123) = {f(123)}");
-    
+
     // anonymous functions infer their return type, if it is not explicit:
     let g = (j: int) => "j is {j}";
     write_line("g(456) = {g(456)}");
@@ -24,7 +24,7 @@ entry() is
 
     // anonymous functions can capture values from outer lexical scopes -
     // in this case the anonymous functions f, g and h are captured:
-    let closure = (i: int, j: int, k: int) => "{f(i)}, {g(j)}, {h(k)}";
+    let closure = (i, j, k) => "{f(i)}, {g(j)}, {h(k)}";
     write_line("captured values: {closure(111, 222, 333)}");
 
     // anonymous functions can be nested, and their frames live on after they return:

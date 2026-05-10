@@ -1,0 +1,41 @@
+an_int is a System.Int32
+a_single is a System.Single
+a_double is a System.Double
+a_string is a System.String
+a_char is a System.Char
+a_bool is a System.Boolean
+int_box.value: 42
+string_box.value: hello
+pair: (123, hello)
+nested.value.value: 7
+mixed: (1, two)
+ints: 1, 2, 3
+strings: one, two, three
+person: (alice, 30)
+nested.`0.`0: alice
+name: alice (System.String), age: 30 (System.Int32)
+first: a, second: b, third: c
+range value i: 1
+range value i: 2
+range value i: 3
+string char c: g
+string char c: h
+string char c: u
+string char c: l
+a = 1
+b = 2
+c = 3
+doubled: 2, 4, 6
+even: 2, 4, 6
+sum: 15
+labelled: n=1 n=2 n=3
+ghūl is 12 years old
+summarise(0): zero
+summarise(7): positive
+summarise(-3): negative
+add_5(3): 8
+lengths: 3, 8, 4
+apply(times_2, 5): 10
+transform(...): <42>
+circle of radius 3
+square of side 4
