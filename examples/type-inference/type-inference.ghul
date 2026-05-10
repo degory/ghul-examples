@@ -1,0 +1,236 @@
+use IO.Std.write_line;
+use Collections.LIST;
+
+// ghūl performs a fair amount of type inference, so most of the time
+// you don't need to write explicit types for local variables, lambda
+// parameters, or generic type arguments. This example tours the kinds
+// of inference the compiler supports.
+
+entry() is
+    local_variables();
+    constructors();
+    array_and_tuple_literals();
+    destructuring();
+    for_loop_variables();
+    lambdas_from_pipe_context();
+    lambda_return_types();
+    iterative_inference();
+    generic_function_arguments();
+    union_narrowing();
+si
+
+// === local variables ===
+// the type of a let binding is taken from the type of its initializer:
+local_variables() is
+    let an_int = 42;
+    let a_single = 3.14;
+    let a_double = 3.14D;
+    let a_string = "hello";
+    let a_char = 'g';
+    let a_bool = true;
+
+    write_line("an_int is a {an_int.get_type()}");
+    write_line("a_single is a {a_single.get_type()}");
+    write_line("a_double is a {a_double.get_type()}");
+    write_line("a_string is a {a_string.get_type()}");
+    write_line("a_char is a {a_char.get_type()}");
+    write_line("a_bool is a {a_bool.get_type()}");
+si
+
+// === constructors ===
+class BOX[T] is
+    init(value: T) is
+        _value = value;
+    si
+
+    _value: T;
+    value: T => _value;
+si
+
+class PAIR[A, B] is
+    init(first: A, second: B) is
+        _first = first;
+        _second = second;
+    si
+
+    _first: A;
+    _second: B;
+    first: A => _first;
+    second: B => _second;
+si
+
+// generic class constructors infer their type arguments from their actual
+// arguments, so explicit [T] / [A, B] type arguments are not needed:
+constructors() is
+    let int_box = BOX(42);
+    let string_box = BOX("hello");
+    let pair = PAIR(123, "hello");
+
+    write_line("int_box.value: {int_box.value}");
+    write_line("string_box.value: {string_box.value}");
+    write_line("pair: ({pair.first}, {pair.second})");
+
+    // inference nests through the call tree:
+    let nested = BOX(BOX(7));
+    write_line("nested.value.value: {nested.value.value}");
+
+    let mixed = PAIR(BOX(1), BOX("two"));
+    write_line("mixed: ({mixed.first.value}, {mixed.second.value})");
+si
+
+// === array and tuple literals ===
+array_and_tuple_literals() is
+    // an array literal's element type is the least upper bound (LUB)
+    // of its element types - all-int → List[int], all-string → List[string]:
+    let ints = [1, 2, 3];
+    let strings = ["one", "two", "three"];
+
+    write_line("ints: {ints | }");
+    write_line("strings: {strings | }");
+
+    // a tuple's element types come from its element expressions:
+    let person = ("alice", 30);
+    write_line("person: ({person.`0}, {person.`1})");
+
+    // nested:
+    let nested = (("alice", 30), [1, 2, 3]);
+    write_line("nested.`0.`0: {nested.`0.`0}");
+si
+
+// === destructuring ===
+// destructuring assignments propagate types from the right-hand side
+// into the bound names:
+destructuring() is
+    let person = ("alice", 30);
+    let (name, age) = person;
+    write_line("name: {name} ({name.get_type()}), age: {age} ({age.get_type()})");
+
+    // works for nested tuples too:
+    let ((first, second), third) = (("a", "b"), "c");
+    write_line("first: {first}, second: {second}, third: {third}");
+si
+
+// === for-loop variables ===
+// loop variables get their type from the iterable being looped over:
+for_loop_variables() is
+    // i: int from the range:
+    for i in 1::3 do
+        write_line("range value i: {i}");
+    od
+
+    // c: char from the string iterator:
+    for c in "ghul" do
+        write_line("string char c: {c}");
+    od
+
+    // destructured loop variables:
+    let pairs = [("a", 1), ("b", 2), ("c", 3)];
+    for (name, value) in pairs do
+        write_line("{name} = {value}");
+    od
+si
+
+// === lambda parameter types from pipe context ===
+// when a lambda is passed to a method whose parameter type is known,
+// the lambda's parameter types are inferred from that signature:
+lambdas_from_pipe_context() is
+    // .map[R](f: T -> R) - x: int comes from the pipe element type:
+    let doubled = [1, 2, 3] | .map(x => x * 2);
+    write_line("doubled: {doubled}");
+
+    // .filter(predicate: T -> bool):
+    let even = [1, 2, 3, 4, 5, 6] | .filter(x => x % 2 == 0);
+    write_line("even: {even}");
+
+    // .reduce(seed, step: (A, T) -> A) - acc and x are both inferred:
+    let sum = [1, 2, 3, 4, 5] | .reduce(0, (acc, x) => acc + x);
+    write_line("sum: {sum}");
+
+    // chained calls keep flowing the inferred types through:
+    let labelled = [1, 2, 3] | .map(n => "n={n}") .reduce("", (acc, s) => acc + " " + s);
+    write_line("labelled:{labelled}");
+si
+
+// === lambda return types from the body ===
+// if a lambda has explicit parameter types but no explicit return type,
+// the return type comes from the body expression:
+lambda_return_types() is
+    let to_message = (name: string, age: int) => "{name} is {age} years old";
+    write_line(to_message("ghūl", 12));
+
+    // a lambda with a block body and return statements infers its
+    // return type from the returned expression:
+    let summarise = (n: int) is
+        if n == 0 then
+            return "zero";
+        elif n > 0 then
+            return "positive";
+        else
+            return "negative";
+        fi
+    si;
+
+    write_line("summarise(0): {summarise(0)}");
+    write_line("summarise(7): {summarise(7)}");
+    write_line("summarise(-3): {summarise(-3)}");
+si
+
+// === iterative inference ===
+// inference is iterative: information flows both into and out of a
+// lambda's body, so use-site context can determine a lambda's
+// parameter types when its body alone wouldn't be enough:
+iterative_inference() is
+    // add's signature pins x and y to int:
+    let add = (x: int, y: int) => x + y;
+
+    // here y has no explicit type but it's passed to add as the second
+    // argument, so its type is inferred from add's signature:
+    let add_5 = y => add(5, y);
+    write_line("add_5(3): {add_5(3)}");
+
+    // and back-propagation through a list literal:
+    let lengths = ["one", "fourteen", "five"] | .map(s => s.length);
+    write_line("lengths: {lengths}");
+si
+
+// === generic function type arguments ===
+// generic free functions infer their type arguments from their actual
+// arguments, so explicit [T] is rarely needed at the call site:
+apply[T](f: T -> T, x: T) -> T => f(x);
+transform[A, B](f: A -> B, x: A) -> B => f(x);
+
+generic_function_arguments() is
+    // T = int from times_2 and 5:
+    let times_2 = x => x * 2;
+    write_line("apply(times_2, 5): {apply(times_2, 5)}");
+
+    // A = int, B = string from the lambda and the value:
+    let stringified = transform(n => "<{n}>", 42);
+    write_line("transform(...): {stringified}");
+si
+
+// === union variant narrowing ===
+// after testing the variant of a 2-variant union with .is_X, the
+// type is narrowed - so the variant's fields become visible:
+union Shape is
+    CIRCLE(radius: double);
+    SQUARE(side: double);
+si
+
+use Shape.CIRCLE;
+use Shape.SQUARE;
+
+describe(s: Shape) -> string =>
+    if s.is_circle then
+        // s is narrowed to CIRCLE here, so .radius is accessible:
+        "circle of radius {s.radius}"
+    else
+        // since the union has exactly two variants, the else branch
+        // narrows s to SQUARE - so .side is accessible:
+        "square of side {s.side}"
+    fi;
+
+union_narrowing() is
+    write_line(describe(CIRCLE(3.0D)));
+    write_line(describe(SQUARE(4.0D)));
+si

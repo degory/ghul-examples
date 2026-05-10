@@ -3,12 +3,10 @@ use IO.Std.write_line;
 entry() is
     let int_calculator = CALCULATOR(
         [
-            // we don't have covariance in tuples, so we need
-            // to specify the type of the operation explicitly
-            ("+", op: Operation[int] = INTEGER_ADDITION()),
-            ("-", op: Operation[int] = INTEGER_SUBTRACTION()),
-            ("*", op: Operation[int] = INTEGER_MULTIPLICATION()),
-            ("/", op: Operation[int] = INTEGER_DIVISION())
+            ("+", INTEGER_ADDITION()),
+            ("-", INTEGER_SUBTRACTION()),
+            ("*", INTEGER_MULTIPLICATION()),
+            ("/", INTEGER_DIVISION())
         ]
     );
 
@@ -21,8 +19,8 @@ entry() is
 
     let string_calculator = CALCULATOR(
         [
-            ("+", op: Operation[string] = STRING_CONCATENATION()),
-            ("-", op: Operation[string] = STRING_SUBTRACTION())
+            ("+", STRING_CONCATENATION()),
+            ("-", STRING_SUBTRACTION())
         ]
     );
 

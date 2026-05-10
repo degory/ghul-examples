@@ -17,7 +17,7 @@ entry() is
 si
 
 first_class_functions() is
-    let f = (i) => i * 2;
+    let f = i => i * 2;
 
     let g = f;
 
@@ -74,7 +74,7 @@ pure_examples() is
     // but tuples are immutable, so members cannot be assigned to:
     // tuple.`1 = 10; // compile time error
 
-    let classify = (n) =>
+    let classify = n =>
         if n == 0 then
             "Zero"
         elif n % 2 == 0 /\ n < 0 then
@@ -128,8 +128,8 @@ mutual_recursion_example() is
     // mutual recursion for anonymous functions is slightly awkward, but possible
     // by passing one function into the other as an argument:
 
-    let is_even = (n: int, is_odd: int -> bool) => if n == 0 then true else is_odd(n - 1) fi;
-    let is_odd = (n) rec => if n == 0 then false else is_even(n - 1, rec) fi;
+    let is_even = (n, is_odd) => if n == 0 then true else is_odd(n - 1) fi;
+    let is_odd = n rec => if n == 0 then false else is_even(n - 1, rec) fi;
 
     write_line("even(10): {is_even(10, is_odd)}");
     write_line("odd(10): {is_odd(10)}");
@@ -182,7 +182,7 @@ higher_order_functions_examples() is
     let times_2 = x => x * 2;
     write_line("apply(times_2, 5): {apply(times_2, 5)}");
 
-    let square = (x) => x * x;
+    let square = x => x * x;
     write_line("apply(square, 5): {apply(square, 5)}");
 
     // higher order function consumes another function:
@@ -190,7 +190,7 @@ higher_order_functions_examples() is
     write_line("apply_twice(times_2, 5): {apply_twice(times_2, 5)}");
 
     // higher order function returns another function:
-    let create_apply_twice = (f: int -> int) => (x) => f(f(x));
+    let create_apply_twice = (f: int -> int) => x => f(f(x));
     let apply_twice_times_2 = create_apply_twice(times_2);
 
     write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}");
@@ -202,25 +202,25 @@ if_expressions() is
     // go some way to providing similar functionality:
 
     let is_even =
-        (n) => 
-            if n % 2 == 0 then 
-                true 
-            else 
+        n =>
+            if n % 2 == 0 then
+                true
+            else
                 false
             fi;
 
-    let is_odd = 
-        (n) => 
+    let is_odd =
+        n =>
             if n % 2 != 0 then
-                true 
-            else 
+                true
+            else
                 false
             fi;
 
-    let parity = 
-        (n) => 
+    let parity =
+        n =>
             if is_even(n) then
-                "even" 
+                "even"
             else
                 "odd"
             fi;
@@ -321,31 +321,30 @@ next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
     if iterator.move_next() then
         SOME(iterator.current)
     else
-        NONE[T]()
+        NONE()
     fi;
 
 
 // currying
 currying_examples() is
-    let curryed_add = (x) => (y) => x + y;
+    let curried_add = x => y => x + y;
+    write_line("curried_add(5)(3): {curried_add(5)(3)}");
 
-    write_line("curryed_add(5)(3): {curryed_add(5)(3)}");
-
-    let add_5 = curryed_add(5);
+    let add_5 = curried_add(5);
     write_line("add_5(3): {add_5(3)}");
 
-    let add_10 = curryed_add(10);
+    let add_10 = curried_add(10);
     write_line("add_10(3): {add_10(3)}");
 si
 
 // partial application
 partial_application_examples() is
-    let add = (x: int, y: int) => x + y;
+    let add = (x, y) => x + y;
 
-    let add_5 = (y: int) => add(5, y);
+    let add_5 = y => add(5, y);
     write_line("add_5(3): {add_5(3)}");
 
-    let add_10 = (y: int) => add(10, y);
+    let add_10 = y => add(10, y);
     write_line("add_10(3): {add_10(3)}");
 si
 
@@ -388,7 +387,7 @@ generator_examples() is
     let fibonacci_sequence = GENERATOR(
         (0, 1),
         (state: (int, int)) =>
-            let 
+            let
                 (prev, current) = state,
                 next = prev + current
             in
