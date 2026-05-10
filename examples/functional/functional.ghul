@@ -311,7 +311,7 @@ tree_example[T](leaves: Collections.List[T]) is
             let (left, right) = t in
             "({rec(left)}, {rec(right)})"
         else
-            "{t.leaf}"
+            "{t.value}"
         fi;
 
     write_line(stringify_tree(tree));
