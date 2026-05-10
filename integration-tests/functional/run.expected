@@ -17,6 +17,12 @@ apply(times_2, 5): 10
 apply(square, 5): 25
 apply_twice(times_2, 5): 20
 apply_twice_times_2(5): 20
+42
+none
+1, 2, 3, nil
+A, B, C, nil
+((1, 2), (3, 4))
+((A, B), (C, D))
 curryed_add(5)(3): 8
 add_5(3): 8
 add_10(3): 13

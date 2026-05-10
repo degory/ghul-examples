@@ -10,16 +10,7 @@ entry() is
     mutual_recursion_example();
     immutable_data_structures_and_pure_functions();
     higher_order_functions_examples();
-    // union_examples();  // disabled — restore after the type-narrowing
-                         // compiler change publishes; the post-narrowing
-                         // idiom (`o.value` instead of `o.some` after
-                         // `if o.is_some`, plain `let (h, t) = l`
-                         // instead of `let (h, t) = l.cons` after
-                         // `if l.is_cons`) doesn't compile under the
-                         // pre-narrowing pinned compiler, and the old
-                         // idiom doesn't compile under the post-narrowing
-                         // one. Re-enable + update once the compiler
-                         // version with narrowing is pinned here.
+    union_examples();
     currying_examples();
     partial_application_examples();
     generator_examples();
@@ -239,17 +230,12 @@ if_expressions() is
 si
 
 // unions
-//
-// The union examples (option_example, list_example, tree_example)
-// are temporarily stubbed out: the pre-narrowing idiom
-// (`if o.is_some then o.some` / `let (head, tail) = l.cons` after
-// `if l.is_cons`) doesn't compile under the post-narrowing compiler,
-// and the post-narrowing idiom (`.value` / plain `let (head, tail) = l`)
-// doesn't compile under the still-pinned pre-narrowing compiler.
-// Restore + update once a compiler version with type narrowing is
-// pinned in `.config/dotnet-tools.json`.
 union_examples() is
-    // stubbed — see comment above
+    option_example();
+    list_example([1, 2, 3]);
+    list_example(["A", "B", "C"]);
+    tree_example([1, 2, 3, 4]);
+    tree_example(["A", "B", "C", "D"]);
 si
 
 union Option[T] is
@@ -275,15 +261,60 @@ use Tree.LEAF;
 use Tree.NODE;
 
 option_example() is
-    // stubbed — see comment above union_examples
+    let some_int = SOME(42);
+    let none_int = NONE[int]();
+
+    let stringify_option = (o: Option[int]) rec =>
+        if o.is_some then
+            "{o.value}"
+        else
+            "none"
+        fi;
+
+    write_line(stringify_option(some_int));
+    write_line(stringify_option(none_int));
 si
 
 list_example[T](elements: Collections.List[T]) is
-    // stubbed — see comment above union_examples
+    assert elements.count == 3 else "expected 3 elements";
+
+    let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL[T]())));
+
+    let stringify_list = (l: List[T]) rec =>
+        if l.is_cons then
+            let (head, tail) = l in
+            "{head}, {rec(tail)}"
+        else
+            "nil"
+        fi;
+
+    write_line(stringify_list(list));
 si
 
 tree_example[T](leaves: Collections.List[T]) is
-    // stubbed — see comment above union_examples
+    assert leaves.count == 4 else "expected 4 leaves";
+
+    let tree = 
+        NODE(
+            NODE(
+                LEAF(leaves[0]),
+                LEAF(leaves[1])
+            ),
+            NODE(
+                LEAF(leaves[2]),
+                LEAF(leaves[3])
+            )
+        );
+
+    let stringify_tree = (t: Tree[T]) rec =>
+        if t.is_node then
+            let (left, right) = t in
+            "({rec(left)}, {rec(right)})"
+        else
+            "{t.leaf}"
+        fi;
+
+    write_line(stringify_tree(tree));
 si
 
 next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
