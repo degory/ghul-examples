@@ -193,7 +193,7 @@ lambdas_from_call_context() is
     write_line("sum: {sum}");
 
     // chained calls keep flowing the inferred types through:
-    let labelled = [1, 2, 3] | .map(n => "[{n}]") .reduce("", (acc, s) => acc + s);
+    let labelled = [1, 2, 3] | .map(n => "[{n}]") .reduce("", (acc, s) => "{acc}{s}");
     write_line("labelled: {labelled}");
 si
 
