@@ -31,7 +31,7 @@ m["two"]: 2, count: 3
 doubled: 2, 4, 6
 even: 2, 4, 6
 sum: 15
-labelled: n=1 n=2 n=3
+labelled: [1][2][3]
 ghūl is 12 years old
 summarise(0): zero
 summarise(7): positive
