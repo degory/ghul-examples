@@ -25,6 +25,9 @@ string char c: l
 a = 1
 b = 2
 c = 3
+b.value: 42
+xs: 1, 2, 3, count: 3
+m["two"]: 2, count: 3
 doubled: 2, 4, 6
 even: 2, 4, 6
 sum: 15
@@ -35,6 +38,11 @@ summarise(7): positive
 summarise(-3): negative
 add_5(3): 8
 lengths: 3, 8, 4
+f("hello"): 5
+add_5(3): 8
+add_5(20): 25
+times_7(6): 42
+boxed.value: 42
 apply(times_2, 5): 10
 transform(...): <42>
 circle of radius 3
