@@ -1,5 +1,6 @@
 use IO.Std.write_line;
 use Collections.LIST;
+use Collections.MAP;
 
 // ghūl performs a fair amount of type inference, so most of the time
 // you don't need to write explicit types for local variables, lambda
@@ -12,9 +13,11 @@ entry() is
     array_and_tuple_literals();
     destructuring();
     for_loop_variables();
-    lambdas_from_pipe_context();
+    type_args_from_later_use();
+    lambdas_from_call_context();
     lambda_return_types();
     iterative_inference();
+    closures_and_currying();
     generic_function_arguments();
     union_narrowing();
 si
@@ -40,6 +43,13 @@ si
 // === constructors ===
 class BOX[T] is
     init(value: T) is
+        _value = value;
+    si
+
+    init() is
+    si
+
+    set(value: T) is
         _value = value;
     si
 
@@ -130,10 +140,41 @@ for_loop_variables() is
     od
 si
 
-// === lambda parameter types from pipe context ===
-// when a lambda is passed to a method whose parameter type is known,
-// the lambda's parameter types are inferred from that signature:
-lambdas_from_pipe_context() is
+// === type arguments resolved from later use ===
+// when a let-bound value of a generic type has no type arguments
+// and no initializer to fix them, the compiler resolves the type
+// from later operations on the value. The mechanism is general —
+// it applies to any generic type, not just standard collections:
+type_args_from_later_use() is
+    // a user-defined generic class. T is resolved from the .set()
+    // call below — there's no [int] written anywhere, and the
+    // no-arg constructor doesn't pin T either:
+    let b = BOX();
+    b.set(42);
+    write_line("b.value: {b.value}");
+
+    // standard collections work via exactly the same mechanism —
+    // T from .add() calls:
+    let xs = LIST();
+    xs.add(1);
+    xs.add(2);
+    xs.add(3);
+    write_line("xs: {xs | }, count: {xs.count}");
+
+    // K and V from indexed assignments:
+    let m = MAP();
+    m["one"] = 1;
+    m["two"] = 2;
+    m["three"] = 3;
+    write_line("m[\"two\"]: {m["two"]}, count: {m.count}");
+si
+
+// === lambda parameter types from call-site context ===
+// when a lambda is passed as an argument and the call site's
+// formal parameter is a function type, the lambda's parameter
+// types are inferred from that signature. The pipe operator
+// is one common way to write such call sites:
+lambdas_from_call_context() is
     // .map[R](f: T -> R) - x: int comes from the pipe element type:
     let doubled = [1, 2, 3] | .map(x => x * 2);
     write_line("doubled: {doubled}");
@@ -188,10 +229,46 @@ iterative_inference() is
     let add_5 = y => add(5, y);
     write_line("add_5(3): {add_5(3)}");
 
-    // and back-propagation through a list literal:
+    // back-propagation through a list literal:
     let lengths = ["one", "fourteen", "five"] | .map(s => s.length);
     write_line("lengths: {lengths}");
+
+    // body and call site converge: `.length` says x has a
+    // length-yielding member, the call site `f("hello")` pins
+    // x to string. Neither end alone would resolve x's type:
+    let f = x => x.length;
+    write_line("f(\"hello\"): {f("hello")}");
 si
+
+// === closures and curried lambdas ===
+// inference treats lambdas as ordinary values: anywhere a typed
+// value can appear, a lambda whose type is being inferred can
+// appear too, and the same machinery applies:
+closures_and_currying() is
+    // both a and b are resolved through use: the outer call pins
+    // a, then the inner call (via add_5) pins b. The lambda itself
+    // is written without any annotations:
+    let curried_add = a => b => a + b;
+    let add_5 = curried_add(5);
+    write_line("add_5(3): {add_5(3)}");
+    write_line("add_5(20): {add_5(20)}");
+
+    // a factory that captures its argument and returns a closure.
+    // x is resolved from `x * n` (n is already int) and the outer
+    // return signature pins the lambda's shape:
+    let times_7 = make_multiplier(7);
+    write_line("times_7(6): {times_7(6)}");
+
+    // a lambda whose body is a generic constructor with no type
+    // arguments: BOX's T is inferred from the constructor argument,
+    // and the lambda's return type follows from there:
+    let make_box = n => BOX(n);
+    let boxed = make_box(42);
+    write_line("boxed.value: {boxed.value}");
+si
+
+make_multiplier(n: int) -> int -> int =>
+    x => x * n;
 
 // === generic function type arguments ===
 // generic free functions infer their type arguments from their actual
@@ -210,8 +287,10 @@ generic_function_arguments() is
 si
 
 // === union variant narrowing ===
-// after testing the variant of a 2-variant union with .is_X, the
-// type is narrowed - so the variant's fields become visible:
+// after testing the variant of a union with .is_X, the type is
+// narrowed within that branch and the variant's fields become
+// visible. When the union has exactly two variants, the else
+// branch narrows to the other variant:
 union Shape is
     CIRCLE(radius: double);
     SQUARE(side: double);
