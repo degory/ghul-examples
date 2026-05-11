@@ -17,6 +17,7 @@ entry() is
     lambdas_from_call_context();
     lambda_return_types();
     iterative_inference();
+    bidirectional_convergence();
     closures_and_currying();
     generic_function_arguments();
     union_narrowing();
@@ -91,7 +92,9 @@ si
 // === array and tuple literals ===
 array_and_tuple_literals() is
     // an array literal's element type is the least upper bound (LUB)
-    // of its element types - all-int → List[int], all-string → List[string]:
+    // of its element types — homogeneous elements collapse to that
+    // element type; mixed elements with a common supertype collapse
+    // to that supertype:
     let ints = [1, 2, 3];
     let strings = ["one", "two", "three"];
 
@@ -133,7 +136,9 @@ for_loop_variables() is
         write_line("string char c: {c}");
     od
 
-    // destructured loop variables:
+    // destructuring composes with loop-variable inference: the
+    // iterable's element type is resolved as a tuple, and the
+    // tuple's slot types then flow into name and value:
     let pairs = [("a", 1), ("b", 2), ("c", 3)];
     for (name, value) in pairs do
         write_line("{name} = {value}");
@@ -188,8 +193,8 @@ lambdas_from_call_context() is
     write_line("sum: {sum}");
 
     // chained calls keep flowing the inferred types through:
-    let labelled = [1, 2, 3] | .map(n => "n={n}") .reduce("", (acc, s) => acc + " " + s);
-    write_line("labelled:{labelled}");
+    let labelled = [1, 2, 3] | .map(n => "[{n}]") .reduce("", (acc, s) => acc + s);
+    write_line("labelled: {labelled}");
 si
 
 // === lambda return types from the body ===
@@ -199,8 +204,10 @@ lambda_return_types() is
     let to_message = (name: string, age: int) => "{name} is {age} years old";
     write_line(to_message("ghūl", 12));
 
-    // a lambda with a block body and return statements infers its
-    // return type from the returned expression:
+    // a lambda with a block body has its return type inferred
+    // from the LUB of every reachable `return` expression — all
+    // three branches return string here, so the lambda's return
+    // type is string:
     let summarise = (n: int) is
         if n == 0 then
             return "zero";
@@ -232,10 +239,19 @@ iterative_inference() is
     // back-propagation through a list literal:
     let lengths = ["one", "fourteen", "five"] | .map(s => s.length);
     write_line("lengths: {lengths}");
+si
 
-    // body and call site converge: `.length` says x has a
-    // length-yielding member, the call site `f("hello")` pins
-    // x to string. Neither end alone would resolve x's type:
+// === bidirectional convergence ===
+// the most demanding inference case: a lambda whose parameter
+// type can't be resolved from the body alone, *or* from the call
+// site alone, but is determined when both directions are
+// combined.
+//
+// Here `.length` in the body says x has a length-yielding member,
+// and the call site `f("hello")` says x is a string. Each
+// constraint on its own would leave x ambiguous; the intersection
+// pins it precisely:
+bidirectional_convergence() is
     let f = x => x.length;
     write_line("f(\"hello\"): {f("hello")}");
 si
@@ -245,9 +261,9 @@ si
 // value can appear, a lambda whose type is being inferred can
 // appear too, and the same machinery applies:
 closures_and_currying() is
-    // both a and b are resolved through use: the outer call pins
-    // a, then the inner call (via add_5) pins b. The lambda itself
-    // is written without any annotations:
+    // the outer call `curried_add(5)` pins a to int from its int
+    // argument; the inner call `add_5(3)` then pins b to int from
+    // its argument. Neither parameter type is written anywhere:
     let curried_add = a => b => a + b;
     let add_5 = curried_add(5);
     write_line("add_5(3): {add_5(3)}");
@@ -288,9 +304,12 @@ si
 
 // === union variant narrowing ===
 // after testing the variant of a union with .is_X, the type is
-// narrowed within that branch and the variant's fields become
-// visible. When the union has exactly two variants, the else
-// branch narrows to the other variant:
+// narrowed to that variant within the branch and the variant's
+// fields become visible. When the union has exactly two variants,
+// the else branch narrows to the other; with three or more
+// variants, the else branch narrows only to "not this one" —
+// the rest taken as a union, whose shared members remain reachable
+// but variant-specific fields do not:
 union Shape is
     CIRCLE(radius: double);
     SQUARE(side: double);
