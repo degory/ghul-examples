@@ -1,0 +1,28 @@
+use IO.Std.write_line;
+
+enum TRAFFIC_LIGHT is
+    RED,
+    YELLOW,
+    GREEN
+si
+
+action_for(light: TRAFFIC_LIGHT) -> string is
+    let result = "";
+    case light
+    when TRAFFIC_LIGHT.RED:
+        result = "stop";
+    when TRAFFIC_LIGHT.YELLOW:
+        result = "slow down";
+    when TRAFFIC_LIGHT.GREEN:
+        result = "go";
+    default
+        result = "unknown";
+    esac
+    return result;
+si
+
+entry() is
+    for light in [TRAFFIC_LIGHT.RED, TRAFFIC_LIGHT.YELLOW, TRAFFIC_LIGHT.GREEN] do
+        write_line("{light} means {action_for(light)}");
+    od
+si
