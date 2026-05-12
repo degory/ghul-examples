@@ -55,7 +55,9 @@ if_expression_examples() is
 si
 
 while_examples() is
-    let i mut = 0;    while i < 10 do
+    let i mut = 0;
+
+    while i < 10 do
         assert i < 10;
         i = i + 1;
 
@@ -67,6 +69,7 @@ si
 
 for_examples() is
     let count mut = 0;
+
     for i in 0..10 do
         assert i >= 0 /\ i < 10;
 
@@ -109,7 +112,9 @@ try_examples() is
 
     // try finally for ensuring clean-up code is run:
 
-    let is_resource_in_use mut = false;    try
+    let is_resource_in_use mut = false;
+
+    try
         is_resource_in_use = true;
         write_line("resource acquired");
         throw System.Exception("oops: exception with resource held");
