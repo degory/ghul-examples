@@ -13,8 +13,7 @@ entry() is
 si
 
 count_things[E](things: Iterable[E]) -> int is
-    let count = 0;
-
+    let count mut = 0;
     for thing in things do
         count = count + 1;
     od
