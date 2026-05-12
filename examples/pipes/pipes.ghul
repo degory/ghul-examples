@@ -15,8 +15,7 @@ entry() is
 
     // anonymous functions can have a block body:
     let h = (k: int) is
-        let result = "k is ";
-        result = "{result}{k}";
+        let result mut = "k is ";        result = "{result}{k}";
         return result; // return type is inferred here
     si;
 
