@@ -1,11 +1,11 @@
 use IO.Std.write_line;
 use Collections.LIST;
 
-use Generators.STEP;
-use Generators.generator;
+use Ghul.Pipes.STREAM;
+use Ghul.Pipes.pipe;
 
-use STEP.DONE;
-use STEP.YIELD;
+use STREAM.DONE;
+use STREAM.YIELD;
 
 entry() is
     first_class_functions();
@@ -354,42 +354,43 @@ partial_application_examples() is
     write_line("add_10(3): {add_10(3)}");
 si
 
-// Lazy sequences via the GENERATOR_STEP union and GENERATOR_PIPE class
-// in generators.ghul. Each step closure returns either DONE (sequence is
-// over) or YIELD(value, rest) — a value plus a thunk producing the next
-// step. The GENERATOR_PIPE wraps a starting thunk and surfaces the
-// sequence through the standard Pipe[T] combinator API.
+// Lazy sequences via `Ghul.Pipes.STREAM` (a union — `DONE` /
+// `YIELD(value, rest)`) wrapped through `pipe(() => step())` into a
+// `Pipe[T]`. Each step closure returns either DONE (sequence is over)
+// or `value || rest_expr` — a value, then a thunk producing the next
+// step (the `||` infix is parser sugar for
+// `YIELD(value, () => rest_expr)`).
 
 generator_examples() is
     // terminating generator: counting n .. 1, then DONE.
-    // `rec` referenced from the nested thunk resolves to the
+    // `rec` referenced from the `||` right operand resolves to the
     // enclosing recursive lambda via outer-rec capture.
 
-    let counting = n -> STEP[int] rec =>
+    let counting = n -> STREAM[int] rec =>
         if n == 0 then
             DONE[int]()
         else
-            YIELD(n, () => rec(n - 1))
+            n || rec(n - 1)
         fi;
 
-    let fib_step = (prev: int, current: int) -> STEP[int] rec =>
-        YIELD(current, () => rec(current, prev + current));
+    let fib_step = (prev: int, current: int) -> STREAM[int] rec =>
+        current || rec(current, prev + current);
 
-    let factorial_step = (n: int, prev: int) -> STEP[int] rec =>
+    let factorial_step = (n: int, prev: int) -> STREAM[int] rec =>
         let
             next_n = n + 1,
             next   = prev * next_n
         in
-            YIELD(next, () => rec(next_n, next));
+            next || rec(next_n, next);
 
     // terminating generator — exhausts naturally via DONE
-    let count_down = generator(() => counting(5));
+    let count_down = pipe(() => counting(5));
 
     write_line("counting down from 5: {count_down}");
 
     // infinite generators bounded by .take(...)
-    let fibonacci_sequence = generator(() => fib_step(1, 1));
-    let factorial_sequence = generator(() => factorial_step(1, 1));
+    let fibonacci_sequence = pipe(() => fib_step(1, 1));
+    let factorial_sequence = pipe(() => factorial_step(1, 1));
 
     write_line("first 10 fibonacci numbers: {fibonacci_sequence | .take(10)}");
     write_line("first 10 factorial numbers: {factorial_sequence | .take(10)}");
