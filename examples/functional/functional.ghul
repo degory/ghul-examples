@@ -1,6 +1,12 @@
 use IO.Std.write_line;
 use Collections.LIST;
 
+use Generators.STEP;
+use Generators.generator;
+
+use STEP.DONE;
+use STEP.YIELD;
+
 entry() is
     first_class_functions();
     map_filter_reduce_examples();
@@ -348,63 +354,42 @@ partial_application_examples() is
     write_line("add_10(3): {add_10(3)}");
 si
 
-// we don't have true lazy evaluation but we can try to approximate it
-
-// a generic infinite sequence generator with arbitrary state
-class GENERATOR[T, S]: Collections.Iterator[T], Collections.Iterable[T] is
-    current: T;
-    iterator: Collections.Iterator[T] => self;
-
-    _initial: S;
-    _state: S;
-    _generator: S -> (S, T); // given the current state, return the next state and the current value
-
-    init(initial: S, generator: S -> (S, T)) is
-        _initial = initial;
-        _generator = generator;
-        reset();
-    si
-
-    init() is
-        reset();
-    si
-        
-    move_next() -> bool is
-        (_state, current) = _generator(_state);
-        return true;
-    si
-
-    reset() is
-        _state = _initial;
-    si
-
-    dispose() is
-    si
-si
+// Lazy sequences via the GENERATOR_STEP union and GENERATOR_PIPE class
+// in generators.ghul. Each step closure returns either DONE (sequence is
+// over) or YIELD(value, rest) — a value plus a thunk producing the next
+// step. The GENERATOR_PIPE wraps a starting thunk and surfaces the
+// sequence through the standard Pipe[T] combinator API.
 
 generator_examples() is
-    // generates an infinite sequence of fibonacci numbers:
-    let fibonacci_sequence = GENERATOR(
-        (0, 1),
-        (state: (int, int)) =>
-            let
-                (prev, current) = state,
-                next = prev + current
-            in
-                ((current, next), next)
-    );
+    // terminating generator: counting n .. 1, then DONE.
+    // `rec` referenced from the nested thunk resolves to the
+    // enclosing recursive lambda via outer-rec capture.
 
-    // generates an infinite sequence of factorials:
-    let factorial_sequence = GENERATOR(
-        (1, 1),
-        (state) =>
-            let
-                (p, prev) = state,
-                n = p + 1,
-                next = prev * n
-            in
-                ((n, next), next)            
-    );
+    let counting = n -> STEP[int] rec =>
+        if n == 0 then
+            DONE[int]()
+        else
+            YIELD(n, () => rec(n - 1))
+        fi;
+
+    let fib_step = (prev: int, current: int) -> STEP[int] rec =>
+        YIELD(current, () => rec(current, prev + current));
+
+    let factorial_step = (n: int, prev: int) -> STEP[int] rec =>
+        let
+            next_n = n + 1,
+            next   = prev * next_n
+        in
+            YIELD(next, () => rec(next_n, next));
+
+    // terminating generator — exhausts naturally via DONE
+    let count_down = generator(() => counting(5));
+
+    write_line("counting down from 5: {count_down}");
+
+    // infinite generators bounded by .take(...)
+    let fibonacci_sequence = generator(() => fib_step(1, 1));
+    let factorial_sequence = generator(() => factorial_step(1, 1));
 
     write_line("first 10 fibonacci numbers: {fibonacci_sequence | .take(10)}");
     write_line("first 10 factorial numbers: {factorial_sequence | .take(10)}");

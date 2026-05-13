@@ -28,6 +28,7 @@ add_5(3): 8
 add_10(3): 13
 add_5(3): 8
 add_10(3): 13
+counting down from 5: 5, 4, 3, 2, 1
 first 10 fibonacci numbers: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89
 first 10 factorial numbers: 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800
 first 10 even fibonacci numbers: 2, 8, 34, 144, 610, 2584, 10946, 46368, 196418, 832040
