@@ -373,30 +373,30 @@ generator_examples() is
             n || rec(n - 1)
         fi;
 
-    let fib_step = (prev: int, current: int) -> STREAM[int] rec =>
+    let fibonacci_stream = (prev: int, current: int) -> STREAM[int] rec =>
         current || rec(current, prev + current);
 
-    let factorial_step = (n: int, prev: int) -> STREAM[int] rec =>
+    let factorial_stream = (n: int, prev: int) -> STREAM[int] rec =>
         let
             next_n = n + 1,
             next   = prev * next_n
         in
             next || rec(next_n, next);
 
-    // terminating generator — exhausts naturally via DONE
-    let count_down = pipe(() => counting(5));
+    // Each `step | ` lifts a `STREAM[int]` to `Pipe[int]` via pipe
+    // sugar; inlining the step calls at each use site builds a fresh
+    // stream every time and sidesteps reuse-with-reset questions. For
+    // the zip case, the right-hand step is lifted with a trailing
+    // `| ` because `.zip(other: Iterable[U])` expects an Iterable —
+    // a raw `STREAM[T]` isn't one.
 
-    write_line("counting down from 5: {count_down}");
+    write_line("counting down from 5: {counting(5) | }");
 
-    // infinite generators bounded by .take(...)
-    let fibonacci_sequence = pipe(() => fib_step(1, 1));
-    let factorial_sequence = pipe(() => factorial_step(1, 1));
+    write_line("first 10 fibonacci numbers: {fibonacci_stream(1, 1) | .take(10)}");
+    write_line("first 10 factorial numbers: {factorial_stream(1, 1) | .take(10)}");
+    write_line("first 10 even fibonacci numbers: {fibonacci_stream(1, 1) | .filter(x => x % 2 == 0) .take(10)}");
 
-    write_line("first 10 fibonacci numbers: {fibonacci_sequence | .take(10)}");
-    write_line("first 10 factorial numbers: {factorial_sequence | .take(10)}");
-    write_line("first 10 even fibonacci numbers: {fibonacci_sequence | .filter(x => x % 2 == 0) .take(10)}");
-
-    for (i, (fib, fact)) in fibonacci_sequence | .zip(factorial_sequence) .take(10) .index() do
+    for (i, (fib, fact)) in fibonacci_stream(1, 1) | .zip(factorial_stream(1, 1) | ) .take(10) .index() do
         write_line("fibonacci {i} is {fib}");
         write_line("factorial {i} is {fact}");
     od;
