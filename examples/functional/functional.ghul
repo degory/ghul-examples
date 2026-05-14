@@ -2,6 +2,7 @@ use IO.Std.write_line;
 use Collections.LIST;
 
 use Ghul.Pipes.STREAM;
+use Ghul.Pipes.stream;
 use Ghul.Pipes.pipe;
 
 use STREAM.DONE;
@@ -354,49 +355,61 @@ partial_application_examples() is
     write_line("add_10(3): {add_10(3)}");
 si
 
-// Lazy sequences via `Ghul.Pipes.STREAM` (a union — `DONE` /
-// `YIELD(value, rest)`) wrapped through `pipe(() => step())` into a
-// `Pipe[T]`. Each step closure returns either DONE (sequence is over)
-// or `value || rest_expr` — a value, then a thunk producing the next
-// step (the `||` infix is parser sugar for
-// `YIELD(value, () => rest_expr)`).
+// Lazy sequences via `Ghul.Pipes.STREAM[T, S]` (a union — `DONE` /
+// `YIELD(value, state)`) consumed through `stream(initial, advance)`
+// which returns a `Pipe[T]`. The step lambda is pure
+// `S -> STREAM[T, S]`: returns `DONE` to terminate or
+// `value || next_state` to yield (the `||` infix is parser sugar for
+// `STREAM.YIELD(value, next_state)`). State type `S` is hidden from
+// the consumer — `stream()` returns a plain `Pipe[T]`.
 
 generator_examples() is
-    // terminating generator: counting n .. 1, then DONE.
-    // `rec` referenced from the `||` right operand resolves to the
-    // enclosing recursive lambda via outer-rec capture.
+    // terminating stream: counting n .. 1, then DONE. State is the
+    // current index; output is the index value.
 
-    let counting = n -> STREAM[int] rec =>
-        if n == 0 then
-            DONE[int]()
-        else
-            n || rec(n - 1)
-        fi;
+    let counting = (n: int) =>
+        stream`[int, int](
+            n,
+            i => if i == 0 then DONE[int, int]() else i || (i - 1) fi
+        );
 
-    let fibonacci_stream = (prev: int, current: int) -> STREAM[int] rec =>
-        current || rec(current, prev + current);
+    // infinite fibonacci. State is `(prev, current)`; output is `int`
+    // — state and output types are genuinely different.
 
-    let factorial_stream = (n: int, prev: int) -> STREAM[int] rec =>
-        let
-            next_n = n + 1,
-            next   = prev * next_n
-        in
-            next || rec(next_n, next);
+    let fibonacci = stream`[int, (int, int)](
+        (1, 1),
+        s => let (prev, current) = s in current || (current, prev + current)
+    );
 
-    // Each `step | ` lifts a `STREAM[int]` to `Pipe[int]` via pipe
-    // sugar; inlining the step calls at each use site builds a fresh
-    // stream every time and sidesteps reuse-with-reset questions. For
-    // the zip case, the right-hand step is lifted with a trailing
-    // `| ` because `.zip(other: Iterable[U])` expects an Iterable —
-    // a raw `STREAM[T]` isn't one.
+    // factorial. State is `(n, prev)`; output is `int`.
 
-    write_line("counting down from 5: {counting(5) | }");
+    let factorial = stream`[int, (int, int)](
+        (1, 1),
+        s => let (n, prev) = s in
+            let next_n = n + 1, next = prev * next_n in
+                next || (next_n, next)
+    );
 
-    write_line("first 10 fibonacci numbers: {fibonacci_stream(1, 1) | .take(10)}");
-    write_line("first 10 factorial numbers: {factorial_stream(1, 1) | .take(10)}");
-    write_line("first 10 even fibonacci numbers: {fibonacci_stream(1, 1) | .filter(x => x % 2 == 0) .take(10)}");
+    // chars-of-a-string: state is an `int` cursor, output is `char`.
+    // The canonical "state type differs from output type" example —
+    // input is closed over by the lambda, integer state is hidden
+    // inside the resulting `Pipe[char]`.
 
-    for (i, (fib, fact)) in fibonacci_stream(1, 1) | .zip(factorial_stream(1, 1) | ) .take(10) .index() do
+    let chars_of = (s: string) =>
+        let xs = s.to_char_array() in
+        stream`[char, int](
+            0,
+            i => if i == xs.count then DONE[char, int]() else xs[i] || (i + 1) fi
+        );
+
+    write_line("counting down from 5: {counting(5)}");
+    write_line("chars of hello: {chars_of("hello")}");
+
+    write_line("first 10 fibonacci numbers: {fibonacci | .take(10)}");
+    write_line("first 10 factorial numbers: {factorial | .take(10)}");
+    write_line("first 10 even fibonacci numbers: {fibonacci | .filter(x => x % 2 == 0) .take(10)}");
+
+    for (i, (fib, fact)) in fibonacci | .zip(factorial) .take(10) .index() do
         write_line("fibonacci {i} is {fib}");
         write_line("factorial {i} is {fact}");
     od;
