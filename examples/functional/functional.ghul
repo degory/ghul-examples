@@ -364,30 +364,25 @@ si
 // the consumer — `stream()` returns a plain `Pipe[T]`.
 
 generator_examples() is
-    // terminating stream: counting n .. 1, then DONE. State is the
-    // current index; output is the index value.
+    // terminating stream: counting n .. 1, then DONE.
 
     let counting = (n: int) =>
-        stream`[int, int](
-            n,
-            i => if i == 0 then DONE[int, int]() else i || (i - 1) fi
-        );
+        stream(n, i => if i == 0 then DONE[int, int]() else i || (i - 1) fi);
 
-    // infinite fibonacci. State is `(prev, current)`; output is `int`
-    // — state and output types are genuinely different.
+    // infinite fibonacci. State is `(prev, current)`; output is the
+    // current value — state and output types are different.
 
-    let fibonacci = stream`[int, (int, int)](
-        (1, 1),
-        s => let (prev, current) = s in current || (current, prev + current)
+    let fibonacci = stream(
+        (prev = 1, current = 1),
+        s => s.current || (prev = s.current, current = s.prev + s.current)
     );
 
     // factorial. State is `(n, prev)`; output is `int`.
 
-    let factorial = stream`[int, (int, int)](
-        (1, 1),
-        s => let (n, prev) = s in
-            let next_n = n + 1, next = prev * next_n in
-                next || (next_n, next)
+    let factorial = stream(
+        (n = 1, prev = 1),
+        s => let next_n = s.n + 1, next = s.prev * next_n in
+            next || (n = next_n, prev = next)
     );
 
     // chars-of-a-string: state is an `int` cursor, output is `char`.
@@ -397,10 +392,7 @@ generator_examples() is
 
     let chars_of = (s: string) =>
         let xs = s.to_char_array() in
-        stream`[char, int](
-            0,
-            i => if i == xs.count then DONE[char, int]() else xs[i] || (i + 1) fi
-        );
+        stream(0, i => if i == xs.count then DONE[char, int]() else xs[i] || (i + 1) fi);
 
     write_line("counting down from 5: {counting(5)}");
     write_line("chars of hello: {chars_of("hello")}");
