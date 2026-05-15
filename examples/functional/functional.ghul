@@ -142,14 +142,10 @@ mutual_recursion_example() is
     write_line("odd(10): {is_odd(10)}");
 si
 
-// mututal recursion with named functions, doesn't require any workarounds:
-is_even(n: int) -> bool is
-    if n == 0 then true else is_odd(n - 1) fi;
-si
+// mutual recursion with named functions, doesn't require any workarounds:
+is_even(n: int) -> bool => if n == 0 then true else is_odd(n - 1) fi;
 
-is_odd(n: int) -> bool is
-    if n == 0 then false else is_even(n - 1) fi;
-si
+is_odd(n: int) -> bool => if n == 0 then false else is_even(n - 1) fi;
 
 // immutable data structures and pure functions
 immutable_data_structures_and_pure_functions() is

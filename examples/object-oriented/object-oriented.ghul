@@ -39,6 +39,11 @@ si
 class CALCULATOR[T] is
     _operations: Collections.MAP[string, Operation[T]];
 
+    // fields are initialized to the default value of their type (0, false,
+    // null, ...); `_default` is never assigned, so it keeps that value and
+    // memory can be reset to it
+    _default: T;
+
     memory: T;
 
     init(operations: Collections.Iterable[(name: string, operation: Operation[T])]) is
@@ -70,8 +75,7 @@ class CALCULATOR[T] is
         fi;
 
     clear_memory() is
-        let def: T; // uninitialized variable has default value
-        memory = def;
+        memory = _default;
     si
 si
 
