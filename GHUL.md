@@ -81,15 +81,19 @@ ghūl is strongly typed and offers several ways to define your own types: **clas
 
   Each `POINT` value contains its own `x` and `y`. Struct instances are constructed the same way as classes (e.g. `let origin = POINT(0.0D, 0.0D);`). Unlike classes, copying a struct *copies all its fields* (no pointers to a single heap object) and the `==` operator on structs performs **memberwise equality** by default. In the example above, two `POINT(0.0, 0.0)` instances would be `==` because their contents match. Structs are useful for lightweight data records. Like classes, they can define methods and multiple constructors (`init` overloads), and are written in `MACRO_CASE`.
 
-* **Traits:** Traits in ghūl are analogous to interfaces in other languages. A trait defines a set of methods and/or properties that can be implemented by classes or structs. Trait syntax: `trait Name [ : ParentTrait1, ... ] is ... si`. Inside a trait, you declare method signatures or properties without bodies (these are implicitly abstract). For example:
+* **Traits:** Traits in ghūl are analogous to interfaces in other languages. A trait defines a set of methods and/or properties that can be implemented by classes or structs. Trait syntax: `trait Name [ : ParentTrait1, ... ] is ... si`. A trait member declared without a body is abstract — implementers must provide it. A trait member *with* a body is a **default**: implementers inherit it and may override it. For example:
 
   ```ghul
   trait Printable is
-      print();         // abstract method (no body)
+      print();                 // abstract — implementers must provide it
+
+      describe() is            // default — implementers inherit this body
+          IO.Std.write_line("a printable thing");
+      si
   si
   ```
 
-  This trait requires a `print()` method. Any class or struct that **inherits** from (implements) `Printable` must provide a concrete `print` method. Traits support trait inheritance as well (one trait can extend another, requiring all parent trait members to be implemented too). Trait names use `PascalCase`. In ghūl, a class can extend at most one class but **implement multiple traits**, enabling a form of multiple inheritance of interfaces. Traits are purely abstract; their methods have no implementations (current ghūl requires you to leave trait method bodies empty). Example implementation:
+  This trait requires a `print()` method and supplies a default `describe()`. Any class or struct that **inherits** from (implements) `Printable` must provide a concrete `print` method, and gets `describe` for free unless it overrides it. Traits support trait inheritance as well (one trait can extend another, requiring all parent trait members to be implemented too). Trait names use `PascalCase`. In ghūl, a class can extend at most one class but **implement multiple traits**, enabling a form of multiple inheritance. Example implementation:
 
   ```ghul
   class BOOK: Printable is
@@ -450,7 +454,7 @@ Below is a concise summary of ghūl syntax, keywords, and type system features f
 
   * `class NAME [ : Superclass, Trait, ... ] is ... si` – define class. Supports single inheritance and multiple traits. Use `init` methods for constructors. A class without a specified superclass implicitly inherits from `object` (System.Object).
   * `struct NAME [ : Trait, ... ] is ... si` – define struct (value type). Cannot have a superclass. Copying struct copies data, `==` is memberwise compare.
-  * `trait Name [ : ParentTrait, ... ] is ... si` – define trait (interface). Members have no bodies (except possibly default implementations in future). Classes/structs implement traits by listing them after a colon.
+  * `trait Name [ : ParentTrait, ... ] is ... si` – define trait (interface). A member without a body is abstract; a member with a body is a default that implementers inherit and may override. Classes/structs implement traits by listing them after a colon.
   * `union Name is VARIANT1(...); VARIANT2(...); ... si` – define union (discriminated union). Automatically gets `is_variant` tags and `.variant` accessors for payload. Use qualified name to construct, e.g. `Name.VARIANT1(data)`.
   * `enum NAME is MEMBER1[,=value1], MEMBER2[,=value2], ... si` – define enum. Members are constants of that enum type. Backed by int (32-bit) by default.
 * **Generics Syntax:**
