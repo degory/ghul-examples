@@ -51,7 +51,7 @@ greet(pet: CAT) is
     fi
 si
 
-find_pet(name: string) -> CAT is
+find_pet(name: string) -> CAT? is
     if name == "Felix" then
         return CAT(name);
     fi
