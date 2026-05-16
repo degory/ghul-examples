@@ -17,8 +17,10 @@ entry() is
         write_line("f({i}) = {f(i)}");
     od
 
-    // list_of_gs is a list of 2-tuples, each one having an integer and a function element:
-    let list_of_gs = LIST[(i: int, g: () -> int)]();
+    // list_of_gs is a list of 2-tuples, each one having an integer and a function element.
+    // its element type doesn't need to be written out - the compiler infers it from the
+    // add() call below:
+    let list_of_gs = LIST();
 
     for i in 1::10 do
         // create a function that captures a value - in this case the loop variable i

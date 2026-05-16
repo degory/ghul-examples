@@ -267,7 +267,7 @@ option_example() is
     let some_int = SOME(42);
     let none_int = NONE[int]();
 
-    let stringify_option = (o: Option[int]) rec =>
+    let stringify_option = o rec =>
         if o.is_some then
             "{o.value}"
         else
