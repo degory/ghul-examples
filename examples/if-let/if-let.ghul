@@ -1,0 +1,126 @@
+use IO.Std.write_line;
+
+entry() is
+    type_tests();
+    bare_bindings();
+    destructuring();
+si
+
+// --- if let as a type test ---------------------------------------------
+
+// `if let` puts a `let` binding in the condition of an `if` or `elif`.
+// The then-branch runs only when the value is present; the binding is in
+// scope — and narrowed to the tested type — just within that branch.
+//
+// `if let c: CAT = a` replaces the older two-step idiom
+//     let c = cast CAT(a); if c? then ... fi
+// and, unlike that idiom, `c` does not leak into the surrounding scope.
+
+type_tests() is
+    describe(CAT("Felix"));
+    describe(DOG("Rex"));
+    describe(ANIMAL("Gerald"));
+si
+
+describe(a: ANIMAL) is
+    if let c: CAT = a then
+        // `c` has type CAT here, so CAT-only methods are in scope
+        c.meow();
+    elif let d: DOG = a then
+        d.bark();
+    else
+        write_line("{a.name} is some other animal");
+    fi
+si
+
+// --- if let on a possibly-null value -----------------------------------
+
+// With no type on the binding, `if let` just tests that the value is
+// present (non-null). `find_pet` returns null when there is no match.
+
+bare_bindings() is
+    greet(find_pet("Felix"));
+    greet(find_pet("Nobody"));
+si
+
+greet(pet: CAT) is
+    if let found = pet then
+        found.meow();
+    else
+        write_line("no such pet");
+    fi
+si
+
+find_pet(name: string) -> CAT is
+    if name == "Felix" then
+        return CAT(name);
+    fi
+
+    return null;
+si
+
+// --- if let with destructuring -----------------------------------------
+
+// The binding can destructure, exactly like a plain `let` — including
+// `_` to discard a field that is not needed.
+
+destructuring() is
+    show(SCORE("Alice", 10));
+    show(null);
+    show_winner(SCORE("Bob", 99));
+si
+
+show(score: SCORE) is
+    if let (who, points) = score then
+        write_line("{who} scored {points}");
+    else
+        write_line("no score");
+    fi
+si
+
+show_winner(score: SCORE) is
+    if let (who, _) = score then
+        write_line("winner: {who}");
+    fi
+si
+
+// --- supporting types --------------------------------------------------
+
+class ANIMAL is
+    name: string;
+
+    init(name: string) is
+        self.name = name;
+    si
+si
+
+class CAT: ANIMAL is
+    init(name: string) is
+        super.init(name);
+    si
+
+    meow() is
+        write_line("{name} says meow");
+    si
+si
+
+class DOG: ANIMAL is
+    init(name: string) is
+        super.init(name);
+    si
+
+    bark() is
+        write_line("{name} says woof");
+    si
+si
+
+// a class destructures positionally — its fields are named `0, `1, ...
+class SCORE is
+    `0: string field;
+    `1: int field;
+
+    init(who: string, points: int) is
+        `0 = who;
+        `1 = points;
+    si
+si
