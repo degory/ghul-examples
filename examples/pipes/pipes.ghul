@@ -55,8 +55,8 @@ entry() is
     let inclusive_range = 1::10;
     write_line("inclusive int range: {inclusive_range | }");
 
-    // the '|' postfix operator converts a Collections.Iterable[T] into a Pipes.Pipe`1[T]
-    // Pipe`1[T] provides a number of ways to manipulate a sequence of elements
+    // the '|' postfix operator converts a Collections.Iterable[T] into a Pipes.Pipe[T]
+    // Pipe[T] provides a number of ways to manipulate a sequence of elements
 
     // filter passes only those elements that meet a supplied filter condition.Collections
     let even = (1::8) | .filter(i => is_even(i));
