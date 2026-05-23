@@ -1,0 +1,7 @@
+compute() = 60
+classify(10) = small
+classify(100) = big
+side effect: first
+side effect: second
+divide_then_double(20, 5) = 8
+divide_then_double(10, 0) caught: division by zero
