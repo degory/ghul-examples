@@ -46,4 +46,25 @@ entry() is
 
         write_line("g that captured i when it was {i} is a {g} that returns {g()}");
     od
+
+    // a closure can also read and reassign a mutable binding from an outer
+    // scope. counter is declared `mut`, so bump and peek share the same
+    // live counter rather than each holding a snapshot of its value at the
+    // time the closure was constructed.
+    let counter mut = 0;
+
+    let bump = (n: int) is
+        counter = counter + n;
+    si;
+
+    let peek = () -> int => counter;
+
+    bump(1);
+    bump(2);
+    bump(3);
+
+    assert peek() == 6;
+    assert counter == 6;
+
+    write_line("counter = {counter}, peek() = {peek()}");
 si
