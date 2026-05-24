@@ -1,26 +1,23 @@
 use IO.Std.write_line;
 
-// A function returning `Tasks.TASK[T]` composes asynchronous operations
-// while reading top-to-bottom. The compiler desugars `let await x = e;`
-// into a `.continue_with(...)` chain; at source level it stays linear.
-//
-// All tasks in this example complete synchronously
-// (`Tasks.TASK.from_result` / `Tasks.TASK.completed_task`) so the
-// program is deterministic — in real code these would suspend on I/O.
+// An async function returns Tasks.TASK[T] (or Tasks.TASK for no result).
+// All the tasks below complete synchronously — Tasks.TASK.from_result
+// and Tasks.TASK.completed_task wrap a value or nothing — so the program
+// is deterministic. In real code, a TASK would typically come from I/O.
 
-// In an expression-body async function declared to return
-// `Tasks.TASK[T]`, a bare `T` is auto-wrapped to
-// `Tasks.TASK.from_result(...)` at the return position. No
-// explicit wrap is needed here.
+// Returning a bare T from an expression-bodied function whose return
+// type is Tasks.TASK[T] wraps it with Tasks.TASK.from_result implicitly.
 double_async(x: int) -> Tasks.TASK[int] => x * 2;
 
 add_async(x: int, y: int) -> Tasks.TASK[int] => x + y;
 
-// `let await x = e;` sequentially binds the unwrapped result and
-// turns the rest of the block into the continuation. Returns from
-// inside the continuation must construct a `Tasks.TASK[T]` explicitly
-// — the synthesised continuation lambda has its return type inferred,
-// so the auto-wrap rule above doesn't apply to its returns.
+// `let await x = e;` waits for `e` to complete and binds its result to
+// `x`. The statements that follow it run when `e` has resolved. The
+// source reads top-to-bottom even though execution is asynchronous.
+//
+// Inside a block-bodied function, an explicit `return` still needs to
+// produce a TASK[T] — the implicit Tasks.TASK.from_result wrap only
+// applies to expression bodies.
 compute() -> Tasks.TASK[int] is
     let await a = double_async(10);   // a = 20
     let await b = double_async(a);    // b = 40
@@ -29,9 +26,8 @@ compute() -> Tasks.TASK[int] is
     return Tasks.TASK.from_result(c);
 si
 
-// Branch returns inside an async block: any `return` after a
-// `let await` returns from the outer function. Each must yield a
-// `Tasks.TASK[T]`.
+// `return` after a `let await` returns from the enclosing async
+// function, just as it would in a synchronous function.
 classify(n: int) -> Tasks.TASK[string] is
     let await doubled = double_async(n);
 
@@ -42,8 +38,9 @@ classify(n: int) -> Tasks.TASK[string] is
     return Tasks.TASK.from_result("small");
 si
 
-// `await EXPR;` is the void form — waits for completion, discards the
-// result. Useful for fire-and-wait side effects.
+// `await EXPR;` is the value-less form — it waits for the task to
+// complete and discards the result. Use it when you only care that
+// the work has finished.
 side_effect(label: string) -> Tasks.TASK is
     write_line("side effect: {label}");
 
@@ -57,15 +54,11 @@ run_side_effects() -> Tasks.TASK is
     return Tasks.TASK.completed_task;
 si
 
-// Exception propagation: a faulted task short-circuits the
-// `let await` chain. The continuation never runs, and the surrounding
-// `Tasks.TASK` is itself faulted with the original exception wrapped
-// in `System.AggregateException`.
+// A faulted task short-circuits any chain that awaits it: the
+// statements after the `let await` never run, and the enclosing
+// function returns a faulted TASK that carries the original exception.
 //
-// `Tasks.TASK.from_exception[T](ex)` builds a faulted task — the
-// async analogue of `throw`. A synchronous `throw` inside a
-// `Tasks.TASK`-returning function would propagate synchronously
-// instead, which would bypass the async machinery entirely.
+// Tasks.TASK.from_exception[T](ex) builds a faulted task directly.
 checked_divide(a: int, b: int) -> Tasks.TASK[int] is
     if b == 0 then
         return Tasks.TASK.from_exception[int](
@@ -93,13 +86,13 @@ entry() is
 
     write_line("divide_then_double(20, 5) = {divide_then_double(20, 5).result}");
 
+    // Reading `.result` on a faulted task throws a wrapped
+    // System.AggregateException; `get_base_exception` unwraps it to
+    // the original cause.
     try
         let result = divide_then_double(10, 0).result;
         write_line("divide_then_double(10, 0) unexpected: {result}");
     catch ex: System.AggregateException
-        // `get_base_exception` walks the inner-exception chain to the
-        // original cause; `.result` wraps once per await boundary, so
-        // a faulted task arriving through two awaits is nested.
         let cause = ex.get_base_exception();
 
         write_line("divide_then_double(10, 0) caught: {cause.message}");
