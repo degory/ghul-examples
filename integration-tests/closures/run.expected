@@ -18,3 +18,4 @@ g that captured i when it was 7 is a System.Func`1[System.Int32] that returns 7
 g that captured i when it was 8 is a System.Func`1[System.Int32] that returns 8
 g that captured i when it was 9 is a System.Func`1[System.Int32] that returns 9
 g that captured i when it was 10 is a System.Func`1[System.Int32] that returns 10
+counter = 6, peek() = 6
