@@ -127,7 +127,7 @@ Note that some of the configuration for these projects is being inherited from t
 
 ### using a different devcontainer image
 
-The project is configured to use the [ghūl development container image](https://github.com/degory/ghul/pkgs/container/ghul%2Fdevcontainer). You can use a different container image if you prefer - just edit the configuration in the `.devcontainer` folder accordingly. Make sure the image you select includes the .NET 8.0 SDK, with `dotnet` on the PATH.
+The project is configured to use a standard .NET 8 dev container image — for example [`mcr.microsoft.com/devcontainers/dotnet:8.0`](https://hub.docker.com/r/microsoft/devcontainers-dotnet). You can use a different container image if you prefer - just edit the configuration in the `.devcontainer` folder accordingly. Make sure the image you select includes the .NET 8.0 SDK, with `dotnet` on the PATH.
 
 ## language extension features
 The ghūl language extension for Visual Studio Code provides a few features that make working on ghūl projects easier, including:
