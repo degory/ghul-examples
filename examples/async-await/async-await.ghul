@@ -12,21 +12,21 @@ double_async(x: int) -> Tasks.TASK[int] => x * 2;
 
 add_async(x: int, y: int) -> Tasks.TASK[int] => x + y;
 
-// `let await x = e;` waits for `e` to complete; `x` is then initialized
+// `let x = await e;` waits for `e` to complete; `x` is then initialized
 // to its result and the rest of the function continues. The source
 // reads top-to-bottom even though execution is asynchronous.
 compute() -> Tasks.TASK[int] is
-    let await a = double_async(10);   // a = 20
-    let await b = double_async(a);    // b = 40
-    let await c = add_async(a, b);    // c = 60
+    let a = await double_async(10);   // a = 20
+    let b = await double_async(a);    // b = 40
+    let c = await add_async(a, b);    // c = 60
 
     return c;
 si
 
-// `return` after a `let await` returns from the enclosing async
+// `return` after `let x = await ...` returns from the enclosing async
 // function, just as it would in a synchronous function.
 classify(n: int) -> Tasks.TASK[string] is
-    let await doubled = double_async(n);
+    let doubled = await double_async(n);
 
     if doubled > 50 then
         return "big";
@@ -35,9 +35,9 @@ classify(n: int) -> Tasks.TASK[string] is
     return "small";
 si
 
-// `await EXPR;` is the value-less form — it waits for the task to
-// complete and discards the result. Use it when you only care that
-// the work has finished.
+// `await EXPR;` as a bare statement is the value-less form — it waits
+// for the task to complete and discards the result. Use it when you
+// only care that the work has finished.
 side_effect(label: string) -> Tasks.TASK is
     write_line("side effect: {label}");
 
@@ -48,18 +48,17 @@ run_side_effects() -> Tasks.TASK is
     await side_effect("first");
     await side_effect("second");
 
-    return Tasks.TASK.completed_task;
+    return;
 si
 
-// `let await` and `await` may also appear inside the body of a `for`
-// or `while` loop. The loop iterates, awaiting and resuming once per
-// iteration; a `return` from the body propagates out through the loop
-// as usual.
+// `await` may also appear inside the body of a `for` or `while` loop.
+// The loop iterates, awaiting and resuming once per iteration; a
+// `return` from the body propagates out through the loop as usual.
 sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
     let total mut = 0;
 
     for x in xs do
-        let await y = double_async(x);
+        let y = await double_async(x);
         total = total + y;
     od
 
@@ -67,8 +66,8 @@ sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
 si
 
 // A faulted task short-circuits any chain that awaits it: the
-// statements after the `let await` never run, and the enclosing
-// function returns a faulted TASK that carries the original exception.
+// statements after the `await` never run, and the enclosing function
+// returns a faulted TASK that carries the original exception.
 //
 // Tasks.TASK.from_exception[T](ex) builds a faulted task directly.
 checked_divide(a: int, b: int) -> Tasks.TASK[int] is
@@ -82,8 +81,8 @@ checked_divide(a: int, b: int) -> Tasks.TASK[int] is
 si
 
 divide_then_double(a: int, b: int) -> Tasks.TASK[int] is
-    let await q = checked_divide(a, b);
-    let await result = double_async(q);
+    let q = await checked_divide(a, b);
+    let result = await double_async(q);
 
     return result;
 si
