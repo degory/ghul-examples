@@ -24,7 +24,7 @@ entry() is
 si
 
 // === local variables ===
-// the type of a let binding is taken from the type of its initializer:
+// a let variable takes its type from its initializer:
 local_variables() is
     let an_int = 42;
     let a_single = 3.14;
@@ -111,8 +111,8 @@ array_and_tuple_literals() is
 si
 
 // === destructuring ===
-// destructuring assignments propagate types from the right-hand side
-// into the bound names:
+// destructuring propagates types from the right-hand side into each
+// named variable:
 destructuring() is
     let person = ("alice", 30);
     let (name, age) = person;
@@ -146,7 +146,7 @@ for_loop_variables() is
 si
 
 // === type arguments resolved from later use ===
-// when a let-bound value of a generic type has no type arguments
+// when a let variable of a generic type has no type arguments
 // and no initializer to fix them, the compiler resolves the type
 // from later operations on the value. The mechanism is general —
 // it applies to any generic type, not just standard collections:
@@ -205,7 +205,7 @@ lambda_return_types() is
     write_line(to_message("ghūl", 12));
 
     // a lambda with a block body has its return type inferred
-    // from the LUB of every reachable `return` expression — all
+    // from the LUB of every reachable return expression — all
     // three branches return string here, so the lambda's return
     // type is string:
     let summarise = (n: int) is
@@ -247,8 +247,8 @@ si
 // site alone, but is determined when both directions are
 // combined.
 //
-// Here `.length` in the body says x has a length-yielding member,
-// and the call site `f("hello")` says x is a string. Each
+// Here .length in the body says x has a length-yielding member,
+// and the call site f("hello") says x is a string. Each
 // constraint on its own would leave x ambiguous; the intersection
 // pins it precisely:
 bidirectional_convergence() is
@@ -261,8 +261,8 @@ si
 // value can appear, a lambda whose type is being inferred can
 // appear too, and the same machinery applies:
 closures_and_currying() is
-    // the outer call `curried_add(5)` pins a to int from its int
-    // argument; the inner call `add_5(3)` then pins b to int from
+    // the outer call curried_add(5) pins a to int from its int
+    // argument; the inner call add_5(3) then pins b to int from
     // its argument. Neither parameter type is written anywhere:
     let curried_add = a => b => a + b;
     let add_5 = curried_add(5);
@@ -270,7 +270,7 @@ closures_and_currying() is
     write_line("add_5(20): {add_5(20)}");
 
     // a factory that captures its argument and returns a closure.
-    // x is resolved from `x * n` (n is already int) and the outer
+    // x is resolved from x * n (n is already int) and the outer
     // return signature pins the lambda's shape:
     let times_7 = make_multiplier(7);
     write_line("times_7(6): {times_7(6)}");
@@ -303,13 +303,13 @@ generic_function_arguments() is
 si
 
 // === union variant narrowing ===
-// after testing the variant of a union with .is_X, the type is
-// narrowed to that variant within the branch and the variant's
-// fields become visible. When the union has exactly two variants,
-// the else branch narrows to the other; with three or more
-// variants, the else branch narrows only to "not this one" —
-// the rest taken as a union, whose shared members remain reachable
-// but variant-specific fields do not:
+// isa V(x) tests whether x is variant V of its union. In the
+// then-branch x is narrowed to V and the variant's fields become
+// accessible. When the union has exactly two variants the else
+// branch narrows to the other; with three or more variants the
+// else branch narrows only to "not this one" — the rest taken as
+// a union, whose shared members remain reachable but
+// variant-specific fields do not:
 union Shape is
     CIRCLE(radius: double);
     SQUARE(side: double);
@@ -319,12 +319,11 @@ use Shape.CIRCLE;
 use Shape.SQUARE;
 
 describe(s: Shape) -> string =>
-    if s.is_circle then
+    if isa CIRCLE(s) then
         // s is narrowed to CIRCLE here, so .radius is accessible:
         "circle of radius {s.radius}"
     else
-        // since the union has exactly two variants, the else branch
-        // narrows s to SQUARE - so .side is accessible:
+        // two variants, so the else branch narrows s to SQUARE — .side is accessible:
         "square of side {s.side}"
     fi;
 

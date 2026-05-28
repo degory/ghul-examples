@@ -1,0 +1,60 @@
+use IO.Std.write_line;
+use Collections.Iterable;
+
+// A function whose return type is Iterable[T] and that contains a yield
+// is a generator. Each yield produces the next value, then execution
+// pauses until the caller asks for another. The compiler rewrites the
+// body into a state machine, so ordinary locals keep their values
+// across the pauses.
+
+count_up_to(n: int) -> Iterable[int] is
+    let i mut = 1;
+    while i <= n do
+        yield i;
+        i = i + 1;
+    od
+si
+
+// Generators compose: this one reads another iterable and yields a
+// running total, pausing after every element.
+running_totals(xs: Iterable[int]) -> Iterable[int] is
+    let total mut = 0;
+    for x in xs do
+        total = total + x;
+        yield total;
+    od
+si
+
+// The first n Fibonacci numbers. a and b are plain locals that survive
+// each yield.
+fibonacci(n: int) -> Iterable[int] is
+    let a mut = 0;
+    let b mut = 1;
+    let count mut = 0;
+    while count < n do
+        yield a;
+        let c = a + b;
+        a = b;
+        b = c;
+        count = count + 1;
+    od
+si
+
+entry() is
+    // a generator can be used anywhere an iterable is expected,
+    // including the right-hand side of a for loop:
+    for i in count_up_to(5) do
+        write_line("count: {i}");
+    od
+
+    // generators chain — running_totals consumes count_up_to:
+    write_line("running totals:");
+    for t in running_totals(count_up_to(5)) do
+        write_line("  {t}");
+    od
+
+    write_line("first 10 fibonacci:");
+    for f in fibonacci(10) do
+        write_line("  {f}");
+    od
+si
