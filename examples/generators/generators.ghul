@@ -1,0 +1,62 @@
+use IO.Std.write_line;
+use Collections.Iterable;
+use Ghul.Pipes.Pipe;
+
+// A function that returns Pipe[T] and contains a yield is a generator.
+// Each yield produces the next value, then execution pauses until the
+// caller asks for another. The compiler rewrites the body into a state
+// machine, so ordinary locals keep their values across the pauses.
+//
+// A generator is a Pipe, so it can be looped over directly and composed
+// with the pipe operators (map, filter, take, ...).
+
+count_up_to(n: int) -> Pipe[int] is
+    let i mut = 1;
+    while i <= n do
+        yield i;
+        i = i + 1;
+    od
+si
+
+// Generators compose: this one reads another iterable and yields a
+// running total, pausing after every element.
+running_totals(xs: Iterable[int]) -> Pipe[int] is
+    let total mut = 0;
+    for x in xs do
+        total = total + x;
+        yield total;
+    od
+si
+
+// The first n Fibonacci numbers. a and b are plain locals that survive
+// each yield.
+fibonacci(n: int) -> Pipe[int] is
+    let a mut = 0;
+    let b mut = 1;
+    let count mut = 0;
+    while count < n do
+        yield a;
+        let c = a + b;
+        a = b;
+        b = c;
+        count = count + 1;
+    od
+si
+
+entry() is
+    // loop over a generator directly
+    for i in count_up_to(5) do
+        write_line("count: {i}");
+    od
+
+    // or pipe it — map / filter / take all work on a generator
+    write_line("squares:   {count_up_to(5) | .map(x => x * x)}");
+    write_line("evens:     {count_up_to(10) | .filter(x => x % 2 == 0)}");
+    write_line("first 3:   {count_up_to(100) | .take(3)}");
+
+    // generators compose: running_totals consumes another generator
+    write_line("totals:    {running_totals(count_up_to(5))}");
+
+    // the first ten Fibonacci numbers
+    write_line("fibonacci: {fibonacci(10)}");
+si

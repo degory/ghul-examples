@@ -12,9 +12,9 @@ double_async(x: int) -> Tasks.TASK[int] => x * 2;
 
 add_async(x: int, y: int) -> Tasks.TASK[int] => x + y;
 
-// `let x = await e;` waits for `e` to complete; `x` is then initialized
-// to its result and the rest of the function continues. The source
-// reads top-to-bottom even though execution is asynchronous.
+// let x = await e; waits for e to complete; x is then initialized to its
+// result and the rest of the function continues. The source reads
+// top-to-bottom even though execution is asynchronous.
 compute() -> Tasks.TASK[int] is
     let a = await double_async(10);   // a = 20
     let b = await double_async(a);    // b = 40
@@ -23,7 +23,7 @@ compute() -> Tasks.TASK[int] is
     return c;
 si
 
-// `return` after `let x = await ...` returns from the enclosing async
+// return after let x = await ... returns from the enclosing async
 // function, just as it would in a synchronous function.
 classify(n: int) -> Tasks.TASK[string] is
     let doubled = await double_async(n);
@@ -35,7 +35,7 @@ classify(n: int) -> Tasks.TASK[string] is
     return "small";
 si
 
-// `await EXPR;` as a bare statement is the value-less form — it waits
+// await EXPR; as a bare statement is the value-less form — it waits
 // for the task to complete and discards the result. Use it when you
 // only care that the work has finished.
 side_effect(label: string) -> Tasks.TASK is
@@ -51,9 +51,9 @@ run_side_effects() -> Tasks.TASK is
     return;
 si
 
-// `await` may also appear inside the body of a `for` or `while` loop.
+// await may also appear inside the body of a for or while loop.
 // The loop iterates, awaiting and resuming once per iteration; a
-// `return` from the body propagates out through the loop as usual.
+// return from the body propagates out through the loop as usual.
 sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
     let total mut = 0;
 
@@ -66,7 +66,7 @@ sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
 si
 
 // A faulted task short-circuits any chain that awaits it: the
-// statements after the `await` never run, and the enclosing function
+// statements after the await never run, and the enclosing function
 // returns a faulted TASK that carries the original exception.
 //
 // Tasks.TASK.from_exception[T](ex) builds a faulted task directly.
@@ -99,8 +99,8 @@ entry() is
 
     write_line("divide_then_double(20, 5) = {divide_then_double(20, 5).result}");
 
-    // Reading `.result` on a faulted task throws a wrapped
-    // System.AggregateException; `get_base_exception` unwraps it to
+    // Reading .result on a faulted task throws a wrapped
+    // System.AggregateException; get_base_exception unwraps it to
     // the original cause.
     try
         let result = divide_then_double(10, 0).result;

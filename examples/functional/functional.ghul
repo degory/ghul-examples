@@ -267,8 +267,9 @@ option_example() is
     let some_int = SOME(42);
     let none_int = NONE[int]();
 
+    // isa SOME(o) tests the variant and narrows o to it, so o.value is reachable
     let stringify_option = o rec =>
-        if o.is_some then
+        if isa SOME(o) then
             "{o.value}"
         else
             "none"
@@ -284,7 +285,7 @@ list_example[T](elements: Collections.List[T]) is
     let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL[T]())));
 
     let stringify_list = (l: List[T]) rec =>
-        if l.is_cons then
+        if isa CONS(l) then
             let (head, tail) = l in
             "{head}, {rec(tail)}"
         else
@@ -309,8 +310,9 @@ tree_example[T](leaves: Collections.List[T]) is
             )
         );
 
+    // two variants, so the else branch narrows t to the other one (LEAF)
     let stringify_tree = (t: Tree[T]) rec =>
-        if t.is_node then
+        if isa NODE(t) then
             let (left, right) = t in
             "({rec(left)}, {rec(right)})"
         else
@@ -351,13 +353,10 @@ partial_application_examples() is
     write_line("add_10(3): {add_10(3)}");
 si
 
-// Lazy sequences via `Ghul.Pipes.STREAM[T, S]` (a union — `DONE` /
-// `YIELD(value, state)`) consumed through `stream(initial, advance)`
-// which returns a `Pipe[T]`. The step lambda is pure
-// `S -> STREAM[T, S]`: returns `DONE` to terminate or
-// `value || next_state` to yield (the `||` infix is parser sugar for
-// `STREAM.YIELD(value, next_state)`). State type `S` is hidden from
-// the consumer — `stream()` returns a plain `Pipe[T]`.
+// stream(initial, advance) builds a lazy Pipe[T] from a start state and
+// a pure step lambda S -> STREAM[T, S]. The step returns DONE to stop, or
+// value || next_state to yield the next value (|| is sugar for
+// STREAM.YIELD(value, next_state)). The state type S stays hidden.
 
 generator_examples() is
     // terminating stream: counting n .. 1, then DONE.
@@ -365,7 +364,7 @@ generator_examples() is
     let counting = (n: int) =>
         stream(n, i => if i == 0 then DONE[int, int]() else i || (i - 1) fi);
 
-    // infinite fibonacci. State is `(prev, current)`; output is the
+    // infinite fibonacci. State is (prev, current); output is the
     // current value — state and output types are different.
 
     let fibonacci = stream(
@@ -373,7 +372,7 @@ generator_examples() is
         s => s.current || (prev = s.current, current = s.prev + s.current)
     );
 
-    // factorial. State is `(n, prev)`; output is `int`.
+    // factorial. State is (n, prev); output is int.
 
     let factorial = stream(
         (n = 1, prev = 1),
@@ -381,10 +380,10 @@ generator_examples() is
             next || (n = next_n, prev = next)
     );
 
-    // chars-of-a-string: state is an `int` cursor, output is `char`.
+    // chars-of-a-string: state is an int cursor, output is char.
     // The canonical "state type differs from output type" example —
     // input is closed over by the lambda, integer state is hidden
-    // inside the resulting `Pipe[char]`.
+    // inside the resulting Pipe[char].
 
     let chars_of = (s: string) =>
         let xs = s.to_char_array() in

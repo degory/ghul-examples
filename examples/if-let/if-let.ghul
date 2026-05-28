@@ -8,13 +8,13 @@ si
 
 // --- if let as a type test ---------------------------------------------
 
-// `if let` puts a `let` binding in the condition of an `if` or `elif`.
-// The then-branch runs only when the value is present; the binding is in
+// if let puts a let variable in the condition of an if or elif.
+// The then-branch runs only when the value is present; the variable is in
 // scope — and narrowed to the tested type — just within that branch.
 //
-// `if let c: CAT = a` replaces the older two-step idiom
+// if let c: CAT = a replaces the older two-step idiom
 //     let c = cast CAT(a); if c? then ... fi
-// and, unlike that idiom, `c` does not leak into the surrounding scope.
+// and, unlike that idiom, c does not leak into the surrounding scope.
 
 type_tests() is
     describe(CAT("Felix"));
@@ -24,7 +24,7 @@ si
 
 describe(a: ANIMAL) is
     if let c: CAT = a then
-        // `c` has type CAT here, so CAT-only methods are in scope
+        // c has type CAT here, so CAT-only methods are in scope
         c.meow();
     elif let d: DOG = a then
         d.bark();
@@ -35,8 +35,8 @@ si
 
 // --- if let on a possibly-null value -----------------------------------
 
-// With no type on the binding, `if let` just tests that the value is
-// present (non-null). `find_pet` returns null when there is no match.
+// With no type on the variable, if let just tests that the value is
+// present (non-null). find_pet returns null when there is no match.
 
 bare_bindings() is
     greet(find_pet("Felix"));
@@ -61,8 +61,8 @@ si
 
 // --- if let with destructuring -----------------------------------------
 
-// The binding can destructure, exactly like a plain `let` — including
-// `_` to discard a field that is not needed.
+// if let can destructure, exactly like a plain let — including
+// _ to discard a field that is not needed.
 
 destructuring() is
     show(SCORE("Alice", 10));
@@ -114,7 +114,7 @@ class DOG: ANIMAL is
     si
 si
 
-// a class destructures positionally — its fields are named `0, `1, ...
+// a class destructures positionally — its fields are numbered from 0
 class SCORE is
     `0: string field;
     `1: int field;
