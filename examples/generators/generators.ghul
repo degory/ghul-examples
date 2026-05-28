@@ -1,13 +1,16 @@
 use IO.Std.write_line;
 use Collections.Iterable;
+use Ghul.Pipes.Pipe;
 
-// A function whose return type is Iterable[T] and that contains a yield
-// is a generator. Each yield produces the next value, then execution
-// pauses until the caller asks for another. The compiler rewrites the
-// body into a state machine, so ordinary locals keep their values
-// across the pauses.
+// A function that returns Pipe[T] and contains a yield is a generator.
+// Each yield produces the next value, then execution pauses until the
+// caller asks for another. The compiler rewrites the body into a state
+// machine, so ordinary locals keep their values across the pauses.
+//
+// A generator is a Pipe, so it can be looped over directly and composed
+// with the pipe operators (map, filter, take, ...).
 
-count_up_to(n: int) -> Iterable[int] is
+count_up_to(n: int) -> Pipe[int] is
     let i mut = 1;
     while i <= n do
         yield i;
@@ -17,7 +20,7 @@ si
 
 // Generators compose: this one reads another iterable and yields a
 // running total, pausing after every element.
-running_totals(xs: Iterable[int]) -> Iterable[int] is
+running_totals(xs: Iterable[int]) -> Pipe[int] is
     let total mut = 0;
     for x in xs do
         total = total + x;
@@ -27,7 +30,7 @@ si
 
 // The first n Fibonacci numbers. a and b are plain locals that survive
 // each yield.
-fibonacci(n: int) -> Iterable[int] is
+fibonacci(n: int) -> Pipe[int] is
     let a mut = 0;
     let b mut = 1;
     let count mut = 0;
@@ -41,20 +44,19 @@ fibonacci(n: int) -> Iterable[int] is
 si
 
 entry() is
-    // a generator can be used anywhere an iterable is expected,
-    // including the right-hand side of a for loop:
+    // loop over a generator directly
     for i in count_up_to(5) do
         write_line("count: {i}");
     od
 
-    // generators chain — running_totals consumes count_up_to:
-    write_line("running totals:");
-    for t in running_totals(count_up_to(5)) do
-        write_line("  {t}");
-    od
+    // or pipe it — map / filter / take all work on a generator
+    write_line("squares:   {count_up_to(5) | .map(x => x * x)}");
+    write_line("evens:     {count_up_to(10) | .filter(x => x % 2 == 0)}");
+    write_line("first 3:   {count_up_to(100) | .take(3)}");
 
-    write_line("first 10 fibonacci:");
-    for f in fibonacci(10) do
-        write_line("  {f}");
-    od
+    // generators compose: running_totals consumes another generator
+    write_line("totals:    {running_totals(count_up_to(5))}");
+
+    // the first ten Fibonacci numbers
+    write_line("fibonacci: {fibonacci(10)}");
 si
