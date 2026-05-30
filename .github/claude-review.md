@@ -1,0 +1,58 @@
+# Cloud code review brief
+
+Instructions for the Anthropic Claude Code Action invoked from the `code_review` job in `.github/workflows/ci.yml`. Not loaded by local Claude Code; only the cloud reviewer reads this.
+
+## how to operate
+
+- The PR branch is checked out in the working directory.
+- Get the diff via `gh pr diff <N>`, the body via `gh pr view <N> --json title,body`.
+- `STYLE.md` (fetched from `degory/ghul-style` `main` by the workflow) is the authoritative source for prose, code-comment, vocabulary, and naming rules. Consult it on every prose or comment change. Its `flag these` and `imitate these` sections give concrete file paths to quote in review comments.
+- `GHUL.md` (fetched from `degory/ghul` `main`) is the language reference. Consult when a diff exercises non-obvious language semantics.
+- Read the changed source files in full when context matters - the diff alone often hides whether a contract is upheld.
+- Post findings only to GitHub. Anything you say in chat is invisible.
+
+## what to post, where
+
+- **Inline comments** for specific code findings: `mcp__github_inline_comment__create_inline_comment` with `confirmed: true`. One finding per comment.
+- **End every review with one `gh pr review` verdict**, even on a clean PR. Pick exactly one:
+  - `gh pr review <N> --approve --body "<one-sentence summary>"` - nothing blocking.
+  - `gh pr review <N> --request-changes --body "<one-paragraph summary>"` - at least one inline finding is a real defect.
+  - `gh pr review <N> --comment --body "..."` - non-blocking discussion only.
+- Don't post a separate top-level `gh pr comment` - put the summary in the review body instead.
+
+## what CI has already proven
+
+You're invoked only after the CI build and integration tests pass. That means: every example compiles and its snapshot output matches expected. **Don't second-guess validity.** Don't ask "is this valid ghūl?", "will this compile?". CI just answered both.
+
+## what this repo is
+
+`ghul-examples` is a collection of small ghūl programs that each demonstrate one language feature or idiom. Each example lives in its own folder under `examples/`; each is built and run as an integration test that captures the output and compares it to an `*.expected` snapshot. The audience is human readers learning the language.
+
+Per the conventions captured in `STYLE.md`, each example file opens with `entry() is ... si` calling a sequence of named subroutines, one per concept. Files and folders are kebab-case. Subroutines are snake_case. See `STYLE.md` "naming in example code" for the full set.
+
+## severity bar
+
+Flag:
+
+- Bugs and likely-bugs in example code.
+- Violations of `STYLE.md` - in priority order: hard bans, banner-comment violations, vocabulary and comment-case drift, deprecated idioms.
+- Examples that don't clearly demonstrate the concept they're named for - over-engineered, unfocused, or buried under boilerplate.
+- Deprecated ghūl idioms (e.g. `new Type(...)` instead of `Type(...)` - see GHUL.md).
+- Missing snapshot tests where a behavioural change wants one. New examples need their `*.expected` snapshots.
+- PR description violations: marketing register, internal labels, references to documents that aren't in this repo, `Co-authored-by:` trailer in the body (squash-merge dedups it automatically and producing a duplicate).
+
+Don't flag:
+
+- Hypothetical concerns ("could this race...?" without a concrete path).
+- "Consider..." suggestions that don't identify a real defect.
+- Anything you're not confident about.
+
+Silence on a low-confidence finding is better than noise.
+
+A docs-only or workflow-only PR doesn't need code-review scrutiny - skim, approve with a one-line summary if there's nothing to say.
+
+## posting mechanics - reminder
+
+- Inline: `mcp__github_inline_comment__create_inline_comment` with `confirmed: true`.
+- Verdict (exactly one, always): `gh pr review <N> --approve|--request-changes|--comment --body "..."`.
+- Chat output is invisible. If you didn't post it to GitHub, it didn't happen.
