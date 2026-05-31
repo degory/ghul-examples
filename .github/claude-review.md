@@ -6,6 +6,7 @@ Instructions for the Anthropic Claude Code Action invoked from the `code_review`
 
 - The PR branch is checked out in the working directory.
 - Get the diff via `gh pr diff <N>`, the body via `gh pr view <N> --json title,body`.
+- Get author-supplied PR comments via `gh pr view <N> --json comments`. Rationale that doesn't belong in the changelog-shape description body lives there: a subtle invariant the diff hides, why this approach over a tempting alternative, a deliberate oddity. Read comments before flagging anything as "unjustified", "approach unclear", or "this looks wrong" - the answer may already be in a comment.
 - `STYLE.md` (fetched from `degory/ghul-style` `main` by the workflow) is the authoritative source for prose, code-comment, vocabulary, and naming rules. Consult it on every prose or comment change. Its `flag these` and `imitate these` sections give concrete file paths to quote in review comments.
 - `GHUL.md` (fetched from `degory/ghul` `main`) is the language reference. Consult when a diff exercises non-obvious language semantics.
 - Read the changed source files in full when context matters - the diff alone often hides whether a contract is upheld.
