@@ -8,8 +8,8 @@ entry() is
     write_line("int_things has {count_things(int_things)} things");
     write_line("string_things has {count_things(string_things)} things");
 
-    demonstrate_sack(SACK[int](), int_things);
-    demonstrate_sack(SACK[string](), string_things);
+    demonstrate_sack(SACK(), int_things);
+    demonstrate_sack(SACK(), string_things);
 si
 
 count_things[E](things: Iterable[E]) -> int is
@@ -31,7 +31,7 @@ class SACK[T]: Sack[T] is
     _things: MutableList[T];
 
     init() is
-        _things = LIST[T]();
+        _things = LIST();
     si
 
     add(thing: T) =>
