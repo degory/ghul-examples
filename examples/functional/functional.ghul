@@ -265,7 +265,7 @@ use Tree.NODE;
 
 option_example() is
     let some_int = SOME(42);
-    let none_int = NONE[int]();
+    let none_int = NONE();
 
     // isa SOME(o) tests the variant and narrows o to it, so o.value is reachable
     let stringify_option = o rec =>
@@ -282,7 +282,7 @@ si
 list_example[T](elements: Collections.List[T]) is
     assert elements.count == 3 else "expected 3 elements";
 
-    let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL[T]())));
+    let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL())));
 
     let stringify_list = (l: List[T]) rec =>
         if isa CONS(l) then
@@ -361,8 +361,8 @@ si
 generator_examples() is
     // terminating stream: counting n .. 1, then DONE.
 
-    let counting = (n: int) =>
-        stream(n, i => if i == 0 then DONE[int, int]() else i || (i - 1) fi);
+    let counting = n =>
+        stream(n, i => if i == 0 then DONE() else i || (i - 1) fi);
 
     // infinite fibonacci. State is (prev, current); output is the
     // current value — state and output types are different.
@@ -385,9 +385,9 @@ generator_examples() is
     // input is closed over by the lambda, integer state is hidden
     // inside the resulting Pipe[char].
 
-    let chars_of = (s: string) =>
+    let chars_of = s =>
         let xs = s.to_char_array() in
-        stream(0, i => if i == xs.count then DONE[char, int]() else xs[i] || (i + 1) fi);
+        stream(0, i => if i == xs.count then DONE() else xs[i] || (i + 1) fi);
 
     write_line("counting down from 5: {counting(5)}");
     write_line("chars of hello: {chars_of("hello")}");
