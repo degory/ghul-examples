@@ -284,7 +284,7 @@ list_example[T](elements: Collections.List[T]) is
 
     let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL())));
 
-    let stringify_list = (l: List[T]) rec =>
+    let stringify_list = l rec =>
         if isa CONS(l) then
             let (head, tail) = l in
             "{head}, {rec(tail)}"
@@ -311,7 +311,7 @@ tree_example[T](leaves: Collections.List[T]) is
         );
 
     // two variants, so the else branch narrows t to the other one (LEAF)
-    let stringify_tree = (t: Tree[T]) rec =>
+    let stringify_tree = t rec =>
         if isa NODE(t) then
             let (left, right) = t in
             "({rec(left)}, {rec(right)})"
