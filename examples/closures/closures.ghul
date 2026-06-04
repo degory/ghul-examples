@@ -53,11 +53,11 @@ entry() is
     // time the closure was constructed.
     let counter mut = 0;
 
-    let bump = (n: int) is
+    let bump = n is
         counter = counter + n;
     si;
 
-    let peek = () -> int => counter;
+    let peek = () => counter;
 
     bump(1);
     bump(2);
