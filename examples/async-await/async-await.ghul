@@ -69,10 +69,12 @@ si
 // statements after the await never run, and the enclosing function
 // returns a faulted TASK that carries the original exception.
 //
-// Tasks.TASK.from_exception[T](ex) builds a faulted task directly.
+// Tasks.TASK.from_exception(ex) builds a faulted task directly: the
+// return-type context picks the generic overload and infers the
+// element type from the enclosing function's Tasks.TASK[int].
 checked_divide(a: int, b: int) -> Tasks.TASK[int] is
     if b == 0 then
-        return Tasks.TASK.from_exception[int](
+        return Tasks.TASK.from_exception(
             System.InvalidOperationException("division by zero")
         );
     fi
