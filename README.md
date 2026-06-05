@@ -6,7 +6,7 @@ This repository contains examples of the [ghūl programming language](https://gh
 
 ## prerequisites
 
-To use this examples project you need either [GitHub Codespaces](https://github.com/features/codespaces), or else [Visual Studio Code](https://code.visualstudio.com/) plus Docker or the .NET 8 SDK
+To use this examples project you need either [GitHub Codespaces](https://github.com/features/codespaces), or else [Visual Studio Code](https://code.visualstudio.com/) plus Docker or the .NET 10 SDK
 
 ## opening the examples project
 
@@ -37,7 +37,7 @@ To open the examples in a devcontainer in VS Code Desktop using Docker:
 ### open in VSCode locally
 To open the examples directly in your local VSCode development environment:
 
-- ensure you have the [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed and on the PATH
+- ensure you have the [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) installed and on the PATH
 - clone this repository to your local machine
 - open the cloned project folder in Visual Studio Code
 
@@ -127,7 +127,7 @@ Note that some of the configuration for these projects is being inherited from t
 
 ### using a different devcontainer image
 
-The project is configured to use a standard .NET 8 dev container image — for example [`mcr.microsoft.com/devcontainers/dotnet:8.0`](https://hub.docker.com/r/microsoft/devcontainers-dotnet). You can use a different container image if you prefer - just edit the configuration in the `.devcontainer` folder accordingly. Make sure the image you select includes the .NET 8.0 SDK, with `dotnet` on the PATH.
+The project is configured to use a standard .NET 10 dev container image - for example [`mcr.microsoft.com/devcontainers/dotnet:10.0`](https://hub.docker.com/r/microsoft/devcontainers-dotnet). You can use a different container image if you prefer - just edit the configuration in the `.devcontainer` folder accordingly. Make sure the image you select includes the .NET 10 SDK, with `dotnet` on the PATH.
 
 ## language extension features
 The ghūl language extension for Visual Studio Code provides a few features that make working on ghūl projects easier, including:
