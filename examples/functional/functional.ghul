@@ -17,6 +17,7 @@ entry() is
     mutual_recursion_example();
     immutable_data_structures_and_pure_functions();
     higher_order_functions_examples();
+    if_and_case_expressions();
     union_examples();
     currying_examples();
     partial_application_examples();
@@ -199,30 +200,14 @@ higher_order_functions_examples() is
     write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}");
 si
 
-// if expressions
-if_expressions() is
-    // pattern matching is not yet supported, but if expressions
-    // go some way to providing similar functionality:
-
-    let is_even =
-        n =>
-            if n % 2 == 0 then
-                true
-            else
-                false
-            fi;
-
-    let is_odd =
-        n =>
-            if n % 2 != 0 then
-                true
-            else
-                false
-            fi;
-
+// if and case expressions
+if_and_case_expressions() is
+    // an if-then-else-fi can stand in expression position: both
+    // branches produce a value, and the result type is whatever type
+    // is compatible with both:
     let parity =
         n =>
-            if is_even(n) then
+            if n % 2 == 0 then
                 "even"
             else
                 "odd"
@@ -230,6 +215,26 @@ if_expressions() is
 
     write_line("parity(10): {parity(10)}");
     write_line("parity(11): {parity(11)}");
+
+    // case does the same job and reads cleaner with more arms. an
+    // arm can match several values at once. an expression-position
+    // case requires an else arm:
+    let describe =
+        n =>
+            case n
+            when -1 then "minus one"
+            when 0 then "zero"
+            when 1 then "one"
+            when 2 then "two"
+            when 6, 7, 8 then "small"
+            when 13 then "unlucky"
+            else "other"
+            esac;
+
+    write_line("describe(-1): {describe(-1)}");
+    write_line("describe(2): {describe(2)}");
+    write_line("describe(7): {describe(7)}");
+    write_line("describe(42): {describe(42)}");
 si
 
 // unions

@@ -37,8 +37,10 @@ if_examples() is
 si
 
 if_expression_examples() is
-    // ghūl doesn't have full support for Expression Oriented Programming,
-    // but if statements can be used as expressions:
+    // if can stand in expression position; the type of the result
+    // is whatever type is compatible with all the branch values.
+    // case does the same job and reads cleaner with more arms - see
+    // the pattern-matching example:
 
     let day_of_week = System.DateTime.now.day_of_week;
 

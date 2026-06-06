@@ -17,6 +17,12 @@ apply(times_2, 5): 10
 apply(square, 5): 25
 apply_twice(times_2, 5): 20
 apply_twice_times_2(5): 20
+parity(10): even
+parity(11): odd
+describe(-1): minus one
+describe(2): two
+describe(7): small
+describe(42): other
 42
 none
 1, 2, 3, nil
