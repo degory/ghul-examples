@@ -9,10 +9,10 @@ entry() is
 si
 
 // ghūl has refutable pattern matching through if let and through
-// case-when arms. it isn't full algebraic pattern matching - no
-// exhaustiveness checking, no guard expressions, no variant
-// patterns - but it covers the common shapes: type tests,
-// destructuring, and literal dispatch.
+// case-when arms: type tests, destructuring with literal leaves,
+// /\-guards, and value dispatch. there is no dedicated match
+// construct, no nested constructor patterns, and no exhaustiveness
+// check.
 
 // if let as a type test
 
@@ -44,7 +44,7 @@ si
 
 // if let on a possibly-null value
 
-// with no type on the variable, if let just tests that the value is
+// with no type on the variable, if let tests that the value is
 // present (non-null). find_pet returns null when there is no match.
 
 null_checks() is
