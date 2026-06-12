@@ -11,12 +11,16 @@ factorial(5): 120
 fibonacci(5): 5
 even(10): True
 odd(10): False
+even(10): True
+odd(10): False
 list: 1, 2, 3, 4, 5
 add(5, 3): 8
 apply(times_2, 5): 10
 apply(square, 5): 25
 apply_twice(times_2, 5): 20
 apply_twice_times_2(5): 20
+times_2_then_add_1(5): 11
+pipeline(5): [11]
 parity(10): even
 parity(11): odd
 describe(-1): minus one

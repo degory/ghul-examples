@@ -1,7 +1,7 @@
 // make a type available in this scope without qualification
 use Collections.Iterable;
 
-// and a static method:
+// and a static method, given a short alias:
 use IO.Std.write_line;
 
 entry() is
