@@ -145,7 +145,7 @@ mutual_recursion_by_argument() is
 si
 
 // another way is to declare one of the functions as a mutable variable
-// and assign the lambda to it after the other is defined:
+// and assign the anonymous function to it after the other is defined:
 mutual_recursion_by_forward_reference() is
     let is_odd mut = default;
 
@@ -414,8 +414,8 @@ stream_examples() is
     );
 
     // chars-of-a-string: state is an int index, output is char.
-    // The canonical "state type differs from output type" example —
-    // input is closed over by the lambda, integer state is hidden
+    // the canonical "state type differs from output type" example -
+    // input is closed over by the anonymous function, integer state is hidden
     // inside the resulting Pipe[char].
 
     let chars_of = s =>
