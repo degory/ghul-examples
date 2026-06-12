@@ -37,7 +37,7 @@ Per the conventions captured in `STYLE.md`, each example file opens with `entry(
 Flag:
 
 - Bugs and likely-bugs in example code.
-- Violations of `STYLE.md` - in priority order: hard bans, banner-comment violations, vocabulary and comment-case drift, deprecated idioms.
+- Violations of `STYLE.md` - in priority order: hard bans (flag on any occurrence); conditional bans (`may` only in the capability sense, `simply`/`just`/`easily`/`of course`/`obviously` only when the sentence reads the same without them - see `STYLE.md` "conditional bans" for the deletion test); banner-comment violations; vocabulary and comment-case drift; deprecated idioms.
 - Examples that don't clearly demonstrate the concept they're named for - over-engineered, unfocused, or buried under boilerplate.
 - Deprecated ghūl idioms (e.g. `new Type(...)` instead of `Type(...)` - see GHUL.md).
 - Missing snapshot tests where a behavioural change wants one. New examples need their `*.expected` snapshots.
