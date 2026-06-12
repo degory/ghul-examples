@@ -350,7 +350,7 @@ tree_example[T](leaves: Collections.List[T]) -> string =>
             "({rec(left)}, {rec(right)})"
         else
             // if it's not a NODE, it must be a LEAF, so
-            // just stringify the value
+            // stringify the value
             "{t.value}"
         fi
     in
