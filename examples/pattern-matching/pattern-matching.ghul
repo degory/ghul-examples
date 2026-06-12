@@ -1,132 +1,102 @@
 use IO.Std.write_line;
 
 entry() is
-    type_tests();
-    null_checks();
+    optional_matching();
+    type_matching();
     destructuring();
     literal_patterns();
     case_expressions();
 si
 
-// ghūl has refutable pattern matching through if let and through
-// case-when arms: type tests, destructuring with literal leaves,
-// /\-guards, and value dispatch. there is no dedicated match
-// construct, no nested constructor patterns, and no exhaustiveness
-// check.
-
-// if let as a type test
-
-// if let puts a let variable in the condition of an if or elif.
-// the then-branch runs only when the value is present; the variable
-// is in scope - and narrowed to the tested type - just within that
-// branch.
-//
-// if let c: CAT = a replaces the older two-step idiom
-//     let c = cast CAT(a); if c? then ... fi
-// and, unlike that idiom, c does not leak into the surrounding scope.
-
-type_tests() is
-    describe(CAT("Felix"));
-    describe(DOG("Rex"));
-    describe(ANIMAL("Gerald"));
+optional_matching() is
+    write_line(greet(find_cat("Felix")));
+    write_line(greet(find_cat("Nobody")));
 si
 
-describe(a: ANIMAL) is
-    if let c: CAT = a then
-        // c has type CAT here, so CAT-only methods are in scope
-        c.meow();
-    elif let d: DOG = a then
-        d.bark();
+greet(maybe_a_cat: CAT?) -> string =>
+    // maybe_a_cat is an optional CAT
+    // its value may be a CAT or it may be nothing
+
+    // if let with no pattern matches if a value is present
+    if let definitely_a_cat = maybe_a_cat then
+        // definitely_a_cat is a CAT
+        definitely_a_cat.meow();
     else
-        write_line("{a.name} is some other animal");
-    fi
+        "no such cat";
+    fi;
+
+
+find_cat(name: string) -> CAT? =>
+    let
+        cats = [CAT("Felix"), CAT("Eric"), CAT("Geoff")]
+    in 
+        cats | .find(c => c.name == name);
+
+
+type_matching() is
+    write_line(describe(CAT("Felix")));
+    write_line(describe(DOG("Rex")));
+    write_line(describe(ANIMAL("Gerald")));
 si
 
-// if let on a possibly-null value
-
-// with no type on the variable, if let tests that the value is
-// present (non-null). find_pet returns null when there is no match.
-
-null_checks() is
-    greet(find_pet("Felix"));
-    greet(find_pet("Nobody"));
-si
-
-greet(pet: CAT?) is
-    if let found = pet then
-        found.meow();
+describe(a: ANIMAL) -> string =>
+    // if let with a type matches if the value is of a compatible type
+    if let cat: CAT = a then
+        cat.meow();
+    elif let dog: DOG = a then
+        dog.bark();
     else
-        write_line("no such pet");
-    fi
-si
-
-find_pet(name: string) -> CAT? is
-    if name == "Felix" then
-        return CAT(name);
-    fi
-
-    return null;
-si
-
-// if let with destructuring
-
-// if let can destructure, exactly like a plain let - including
-// _ to discard a field that is not needed.
+        "{a.name} is some other animal";
+    fi;
 
 destructuring() is
-    show(SCORE("Alice", 10));
-    show(null);
-    show_winner(SCORE("Bob", 99));
+    write_line(show(SCORE("Alice", 10)));
+    write_line(show(null));
+    write_line(show(pick_winner(SCORE("Bob", 99), SCORE("Alice", 10))));
+    write_line(show(pick_winner(SCORE("Alice", 99), SCORE("Bob", 99))));
 si
 
-show(score: SCORE?) is
+show(score: SCORE?) -> string =>
     if let (who, points) = score then
-        write_line("{who} scored {points}");
+        "{who} scored {points}"
     else
-        write_line("no score");
-    fi
-si
+        "no score"
+    fi;
 
-show_winner(score: SCORE) is
-    if let (who, _) = score then
-        write_line("winner: {who}");
-    fi
-si
-
-// literal patterns
-
-// a destructure leaf can be a literal - an integer, string, boolean,
-// char, null, or a qualified enum member - and matches by equality
-// against the source position. the arm runs only when every literal
-// matches and every named leaf binds. literal leaves are only
-// allowed in refutable bindings (if let, case-when - never plain
-// let, where the test would silently never happen):
+// pick the higher scorer, or null for a draw
+pick_winner(a: SCORE, b: SCORE) -> SCORE? =>
+    let
+        (_, a_points) = a,
+        (_, b_points) = b
+    in
+        if a_points > b_points then
+            a
+        elif b_points > a_points then
+            b
+        else
+            null
+        fi;
 
 literal_patterns() is
-    label((0, "nothing"));
-    label((42, "answer"));
-    label((7, "lucky"));
-    label(null);
+    write_line(label(("nothing", 0)));
+    write_line(label(("life the universe and everything", 42)));
+    write_line(label(("lucky", 7)));
+    write_line(label(null));
 si
 
-label(pair: (int, string)?) is
-    if let (0, name) = pair then
-        write_line("zero: {name}");
-    elif let (42, name) = pair then
-        write_line("answer: {name}");
-    elif let (n, name) = pair then
-        write_line("other {n}: {name}");
+label(pair: (name: string, value: int)?) -> string =>
+    // if let with a destructuring pattern matches if
+    // the value is present and the corresponding elements
+    // of the value match
+    if let (name, 0) = pair then
+        "{name} is zero";
+    elif let (name, 42) = pair then
+        "{name} is the answer";
+    elif let (name, n) = pair then
+        "{name} is {n}";
     else
-        write_line("nothing");
-    fi
-si
-
-// case expressions
-
-// case dispatches on a single value through ordered arms. arms can
-// list several values, narrow the value's type, or destructure with
-// literal leaves just like if let above. used in expression
-// position, each arm's body is a value and an else arm is required:
+        "nothing";
+    fi;
 
 case_expressions() is
     write_line("describe(-1): {describe_int(-1)}");
@@ -134,67 +104,59 @@ case_expressions() is
     write_line("describe(7): {describe_int(7)}");
     write_line("describe(42): {describe_int(42)}");
 
-    classify((0, 0));
-    classify((0, 5));
-    classify((3, 0));
-    classify((3, 4));
+    write_line(classify((0, 0)));
+    write_line(classify((0, 5)));
+    write_line(classify((3, 0)));
+    write_line(classify((3, 4)));
 si
 
 describe_int(n: int) -> string =>
+    // case expression matches on the value of n
     case n
-    when -1 then "minus one"
-    when 0 then "zero"
-    when 1, 2, 3 then "small"
-    when 13 then "unlucky"
-    else "other"
+    when -1 then
+        "minus one"
+    when 0 then
+        "zero"
+    when 1, 2, 3 then
+        "small"
+    when 4, 5, 6 then
+        "medium"
+    when 7, 8, 9 then
+        "large"
+    when 13 then
+        "unlucky"
+    else
+        "other"
     esac;
 
-classify(p: (int, int)) is
+classify(p: (int, int)) -> string =>
+    // case expressions support the same patterns as if let
+    // so we can destructure the value and match on the elements
     case p
-    when (0, 0) then write_line("origin");
-    when (0, y) then write_line("on y axis at {y}");
-    when (x, 0) then write_line("on x axis at {x}");
-    when (x, y) then write_line("({x}, {y})");
-    esac
+    when (0, 0) then
+        "origin";
+    when (0, y) then
+        "on y axis at {y}";
+    when (x, 0) then
+        "on x axis at {x}";
+    when (x, y) then
+        "({x}, {y})";
+    esac;
+
+class ANIMAL(name: string);
+
+class CAT(name: string): ANIMAL is
+    super(name);
+
+    meow() -> string =>
+        "{name} says meow";
 si
 
-// supporting types
+class DOG(name: string): ANIMAL is
+    super(name);
 
-class ANIMAL is
-    name: string;
-
-    init(name: string) is
-        self.name = name;
-    si
+    bark() -> string =>
+        "{name} says woof";
 si
 
-class CAT: ANIMAL is
-    init(name: string) is
-        super.init(name);
-    si
-
-    meow() is
-        write_line("{name} says meow");
-    si
-si
-
-class DOG: ANIMAL is
-    init(name: string) is
-        super.init(name);
-    si
-
-    bark() is
-        write_line("{name} says woof");
-    si
-si
-
-// a class destructures positionally - its fields are numbered from 0
-class SCORE is
-    `0: string field;
-    `1: int field;
-
-    init(who: string, points: int) is
-        `0 = who;
-        `1 = points;
-    si
-si
+class SCORE(who: string, points: int);

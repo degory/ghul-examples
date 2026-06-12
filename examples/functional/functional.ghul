@@ -14,14 +14,16 @@ entry() is
     expression_body_example(3, 4);
     pure_examples();
     self_recursion_examples();
-    mutual_recursion_example();
+    mutual_recursion_by_argument();
+    mutual_recursion_by_forward_reference();
     immutable_data_structures_and_pure_functions();
     higher_order_functions_examples();
+    custom_operator();
     if_and_case_expressions();
     union_examples();
     currying_examples();
     partial_application_examples();
-    generator_examples();
+    stream_examples();
 si
 
 first_class_functions() is
@@ -103,7 +105,7 @@ pure_examples() is
     write_line("classifyNumber(-3): {classify(-3)}");
     write_line("classifyNumber(0): {classify(0)}");
     write_line("classifyNumber(4): {classify(4)}");
-    write_line("classifyNumber(25): {classify(25)}");        
+    write_line("classifyNumber(25): {classify(25)}");
 si
 
 // self recursion with anonymous functions:
@@ -118,7 +120,7 @@ self_recursion_examples() is
             fi;
 
     write_line("factorial(5): {factorial(5)}");
-
+ 
     // fibonacci
     let fibonacci = 
         n rec => 
@@ -131,11 +133,10 @@ self_recursion_examples() is
     write_line("fibonacci(5): {fibonacci(5)}");
 si
 
-// mutual recursion with anonymous functions:
-mutual_recursion_example() is
-    // mutual recursion for anonymous functions is slightly awkward, but possible
-    // by passing one function into the other as an argument:
-
+// mutual recursion is slightly awkward for anonymous functions because
+// of the forward reference. one way is to pass the other function in as
+// an argument:
+mutual_recursion_by_argument() is
     let is_even = (n, is_odd) => if n == 0 then true else is_odd(n - 1) fi;
     let is_odd = n rec => if n == 0 then false else is_even(n - 1, rec) fi;
 
@@ -143,9 +144,20 @@ mutual_recursion_example() is
     write_line("odd(10): {is_odd(10)}");
 si
 
+// another way is to declare one of the functions as a mutable variable
+// and assign the anonymous function to it after the other is defined:
+mutual_recursion_by_forward_reference() is
+    let is_odd mut = default;
+
+    let is_even = n => if n == 0 then true else is_odd(n - 1) fi;
+    is_odd = n => if n == 0 then false else is_even(n - 1) fi;
+
+    write_line("even(10): {is_even(10)}");
+    write_line("odd(10): {is_odd(10)}");
+si
+
 // mutual recursion with named functions, doesn't require any workarounds:
 is_even(n: int) -> bool => if n == 0 then true else is_odd(n - 1) fi;
-
 is_odd(n: int) -> bool => if n == 0 then false else is_even(n - 1) fi;
 
 // immutable data structures and pure functions
@@ -190,14 +202,30 @@ higher_order_functions_examples() is
     write_line("apply(square, 5): {apply(square, 5)}");
 
     // higher order function consumes another function:
-    let apply_twice = (f: int -> int, x) => f(f(x));
+    let apply_twice = (f, x) => f(f(x));
     write_line("apply_twice(times_2, 5): {apply_twice(times_2, 5)}");
 
     // higher order function returns another function:
-    let create_apply_twice = (f: int -> int) => x => f(f(x));
+    let create_apply_twice = f => x => f(f(x));
     let apply_twice_times_2 = create_apply_twice(times_2);
 
     write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}");
+si
+
+// define a custom operator
+>>[A, B, C](f: A -> B, g: B -> C) -> A -> C =>
+    x => g(f(x));
+
+custom_operator() is
+    let times_2 = x => x * 2;
+    let add_1 = x => x + 1;
+
+    // use our new >> operator to compose functions:
+    let times_2_then_add_1 = times_2 >> add_1;
+    write_line("times_2_then_add_1(5): {times_2_then_add_1(5)}");
+
+    let pipeline = times_2 >> add_1 >> x => "[{x}]";
+    write_line("pipeline(5): {pipeline(5)}");
 si
 
 // if and case expressions
@@ -240,10 +268,11 @@ si
 // unions
 union_examples() is
     option_example();
-    list_example([1, 2, 3]);
-    list_example(["A", "B", "C"]);
-    tree_example([1, 2, 3, 4]);
-    tree_example(["A", "B", "C", "D"]);
+
+    write_line(list_example([1, 2, 3]));
+    write_line(list_example(["A", "B", "C"]));
+    write_line(tree_example([1, 2, 3, 4]));
+    write_line(tree_example(["A", "B", "C", "D"]));
 si
 
 union Option[T] is
@@ -270,7 +299,7 @@ use Tree.NODE;
 
 option_example() is
     let some_int = SOME(42);
-    let none_int = NONE();
+    let none_int = NONE;
 
     // isa SOME(o) tests the variant and narrows o to it, so o.value is reachable
     let stringify_option = o rec =>
@@ -284,24 +313,22 @@ option_example() is
     write_line(stringify_option(none_int));
 si
 
-list_example[T](elements: Collections.List[T]) is
-    assert elements.count == 3 else "expected 3 elements";
+list_example[T](elements: Collections.List[T]) -> string =>
+    assert elements.count == 3 else "expected 3 elements" in
 
-    let list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL())));
+    let
+        list = CONS(elements[0], CONS(elements[1], CONS(elements[2], NIL))),
+        stringify_list = l rec =>
+            if let (head, tail): CONS = l then
+                "{head}, {rec(tail)}"
+            else
+                "nil"
+            fi
+    in
+        stringify_list(list);
 
-    let stringify_list = l rec =>
-        if isa CONS(l) then
-            let (head, tail) = l in
-            "{head}, {rec(tail)}"
-        else
-            "nil"
-        fi;
-
-    write_line(stringify_list(list));
-si
-
-tree_example[T](leaves: Collections.List[T]) is
-    assert leaves.count == 4 else "expected 4 leaves";
+tree_example[T](leaves: Collections.List[T]) -> string =>
+    assert leaves.count == 4 else "expected 4 leaves" in
 
     let tree = 
         NODE(
@@ -313,25 +340,29 @@ tree_example[T](leaves: Collections.List[T]) is
                 LEAF(leaves[2]),
                 LEAF(leaves[3])
             )
-        );
+        )
+    in
 
-    // two variants, so the else branch narrows t to the other one (LEAF)
     let stringify_tree = t rec =>
-        if isa NODE(t) then
-            let (left, right) = t in
+        if let (left, right): NODE = t then
+            // if it's a NODE, recursively stringify the
+            // left and right subtrees
             "({rec(left)}, {rec(right)})"
         else
+            // if it's not a NODE, it must be a LEAF, so
+            // stringify the value
             "{t.value}"
-        fi;
+        fi
+    in
 
-    write_line(stringify_tree(tree));
-si
+    stringify_tree(tree);
+
 
 next[T](iterator: Collections.Iterator[T]) -> Option[T] =>
     if iterator.move_next() then
         SOME(iterator.current)
     else
-        NONE()
+        NONE
     fi;
 
 
@@ -359,19 +390,16 @@ partial_application_examples() is
 si
 
 // stream(initial, advance) builds a lazy Pipe[T] from a start state and
-// a pure step lambda S -> STREAM[T, S]. The step returns DONE to stop, or
-// value || next_state to yield the next value (|| is sugar for
-// STREAM.YIELD(value, next_state)). The state type S stays hidden.
+// a step function S -> STREAM[T, S]. The step returns DONE to stop, or
+// value || next_state to yield the next value.
 
-generator_examples() is
-    // terminating stream: counting n .. 1, then DONE.
-
+stream_examples() is
+    // count down from n to 1:
     let counting = n =>
-        stream(n, i => if i == 0 then DONE() else i || (i - 1) fi);
+        stream(n, i => if i == 0 then DONE else i || (i - 1) fi);
 
     // infinite fibonacci. State is (prev, current); output is the
-    // current value — state and output types are different.
-
+    // current value - state and output types are different.
     let fibonacci = stream(
         (prev = 1, current = 1),
         s => s.current || (prev = s.current, current = s.prev + s.current)
@@ -385,14 +413,14 @@ generator_examples() is
             next || (n = next_n, prev = next)
     );
 
-    // chars-of-a-string: state is an int cursor, output is char.
-    // The canonical "state type differs from output type" example —
-    // input is closed over by the lambda, integer state is hidden
+    // chars-of-a-string: state is an int index, output is char.
+    // the canonical "state type differs from output type" example -
+    // input is closed over by the anonymous function, integer state is hidden
     // inside the resulting Pipe[char].
 
     let chars_of = s =>
         let xs = s.to_char_array() in
-        stream(0, i => if i == xs.count then DONE() else xs[i] || (i + 1) fi);
+        stream(0, i => if i == xs.count then DONE else xs[i] || (i + 1) fi);
 
     write_line("counting down from 5: {counting(5)}");
     write_line("chars of hello: {chars_of("hello")}");
