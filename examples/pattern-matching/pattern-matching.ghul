@@ -92,7 +92,7 @@ label(pair: (name: string, value: int)?) -> string =>
         "{name} is zero";
     elif let (name, 42) = pair then
         "{name} is the answer";
-    elif let (n, name) = pair then
+    elif let (name, n) = pair then
         "{name} is {n}";
     else
         "nothing";
