@@ -1,0 +1,155 @@
+use IO.Std.write_line;
+
+entry() is
+    expression_bodies();
+    if_expressions();
+    case_expressions();
+    let_in_expressions();
+    block_expressions();
+    loop_as_expression();
+    return_from_block();
+    block_as_function_body();
+    assert_in_expressions();
+si
+
+// an expression-bodied function uses '=>' and a single value - no
+// statements, no explicit return:
+double(n: int) -> int => n * 2;
+abs(n: int) -> int => if n < 0 then -n else n fi;
+
+expression_bodies() is
+    write_line("double(21): {double(21)}");
+    write_line("abs(-7): {abs(-7)}");
+si
+
+// an if can be used as an expression: its value is the value of the
+// branch that runs:
+if_expressions() is
+    let n = 7;
+
+    let parity = if n % 2 == 0 then "even" else "odd" fi;
+    write_line("{n} is {parity}");
+
+    let sign =
+        if n > 0 then "positive"
+        elif n < 0 then "negative"
+        else "zero"
+        fi;
+    write_line("sign: {sign}");
+si
+
+// a case can be used as an expression too; here it needs an else arm,
+// and one arm can match several values:
+grade(score: int) -> string =>
+    case score / 10
+    when 10, 9 then "A"
+    when 8 then "B"
+    when 7 then "C"
+    when 6 then "D"
+    else "F"
+    esac;
+
+case_expressions() is
+    write_line("95: {grade(95)}");
+    write_line("82: {grade(82)}");
+    write_line("71: {grade(71)}");
+    write_line("40: {grade(40)}");
+si
+
+// let ... in names some values for use in a single following
+// expression, without opening a block:
+let_in_expressions() is
+    let area =
+        let width = 4, height = 3 in
+        width * height;
+    write_line("area: {area}");
+
+    let size =
+        let x = 10 in
+        if x > 5 then "big" else "small" fi;
+    write_line("size: {size}");
+si
+
+// val ... lav is a block expression: a sequence of statements whose
+// value is the value of the last one. it can be used anywhere a value
+// is needed:
+block_expressions() is
+    let hypotenuse_squared =
+        val
+            let a = 3;
+            let b = 4;
+            a * a + b * b
+        lav;
+    write_line("3,4 -> {hypotenuse_squared}");
+si
+
+// a val block can run a loop that updates a mut variable, then end
+// with that variable as its value:
+loop_as_expression() is
+    let sum =
+        val
+            let acc mut = 0;
+            for i in 1..11 do
+                acc = acc + i;
+            od;
+            acc
+        lav;
+    write_line("sum 1..10: {sum}");
+
+    let factorial =
+        val
+            let product mut = 1;
+            for i in 1..6 do
+                product = product * i;
+            od;
+            product
+        lav;
+    write_line("5!: {factorial}");
+si
+
+// a return inside a val block that is not the whole function body
+// exits the block, not the function: it sets the block's value, and
+// the code after the block still runs:
+return_from_block() is
+    let first_positive =
+        val
+            for x in [-3, -1, 4, 9] do
+                if x > 0 then
+                    return "{x}";
+                fi
+            od;
+            "none"
+        lav;
+    write_line("first positive: {first_positive}");
+si
+
+// when a val block is the whole '=>' body it works like a normal
+// block body: return exits the function, and the trailing expression
+// supplies the value for any path that does not return early:
+sign_label(n: int) -> string =>
+    val
+        if n < 0 then
+            return "neg";
+        fi
+        if n == 0 then
+            return "zero";
+        fi
+        "pos"
+    lav;
+
+block_as_function_body() is
+    write_line("sign_label(-5): {sign_label(-5)}");
+    write_line("sign_label(0): {sign_label(0)}");
+    write_line("sign_label(5): {sign_label(5)}");
+si
+
+// assert ... in checks a condition as part of an expression: if the
+// assert fails it throws, otherwise the following expression is the
+// result:
+checked_head(xs: int[]) -> int =>
+    assert xs.count > 0 else "empty" in
+    xs[0];
+
+assert_in_expressions() is
+    write_line("head of [10,20,30]: {checked_head([10, 20, 30])}");
+si
