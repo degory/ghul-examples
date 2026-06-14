@@ -1,0 +1,18 @@
+double(21): 42
+abs(-7): 7
+7 is odd
+sign: positive
+95: A
+82: B
+71: C
+40: F
+area: 12
+size: big
+3,4 -> 25
+sum 1..10: 55
+5!: 120
+first positive: 4
+sign_label(-5): neg
+sign_label(0): zero
+sign_label(5): pos
+head of [10,20,30]: 10
