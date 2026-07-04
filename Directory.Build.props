@@ -8,5 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ghul.runtime" />
+
+    <GhulOptions Include="--warn-as-error null-deref" />
   </ItemGroup>
 </Project>
