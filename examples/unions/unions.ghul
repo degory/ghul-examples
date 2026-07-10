@@ -1,0 +1,118 @@
+use IO.Std.write_line;
+
+entry() is
+    shape_areas();
+    labelling_shapes();
+    describing_shapes();
+    lookups();
+si
+
+// A union is a reference type that holds one of a fixed, closed set
+// of variants. A primary constructor header declares state shared by
+// every variant; each variant splices those shared parameters in with
+// .. alongside its own fields. A variant that adds no fields of its
+// own drops the parentheses entirely - the .. splice is then implied.
+union SHAPE(name: string) is
+    RECTANGLE(.., width: int, height: int);
+    SQUARE(.., side: int);
+    POINT;
+si
+
+use SHAPE.RECTANGLE;
+use SHAPE.SQUARE;
+use SHAPE.POINT;
+
+// A union body holds only variants, so methods are added in a partial
+// block. A case over a union matches its variants exhaustively: every
+// variant is covered here, so no else arm is needed, and the compiler
+// flags a missing or unreachable arm.
+partial SHAPE is
+    area() -> int =>
+        case self
+        when r: RECTANGLE then r.width * r.height
+        when s: SQUARE then s.side * s.side
+        when _: POINT then 0
+        esac;
+si
+
+shape_areas() is
+    let shapes = [
+        RECTANGLE("billboard", 6, 3),
+        SQUARE("tile", 4),
+        POINT("pixel")
+    ];
+
+    for shape in shapes do
+        // name is a shared field, readable on any variant
+        write_line("{shape.name} has area {shape.area()}");
+    od
+si
+
+labelling_shapes() is
+    write_line(label(SQUARE("badge", 2)));
+    write_line(label(POINT("dot")));
+si
+
+label(shape: SHAPE) -> string =>
+    // isa V(x) tests the runtime variant and narrows x to it in the
+    // branch, so the variant's own fields become readable
+    if isa SQUARE(shape) then
+        "{shape.name} is a {shape.side}x{shape.side} square"
+    elif isa RECTANGLE(shape) then
+        "{shape.name} is a {shape.width}x{shape.height} rectangle"
+    else
+        "{shape.name} is a point"
+    fi;
+
+// A separate impl block makes the union satisfy a trait without
+// naming it in the union header. Inside the block self is a SHAPE, so
+// its shared fields and partial-block methods are in scope.
+trait Describable is
+    describe() -> string;
+si
+
+impl Describable for SHAPE is
+    describe() -> string =>
+        "{name}: area {area()}";
+si
+
+describing_shapes() is
+    // SHAPE satisfies Describable, so SHAPE values flow wherever a
+    // Describable is expected
+    let items = Collections.LIST[Describable]();
+
+    items.add(SQUARE("stamp", 2));
+    items.add(RECTANGLE("card", 5, 2));
+
+    for item in items do
+        write_line(item.describe());
+    od
+si
+
+// A union with a single field-carrying variant is option shaped: ?
+// tests for that variant and ! unwraps its field.
+union LOOKUP is
+    FOUND(port: int);
+    MISSING;
+si
+
+use LOOKUP.FOUND;
+use LOOKUP.MISSING;
+
+lookups() is
+    write_line(port_message("http", find_port("http")));
+    write_line(port_message("smtp", find_port("smtp")));
+si
+
+find_port(scheme: string) -> LOOKUP is
+    if scheme == "http" then return FOUND(80); fi
+
+    return MISSING;
+si
+
+port_message(scheme: string, result: LOOKUP) -> string =>
+    if result? then
+        "{scheme} is on port {result!}"
+    else
+        "{scheme} has no known port"
+    fi;

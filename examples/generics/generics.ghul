@@ -10,7 +10,45 @@ entry() is
 
     demonstrate_sack(SACK(), int_things);
     demonstrate_sack(SACK(), string_things);
+
+    bounded_type_parameters();
 si
+
+bounded_type_parameters() is
+    write_line(announce(CAT("Felix")));
+    write_line(announce(DOG("Rex")));
+
+    write_line(kind_of(CAT("Felix")));
+    write_line(kind_of(DOG("Rex")));
+si
+
+trait Animal is
+    speak() -> string;
+si
+
+class CAT(name: string): Animal is
+    speak() -> string => "{name} says meow";
+si
+
+class DOG(name: string): Animal is
+    speak() -> string => "{name} says woof";
+si
+
+// a type bound [T: Animal] constrains T to types that derive from
+// Animal, and makes Animal's members callable on any value of type T
+announce[T: Animal](pet: T) -> string =>
+    pet.speak();
+
+// a T value also narrows through its bound: isa tests for a specific
+// Animal subtype directly on a T, with no manual widen to Animal
+kind_of[T: Animal](pet: T) -> string =>
+    if isa CAT(pet) then
+        "a cat"
+    elif isa DOG(pet) then
+        "a dog"
+    else
+        "some other animal"
+    fi;
 
 count_things[E](things: Iterable[E]) -> int is
     let count mut = 0;
