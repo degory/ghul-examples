@@ -7,14 +7,14 @@ entry() is
     safe_member_access();
 si
 
-// An optional type T? holds either a value of type T or nothing.
-// A plain T value widens to T? on its own, and null marks the
+// an optional type T? holds either a value of type T or nothing.
+// a plain T value widens to T? on its own, and null marks the
 // absent case. T? and T are not interchangeable: a T? never fills
 // a plain T slot, so a value that might be absent has to be made
 // present first - through if let, a ? presence test, x! or ?? -
 // before it can be used where a T is expected.
 
-// int? is a value-type optional: an int or nothing. A known scheme
+// int? is a value-type optional: an int or nothing. a known scheme
 // returns its port; an unknown one falls through to null for the
 // absent case
 lookup_port(scheme: string) -> int? =>
@@ -71,7 +71,7 @@ safe_member_access() is
     let dev = EMPLOYEE("Grace", lead);
 
     // ?. reads a member when the receiver is present and yields
-    // nothing when it is absent. The result is always optional and
+    // nothing when it is absent. the result is always optional and
     // chains left to right, so a break anywhere short-circuits the
     // rest. ?? then closes each chain with a plain string
     write_line("Grace's skip manager is {dev.manager?.manager?.name ?? "nobody"}");
