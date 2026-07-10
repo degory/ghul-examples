@@ -5,6 +5,7 @@ entry() is
     type_matching();
     destructuring();
     literal_patterns();
+    chained_clauses();
     case_expressions();
 si
 
@@ -15,7 +16,7 @@ si
 
 greet(maybe_a_cat: CAT?) -> string =>
     // maybe_a_cat is an optional CAT
-    // its value may be a CAT or it may be nothing
+    // its value can be a CAT, or nothing
 
     // if let with no pattern matches if a value is present
     if let definitely_a_cat = maybe_a_cat then
@@ -98,6 +99,38 @@ label(pair: (name: string, value: int)?) -> string =>
         "nothing";
     fi;
 
+chained_clauses() is
+    let full = ORDER(1, CUSTOMER("Ada", CONTACT("ada@example.com")));
+    let no_contact = ORDER(2, CUSTOMER("Bjarne", null));
+    let guest = ORDER(3, null);
+
+    write_line(reach(full));
+    write_line(reach(no_contact));
+    write_line(reach(guest));
+
+    write_line(who(full));
+    write_line(who(guest));
+si
+
+reach(order: ORDER) -> string =>
+    // a single if let can chain comma-separated clauses; every clause
+    // must be present for the then-arm to run, and a later clause can
+    // use the locals declared by an earlier one
+    if let customer = order.customer, contact = customer.contact then
+        "order {order.id}: reach {customer.name} at {contact.email}";
+    else
+        "order {order.id}: no contact on file";
+    fi;
+
+who(order: ORDER) -> string =>
+    // the path shorthand declares a local named after the path's last
+    // member, and matches when the whole path is present
+    if let order.customer then
+        customer.name;
+    else
+        "guest";
+    fi;
+
 case_expressions() is
     write_line("describe(-1): {describe_int(-1)}");
     write_line("describe(2): {describe_int(2)}");
@@ -160,3 +193,9 @@ class DOG(name: string): ANIMAL is
 si
 
 class SCORE(who: string, points: int);
+
+class ORDER(id: int, customer: CUSTOMER?);
+
+class CUSTOMER(name: string, contact: CONTACT?);
+
+class CONTACT(email: string);

@@ -5,6 +5,7 @@ entry() is
     if_examples();
     if_expression_examples();
     while_examples();
+    while_let_examples();
     for_examples();
     try_examples();
     let_use_examples();
@@ -67,6 +68,26 @@ while_examples() is
     od
 
     assert i == 10;
+si
+
+while_let_examples() is
+    // while let re-tests its pattern each iteration and declares the
+    // present value as a local; the loop ends the first time it is absent
+    let remaining mut = 3;
+
+    while let n = countdown(remaining) do
+        write_line("{n}...");
+        remaining = remaining - 1;
+    od
+
+    write_line("liftoff!");
+si
+
+// return the next count while positive, or nothing once it reaches zero
+countdown(n: int) -> int? is
+    if n > 0 then return n; fi
+
+    return null;
 si
 
 for_examples() is

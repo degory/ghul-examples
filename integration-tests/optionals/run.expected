@@ -1,0 +1,6 @@
+http listens on port 80
+smtp has no well-known port
+ssh listens on port 22
+ftp falls back to port 21
+Grace's skip manager is Ada
+Bjarne's skip manager is nobody

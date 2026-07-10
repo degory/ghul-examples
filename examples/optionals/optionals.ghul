@@ -1,0 +1,79 @@
+use IO.Std.write_line;
+
+entry() is
+    reading_optionals();
+    presence_narrowing();
+    coalescing();
+    safe_member_access();
+si
+
+// an optional type T? holds either a value of type T or nothing.
+// a plain T value widens to T? on its own, and null marks the
+// absent case. T? and T are not interchangeable: a T? never fills
+// a plain T slot, so a value that might be absent has to be made
+// present first - through if let, a '?' presence test, '!' or '??' -
+// before it can be used where a T is expected.
+
+// int? is a value-type optional: an int or nothing. a known scheme
+// returns its port; an unknown one falls through to null for the
+// absent case
+lookup_port(scheme: string) -> int? =>
+    case scheme
+    when "http" then 80
+    when "https" then 443
+    when "ssh" then 22
+    else null
+    esac;
+
+reading_optionals() is
+    let http = lookup_port("http");
+    let smtp = lookup_port("smtp");
+
+    // if let enters its branch only when a value is present, and
+    // gives the present value a non-optional name to read directly
+    if let port = http then
+        write_line("http listens on port {port}");
+    fi
+
+    if let port = smtp then
+        write_line("smtp listens on port {port}");
+    else
+        write_line("smtp has no well-known port");
+    fi
+si
+
+presence_narrowing() is
+    let ssh = lookup_port("ssh");
+
+    // the '?' presence test narrows the optional to non-optional for
+    // the rest of the branch, so it reads without any unwrapping
+    if ssh? then
+        write_line("ssh listens on port {ssh}");
+    fi
+si
+
+coalescing() is
+    // '??' supplies a fallback when its left side is absent, and only
+    // evaluates the right side when it is needed. '??' is right
+    // associative, so a chain stays optional until a non-optional
+    // value closes it - here the literal 21 makes the result an int
+    let ftp_port = lookup_port("ftp") ?? lookup_port("ftps") ?? 21;
+
+    write_line("ftp falls back to port {ftp_port}");
+si
+
+// manager is optional: the head of the tree reports to nobody
+class EMPLOYEE(name: string, manager: EMPLOYEE?);
+
+safe_member_access() is
+    let ceo = EMPLOYEE("Ada", null);
+    let lead = EMPLOYEE("Bjarne", ceo);
+    let dev = EMPLOYEE("Grace", lead);
+
+    // '?.' reads a member when the receiver is present and yields
+    // nothing when it is absent. the result is always optional and
+    // chains left to right, so a break anywhere short-circuits the
+    // rest. '??' then closes each chain with a plain string
+    write_line("Grace's skip manager is {dev.manager?.manager?.name ?? "nobody"}");
+    write_line("Bjarne's skip manager is {lead.manager?.manager?.name ?? "nobody"}");
+si

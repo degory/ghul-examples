@@ -1,0 +1,9 @@
+billboard has area 18
+tile has area 16
+pixel has area 0
+badge is a 2x2 square
+dot is a point
+stamp: area 4
+card: area 10
+http is on port 80
+smtp has no known port
