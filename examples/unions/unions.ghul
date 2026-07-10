@@ -10,8 +10,8 @@ si
 // a union is a reference type that holds one of a fixed, closed set
 // of variants. a primary constructor header declares state shared by
 // every variant; each variant splices those shared parameters in with
-// .. alongside its own fields. a variant that adds no fields of its
-// own drops the parentheses entirely - the .. splice is then implied.
+// '..' alongside its own fields. a variant that adds no fields of its
+// own drops the parentheses entirely - the '..' splice is then implied.
 union Shape(name: string) is
     RECTANGLE(.., width: int, height: int);
     SQUARE(.., side: int);
@@ -89,8 +89,8 @@ describing_shapes() is
     od
 si
 
-// a union with a single field-carrying variant is option shaped: ?
-// tests for that variant and ! unwraps its field.
+// a union with a single field-carrying variant is option shaped: '?'
+// tests for that variant and '!' unwraps its field.
 union Lookup is
     FOUND(port: int);
     MISSING;
