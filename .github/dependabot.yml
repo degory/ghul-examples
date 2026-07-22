@@ -1,7 +1,0 @@
-# force update 4
-version: 2
-updates:
-  - package-ecosystem: "nuget"
-    directory: ".dependabot/"
-    schedule:
-      interval: "daily"
