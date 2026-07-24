@@ -4,6 +4,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="ghul.runtime" Version="5.5.1" />
+    <PackageVersion Include="ghul.runtime" Version="5.6.0" />
   </ItemGroup>
 </Project>
