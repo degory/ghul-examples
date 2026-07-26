@@ -7,7 +7,7 @@ Instructions for the Anthropic Claude Code Action invoked from the `code_review`
 - The PR branch is checked out in the working directory.
 - Get the diff via `gh pr diff <N>`, the body via `gh pr view <N> --json title,body`.
 - Get author-supplied PR comments via `gh pr view <N> --json comments`. Rationale that doesn't belong in the changelog-shape description body lives there: a subtle invariant the diff hides, why this approach over a tempting alternative, a deliberate oddity. Read comments before flagging anything as "unjustified", "approach unclear", or "this looks wrong" - the answer may already be in a comment.
-- `STYLE.md` (fetched from `degory/ghul-style` `main` by the workflow) is the authoritative source for prose, code-comment, vocabulary, and naming rules. Consult it on every prose or comment change. Its `flag these` and `imitate these` sections give concrete file paths to quote in review comments.
+- `STYLE.md` (fetched from `degory/ghul-style` `main` by the workflow) is the authoritative source for prose, code-comment, vocabulary, and naming rules. Consult it on every prose or comment change. Its `flag these` and `imitate these` sections give concrete file paths to quote in review comments. Its vocabulary rules target senses rather than spellings: before flagging a word, name the replacement and read the sentence back with it, and leave the word alone if the replacement loses information or forces a contorted rewrite.
 - `GHUL.md` (fetched from `degory/ghul` `main`) is the language reference. Consult when a diff exercises non-obvious language semantics.
 - Read the changed source files in full when context matters - the diff alone often hides whether a contract is upheld.
 - Post findings only to GitHub. Anything you say in chat is invisible.
@@ -37,7 +37,7 @@ Per the conventions captured in `STYLE.md`, each example file opens with `entry(
 Flag:
 
 - Bugs and likely-bugs in example code.
-- Violations of `STYLE.md` - in priority order: hard bans (flag on any occurrence); conditional bans (`may` only in the capability sense, `simply`/`just`/`easily`/`of course`/`obviously` only when the sentence reads the same without them - see `STYLE.md` "conditional bans" for the deletion test); banner-comment violations; vocabulary and comment-case drift; deprecated idioms.
+- Violations of `STYLE.md` - in priority order: hard bans (flag on any occurrence); conditional bans (`binding`/`binds` only for what `let` does, `carry`/`carries` only where `have` would do, `may` only in the capability sense, `simply`/`just`/`easily`/`of course`/`obviously` only when the sentence reads the same without them - see `STYLE.md` "conditional bans" for each rule's leave-alone cases); banner-comment violations; vocabulary and comment-case drift; deprecated idioms.
 - Examples that don't clearly demonstrate the concept they're named for - over-engineered, unfocused, or buried under boilerplate.
 - Deprecated ghūl idioms (e.g. `new Type(...)` instead of `Type(...)` - see GHUL.md).
 - Missing snapshot tests where a behavioural change wants one. New examples need their `*.expected` snapshots.
