@@ -1,6 +1,9 @@
 use IO.Std.write_line;
 use Collections.LIST;
 use Collections.MAP;
+use Ghul.Pipes.map;
+use Ghul.Pipes.filter;
+use Ghul.Pipes.reduce;
 
 // ghūl performs a fair amount of type inference, so most of the time
 // you don't need to write explicit types for local variables, lambda
@@ -177,23 +180,23 @@ si
 // === lambda parameter types from call-site context ===
 // when a lambda is passed as an argument and the call site's
 // formal parameter is a function type, the lambda's parameter
-// types are inferred from that signature. The pipe operator
-// is one common way to write such call sites:
+// types are inferred from that signature. The thread-first operator
+// |> is one common way to write such call sites:
 lambdas_from_call_context() is
-    // .map[R](f: T -> R) - x: int comes from the pipe element type:
-    let doubled = [1, 2, 3] | .map(x => x * 2);
+    // map[T,U](source: Iterable[T], mapper: T -> U) - x: int comes from the source element type:
+    let doubled = [1, 2, 3] |> map(x => x * 2);
     write_line("doubled: {doubled}");
 
-    // .filter(predicate: T -> bool):
-    let even = [1, 2, 3, 4, 5, 6] | .filter(x => x % 2 == 0);
+    // filter[T](source: Iterable[T], predicate: T -> bool):
+    let even = [1, 2, 3, 4, 5, 6] |> filter(x => x % 2 == 0);
     write_line("even: {even}");
 
-    // .reduce(seed, step: (A, T) -> A) - acc and x are both inferred:
-    let sum = [1, 2, 3, 4, 5] | .reduce(0, (acc, x) => acc + x);
+    // reduce[T,TRunning](source, seed, accumulator: (TRunning, T) -> TRunning) - acc and x are both inferred:
+    let sum = [1, 2, 3, 4, 5] |> reduce(0, (acc, x) => acc + x);
     write_line("sum: {sum}");
 
     // chained calls keep flowing the inferred types through:
-    let labelled = [1, 2, 3] | .map(n => "[{n}]") .reduce("", (acc, s) => "{acc}{s}");
+    let labelled = [1, 2, 3] |> map(n => "[{n}]") |> reduce("", (acc, s) => "{acc}{s}");
     write_line("labelled: {labelled}");
 si
 
@@ -237,7 +240,7 @@ iterative_inference() is
     write_line("add_5(3): {add_5(3)}");
 
     // back-propagation through a list literal:
-    let lengths = ["one", "fourteen", "five"] | .map(s => s.length);
+    let lengths = ["one", "fourteen", "five"] |> map(s => s.length);
     write_line("lengths: {lengths}");
 si
 
