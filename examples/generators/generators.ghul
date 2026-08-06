@@ -52,7 +52,7 @@ entry() is
         write_line("count: {i}");
     od
 
-    // or thread it through map / filter / take — all work on a generator
+    // or thread it through map / filter / take - all work on a generator
     write_line("squares:   {count_up_to(5) |> map(x => x * x)}");
     write_line("evens:     {count_up_to(10) |> filter(x => x % 2 == 0)}");
     write_line("first 3:   {count_up_to(100) |> take(3)}");
