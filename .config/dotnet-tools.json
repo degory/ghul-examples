@@ -2,17 +2,17 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "ghul.compiler": {
-      "version": "23.15.0",
-      "commands": [
-        "ghul-compiler"
-      ],
-      "rollForward": false
-    },
     "ghul.test": {
       "version": "1.6.7",
       "commands": [
         "ghul-test"
+      ],
+      "rollForward": false
+    },
+    "ghul.compiler": {
+      "version": "25.0.0",
+      "commands": [
+        "ghul-compiler"
       ],
       "rollForward": false
     }
