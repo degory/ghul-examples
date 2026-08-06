@@ -1,4 +1,5 @@
 use IO.Std.write_line;
+use Ghul.Pipes.find;
 
 entry() is
     optional_matching();
@@ -31,7 +32,7 @@ find_cat(name: string) -> CAT? =>
     let
         cats = [CAT("Felix"), CAT("Eric"), CAT("Geoff")]
     in 
-        cats | .find(c => c.name == name);
+        cats |> find(c => c.name == name);
 
 
 type_matching() is

@@ -1,4 +1,5 @@
 use IO.Std.write_line;
+use Ghul.Pipes.index;
 
 entry() is
     assert_examples();
@@ -111,10 +112,10 @@ for_examples() is
     assert range.from == 0;
     assert range.to == 100;
 
-    assert range | .count() == 100;
+    assert range |> Ghul.Pipes.count() == 100;
 
     // for can iterate over anything that implements Iterable[T], Iterator[T], or move_next() and current:
-    for ci in "hello" | .index() do
+    for ci in "hello" |> index() do
         write_line("char {ci.index} of 'hello' is {ci.value}");
     od    
 si

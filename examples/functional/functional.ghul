@@ -4,6 +4,12 @@ use Collections.LIST;
 use Ghul.Pipes.STREAM;
 use Ghul.Pipes.stream;
 use Ghul.Pipes.pipe;
+use Ghul.Pipes.map;
+use Ghul.Pipes.filter;
+use Ghul.Pipes.reduce;
+use Ghul.Pipes.take;
+use Ghul.Pipes.zip;
+use Ghul.Pipes.index;
 
 use STREAM.DONE;
 use STREAM.YIELD;
@@ -39,15 +45,15 @@ map_filter_reduce_examples() is
     // see pipes examples for more details
 
     // map
-    let doubled = [1, 2, 3, 4, 5] | .map(x => x * 2);
+    let doubled = [1, 2, 3, 4, 5] |> map(x => x * 2);
     write_line("doubled: {doubled}");
- 
+
     // filter
-    let evens = [1, 2, 3, 4, 5] | .filter(x => x % 2 == 0);
+    let evens = [1, 2, 3, 4, 5] |> filter(x => x % 2 == 0);
     write_line("evens: {evens}");
 
     // reduce
-    let sum = [1, 2, 3, 4, 5] | .reduce(0, (acc, x) => acc + x);
+    let sum = [1, 2, 3, 4, 5] |> reduce(0, (acc, x) => acc + x);
     write_line("sum: {sum}");
 si
 
@@ -165,7 +171,7 @@ immutable_data_structures_and_pure_functions() is
     // immutable data structures
     let list = [1, 2, 3, 4, 5];
 
-    let doubled = list | .map(x => x * 2);
+    let doubled = list |> map(x => x * 2);
 
     // original list is still the same:
     write_line("list: {list | }");
@@ -425,11 +431,11 @@ stream_examples() is
     write_line("counting down from 5: {counting(5)}");
     write_line("chars of hello: {chars_of("hello")}");
 
-    write_line("first 10 fibonacci numbers: {fibonacci | .take(10)}");
-    write_line("first 10 factorial numbers: {factorial | .take(10)}");
-    write_line("first 10 even fibonacci numbers: {fibonacci | .filter(x => x % 2 == 0) .take(10)}");
+    write_line("first 10 fibonacci numbers: {fibonacci |> take(10)}");
+    write_line("first 10 factorial numbers: {factorial |> take(10)}");
+    write_line("first 10 even fibonacci numbers: {fibonacci |> filter(x => x % 2 == 0) |> take(10)}");
 
-    for (i, (fib, fact)) in fibonacci | .zip(factorial) .take(10) .index() do
+    for (i, (fib, fact)) in fibonacci |> zip(factorial) |> take(10) |> index() do
         write_line("fibonacci {i} is {fib}");
         write_line("factorial {i} is {fact}");
     od;
