@@ -406,16 +406,19 @@ stream_examples() is
 
     // infinite fibonacci. State is (prev, current); output is the
     // current value - state and output types are different.
+    // the step's parameter destructures the state tuple, so the fields
+    // are read by name: the outer parentheses are the parameter list, the
+    // inner ones the pattern.
     let fibonacci = stream(
         (prev = 1, current = 1),
-        s => s.current || (prev = s.current, current = s.prev + s.current)
+        ((prev, current)) => current || (prev = current, current = prev + current)
     );
 
     // factorial. State is (n, prev); output is int.
 
     let factorial = stream(
         (n = 1, prev = 1),
-        s => let next_n = s.n + 1, next = s.prev * next_n in
+        ((n, prev)) => let next_n = n + 1, next = prev * next_n in
             next || (n = next_n, prev = next)
     );
 
