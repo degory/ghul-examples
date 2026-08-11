@@ -101,8 +101,8 @@ array_and_tuple_literals() is
     let ints = [1, 2, 3];
     let strings = ["one", "two", "three"];
 
-    write_line("ints: {ints | }");
-    write_line("strings: {strings | }");
+    write_line("ints: {ints |> $}");
+    write_line("strings: {strings |> $}");
 
     // a tuple's element types come from its element expressions:
     let person = ("alice", 30);
@@ -167,7 +167,7 @@ type_args_from_later_use() is
     xs.add(1);
     xs.add(2);
     xs.add(3);
-    write_line("xs: {xs | }, count: {xs.count}");
+    write_line("xs: {xs |> $}, count: {xs.count}");
 
     // K and V from indexed assignments:
     let m = MAP();

@@ -9,8 +9,8 @@ string_box.value: hello
 pair: (123, hello)
 nested.value.value: 7
 mixed: (1, two)
-ints: 1, 2, 3
-strings: one, two, three
+ints: [1, 2, 3]
+strings: [one, two, three]
 person: (alice, 30)
 nested.`0.`0: alice
 name: alice (System.String), age: 30 (System.Int32)
@@ -26,7 +26,7 @@ a = 1
 b = 2
 c = 3
 b.value: 42
-xs: 1, 2, 3, count: 3
+xs: [1, 2, 3], count: 3
 m["two"]: 2, count: 3
 doubled: 2, 4, 6
 even: 2, 4, 6
