@@ -56,11 +56,11 @@ entry() is
 
     // '..' constructs an iterable integer range, inclusive of the first element and exclusive of the last:
     let exclusive_range = 0..10;
-    write_line("exclusive int range: {exclusive_range | }");
+    write_line("exclusive int range: {exclusive_range |> $}");
 
     // '::' constructs an iterable integer range, inclusive of the first and last elements:
     let inclusive_range = 1::10;
-    write_line("inclusive int range: {inclusive_range | }");
+    write_line("inclusive int range: {inclusive_range |> $}");
 
     // the thread-first operator '|>' calls a function with the value on its left as
     // the first argument: 'x |> f(a)' is 'f(x, a)'. Chained, it reads left to right:

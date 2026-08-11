@@ -20,5 +20,5 @@ entry() is
     write_line("tuple literal: {("three", "string", "tuple")}");
 
     assert ["a", "four", "element", "list"].get_type() == typeof string[];
-    write_line("list literal: {["a", "four", "element", "list"] | }");
+    write_line("list literal: {["a", "four", "element", "list"] |> $}");
 si

@@ -13,7 +13,7 @@ even(10): True
 odd(10): False
 even(10): True
 odd(10): False
-list: 1, 2, 3, 4, 5
+list: [1, 2, 3, 4, 5]
 add(5, 3): 8
 apply(times_2, 5): 10
 apply(square, 5): 25
