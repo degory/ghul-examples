@@ -8,6 +8,12 @@ entry() is
     literal_patterns();
     chained_clauses();
     case_expressions();
+    case_binding_patterns();
+    if_let_guards();
+    case_arm_guards();
+    match_by_value();
+    while_let_examples();
+    nested_destructuring();
 si
 
 optional_matching() is
@@ -31,7 +37,7 @@ greet(maybe_a_cat: CAT?) -> string =>
 find_cat(name: string) -> CAT? =>
     let
         cats = [CAT("Felix"), CAT("Eric"), CAT("Geoff")]
-    in 
+    in
         cats |> find(c => c.name == name);
 
 
@@ -200,3 +206,274 @@ class ORDER(id: int, customer: CUSTOMER?);
 class CUSTOMER(name: string, contact: CONTACT?);
 
 class CONTACT(email: string);
+
+// case over a union: a binding pattern (`when v: T`) narrows the
+// scrutinee's static type for the rest of the arm
+
+union SHAPE is
+    CIRCLE(radius: double);
+    SQUARE(side: double);
+    TRIANGLE(base: double, height: double);
+si
+
+case_binding_patterns() is
+    write_line("area of a circle: {area(SHAPE.CIRCLE(2.0D))}");
+    write_line("area of a square: {area(SHAPE.SQUARE(3.0D))}");
+    write_line("area of a triangle: {area(SHAPE.TRIANGLE(4.0D, 5.0D))}");
+
+    write_line(is_round(SHAPE.CIRCLE(2.0D)));
+    write_line(is_round(SHAPE.SQUARE(3.0D)));
+si
+
+area(s: SHAPE) -> double =>
+    // SHAPE is a closed union with three variants, all covered here,
+    // so this case expression is exhaustive without an else arm
+    case s
+    when c: SHAPE.CIRCLE then 3.14159D * c.radius * c.radius
+    when q: SHAPE.SQUARE then q.side * q.side
+    when t: SHAPE.TRIANGLE then 0.5D * t.base * t.height
+    esac;
+
+is_round(s: SHAPE) -> string =>
+    // `when _: T` narrows the scrutinee itself without binding a new
+    // name, so `s` reads as SHAPE.CIRCLE inside this arm
+    case s
+    when _: SHAPE.CIRCLE then "round, radius {s.radius}"
+    else "not round"
+    esac;
+
+// a trailing `/\` guard gates entry on an extra condition, evaluated
+// after the pattern matches; a failing guard falls through to the
+// next clause, exactly as if the pattern itself hadn't matched
+if_let_guards() is
+    let a_shape: SHAPE = SHAPE.CIRCLE(5.0D);
+
+    if let c: SHAPE.CIRCLE = a_shape /\ c.radius > 1.0D then
+        write_line("if let guard: big enough, radius {c.radius}");
+    fi
+
+    if let c: SHAPE.CIRCLE = a_shape /\ c.radius > 100.0D then
+        write_line("unreachable");
+    else
+        write_line("if let guard: not big enough");
+    fi
+si
+
+case_arm_guards() is
+    write_line(describe_shape(SHAPE.CIRCLE(20.0D)));
+    write_line(describe_shape(SHAPE.CIRCLE(2.0D)));
+    write_line(describe_shape(SHAPE.SQUARE(3.0D)));
+si
+
+describe_shape(s: SHAPE) -> string =>
+    // the same guard works on a case arm; the bound name (c) and the
+    // scrutinee narrowing are both in scope in the guard and the body
+    case s
+    when c: SHAPE.CIRCLE /\ c.radius > 10.0D then "large circle"
+    when c: SHAPE.CIRCLE then "circle radius {c.radius}"
+    when q: SHAPE.SQUARE then "square side {q.side}"
+    when t: SHAPE.TRIANGLE then "triangle base {t.base}"
+    esac;
+
+// case and =~ agree on what "equal" means: a case scrutinee is
+// compared to each label the way =~ would, so a string, a null-able
+// optional, or a user type that declares =~ all match by value
+// rather than by reference
+
+class POINT is
+    x: int;
+    y: int;
+
+    init(x: int, y: int) is
+        self.x = x;
+        self.y = y;
+    si
+
+    =~(other: POINT) -> bool => x == other.x /\ y == other.y;
+    get_hash_code() -> int => x * 397 + y;
+si
+
+classify_point(p: POINT) -> string =>
+    case p
+    when POINT(0, 0) then "origin"
+    else "elsewhere"
+    esac;
+
+describe_day(name: string) -> string =>
+    case name
+    when "Mon", "Tue", "Wed", "Thu", "Fri" then "weekday"
+    when "Sat", "Sun" then "weekend"
+    else "not a day"
+    esac;
+
+label_optional(n: int?) -> string =>
+    // a `when null` label matches absence, whichever of the three
+    // optional representations backs the scrutinee's type
+    case n
+    when 42 then "forty-two"
+    when null then "nothing"
+    else "something else"
+    esac;
+
+match_by_value() is
+    // built at runtime, so it's a different string object to the
+    // literal "Sat" below - case still matches it by content
+    let prefix = "S";
+    let built = "{prefix}at";
+
+    write_line(describe_day(built));
+    write_line(describe_day("Mon"));
+
+    // two different POINT instances, equal by =~
+    write_line(classify_point(POINT(0, 0)));
+    write_line(classify_point(POINT(1, 1)));
+
+    write_line(label_optional(42));
+    write_line(label_optional(null));
+    write_line(label_optional(7));
+si
+
+// while let repeats the if let clause on every iteration, with the
+// declared names freshly in scope each time round the loop
+
+class LINK(value: int, next: LINK?);
+
+sum_link(head: LINK?) -> int =>
+    val
+        let total mut = 0;
+        let current mut = head;
+
+        // a bare optional local narrows on its own presence test,
+        // the same as in an if condition - no `let` needed here
+        while current? do
+            total = total + current.value;
+            current = current.next;
+        od;
+
+        total
+    lav;
+
+sum_until_negative(head: LINK?) -> int =>
+    val
+        let total mut = 0;
+        let current mut = head;
+
+        // while let with a name and a guard: the loop stops as soon
+        // as either the chain ends or the guard fails
+        while let c = current /\ c.value >= 0 do
+            total = total + c.value;
+            current = c.next;
+        od;
+
+        total
+    lav;
+
+count_chain(head: LINK) -> int =>
+    val
+        let total mut = 1;
+        let node mut = head;
+
+        // the path shorthand declares `next`, matching while it holds
+        while let node.next do
+            total = total + 1;
+            node = next;
+        od;
+
+        total
+    lav;
+
+while_let_examples() is
+    let chain = LINK(1, LINK(2, LINK(3, LINK(-1, LINK(4, null)))));
+
+    write_line("sum: {sum_link(chain)}");
+    write_line("sum until negative: {sum_until_negative(chain)}");
+    write_line("chain length: {count_chain(chain)}");
+si
+
+// pattern arms nest to any depth: a tuple scrutinee's elements can
+// themselves be typed sub-patterns, which can themselves destructure
+// further - this is Okasaki's red-black tree rebalance, matching a
+// 4-tuple against literal enum leaves and nested variant patterns
+// three levels deep in one case expression
+
+enum COLOUR is
+    RED,
+    BLACK,
+si
+
+union TREE is
+    EMPTY;
+    NODE(colour: COLOUR, left: TREE, value: int, right: TREE);
+si
+
+balance(colour: COLOUR, left: TREE, value: int, right: TREE) -> TREE =>
+    case (colour, left, value, right)
+    when (COLOUR.BLACK, (COLOUR.RED, (COLOUR.RED, a, x, b): TREE.NODE, y, c): TREE.NODE, z, d) then
+        TREE.NODE(COLOUR.RED, TREE.NODE(COLOUR.BLACK, a, x, b), y, TREE.NODE(COLOUR.BLACK, c, z, d))
+    when (COLOUR.BLACK, (COLOUR.RED, a, x, (COLOUR.RED, b, y, c): TREE.NODE): TREE.NODE, z, d) then
+        TREE.NODE(COLOUR.RED, TREE.NODE(COLOUR.BLACK, a, x, b), y, TREE.NODE(COLOUR.BLACK, c, z, d))
+    when (COLOUR.BLACK, a, x, (COLOUR.RED, (COLOUR.RED, b, y, c): TREE.NODE, z, d): TREE.NODE) then
+        TREE.NODE(COLOUR.RED, TREE.NODE(COLOUR.BLACK, a, x, b), y, TREE.NODE(COLOUR.BLACK, c, z, d))
+    when (COLOUR.BLACK, a, x, (COLOUR.RED, b, y, (COLOUR.RED, c, z, d): TREE.NODE): TREE.NODE) then
+        TREE.NODE(COLOUR.RED, TREE.NODE(COLOUR.BLACK, a, x, b), y, TREE.NODE(COLOUR.BLACK, c, z, d))
+    else
+        TREE.NODE(colour, left, value, right)
+    esac;
+
+ins(t: TREE, v: int) -> TREE =>
+    if let (colour, left, value, right): TREE.NODE = t then
+        if v < value then
+            balance(colour, ins(left, v), value, right)
+        elif v > value then
+            balance(colour, left, value, ins(right, v))
+        else
+            t
+        fi
+    else
+        TREE.NODE(COLOUR.RED, TREE.EMPTY, v, TREE.EMPTY)
+    fi;
+
+// the root of ins() may come out red; a real red-black insert always
+// re-blackens the root before handing the tree back to the caller
+blacken(t: TREE) -> TREE =>
+    case t
+    when n: TREE.NODE then TREE.NODE(COLOUR.BLACK, n.left, n.value, n.right)
+    else t
+    esac;
+
+insert_value(t: TREE, v: int) -> TREE => blacken(ins(t, v));
+
+count(t: TREE) -> int =>
+    case t
+    when n: TREE.NODE then 1 + count(n.left) + count(n.right)
+    else 0
+    esac;
+
+black_height(t: TREE) -> int =>
+    case t
+    when n: TREE.NODE /\ n.colour == COLOUR.BLACK then 1 + black_height(n.left)
+    when n: TREE.NODE then black_height(n.left)
+    else 0
+    esac;
+
+is_leaf(t: TREE) -> string =>
+    // isa is the narrowing test underneath if let and case: it
+    // narrows t in place, and narrows the else branch to the
+    // complement variant since TREE has only two variants
+    if isa TREE.NODE(t) then
+        "node with value {t.value}"
+    else
+        "empty"
+    fi;
+
+nested_destructuring() is
+    let t: TREE mut = TREE.EMPTY;
+    for v in [10, 5, 20, 3, 7, 15, 25, 1, 30, 12] do
+        t = insert_value(t, v);
+    od;
+
+    write_line("tree size: {count(t)}");
+    write_line("black height: {black_height(t)}");
+    write_line(is_leaf(TREE.EMPTY));
+    write_line(is_leaf(t));
+si

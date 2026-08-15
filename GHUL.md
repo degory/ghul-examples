@@ -156,6 +156,17 @@ let b = 1.0D + cast double(1);   // ok, explicit cast
 let o: object = "hello";         // ok, string is an object
 ```
 
+The target type can be left out when the surrounding expression already determines it. `cast(v)` converts `v` to whatever type the position it sits in calls for — a typed `let` initializer, an assignment, a `return` or `=>` body, an argument, an operator's other formal, an index:
+
+```ghul
+let total = cast(count) + average;   // count converts to double
+let d: double = cast(i);             // to double
+takes_a_double(cast(i));             // to double
+values[cast(index)];                 // to whatever the indexer takes
+```
+
+The type comes from the declaration the expression resolves against rather than from any other operand, so a `cast(v)` in an argument or operand position takes the type of the formal it lands on. That means resolution has to reach exactly one candidate: `cast(v)` is refused where the position supplies no type at all, and where more than one overload or operator would accept it. `cast(a) + cast(b)` is an error rather than a guess, as is a call whose overloads differ only in the parameter the `cast(v)` fills. Hover over the `cast` keyword shows the type it resolved to.
+
 A **string literal** may interpolate expressions: `{` opens an expression and `}` closes it, and the expression's value is converted to a string in place. There is no `+` operator on `string`, so interpolation is how strings are joined:
 
 ```ghul
@@ -173,7 +184,7 @@ Adjacent string literals concatenate, so a long string can be split across lines
 
 Inside the braces you are in *expression* context, so a nested string literal is written normally — `"{format("hello")}"` needs no escaping of its inner quotes. To write a literal brace, double it: `"{{"` and `"}}"`. The escapes are `\t`, `\n`, `\r` and `\\`, plus a run of octal digits for an arbitrary character code — so an escape character is `"\33"`. Any other character after a `\` stands for itself, which is what makes `\"` a quote.
 
-An **array** type is written `E[]`. Arrays are fixed-size and immutable — there is no assigning indexer. An array's length is its `count`. An array literal is a comma-separated list in square brackets, and its element type is inferred as the most specific type compatible with every element (`object` if there is no closer common ancestor):
+An **array** type is written `E[]`. Arrays are fixed-size and read-only — there is no assigning indexer. An array's length is its `count`. An array literal is a comma-separated list in square brackets, and its element type is inferred as the most specific type compatible with every element (`object` if there is no closer common ancestor):
 
 ```ghul
 let primes = [2, 3, 5, 7, 11];          // int[]
@@ -183,7 +194,7 @@ let p = primes[2];                      // indexing, 0-based
 
 The empty array literal `[]` is accepted wherever the element type comes from context — an explicitly-typed `let`, a `return`, or a call argument's parameter type.
 
-A **tuple** groups two or more values of possibly different types — a single-element tuple is rejected. Tuple types and literals both use parentheses; elements may be named, and an unnamed element is named with a backtick and its index. Tuples are immutable, compare by structural equality, nest, and can be destructured:
+A **tuple** groups two or more values of possibly different types — a single-element tuple is rejected, and a tuple has at most 7 elements. Tuple types and literals both use parentheses; elements may be named, and an unnamed element is named with a backtick and its index. Tuples are immutable, compare by structural equality, nest, and can be destructured:
 
 ```ghul
 let pair = (10, "hello");                  // (int, string)
@@ -255,7 +266,7 @@ add_pair((3, 4));    // 7
 
 Nesting and mixing with ordinary parameters both work: `f(x: int, (a: int, b: int): (int, int), y: int)`. Because a named function's signature is always fully explicit, the aggregate type ascription is required — there is no context to infer it from — and per-element types are optional, exactly as in a `let (a, b) = pair;` local. The aggregate type can be any positionally-destructurable type — a tuple, or a type with a matching `deconstruct(...)` method. The by-name group form (`(x = field, ...)`) is not supported in a formal argument list.
 
-Functions are first-class values. A function literal has the same shape without a name, but its argument and return types are generally *inferred* — from the body and from the context the literal is used in — so they are usually written without annotations (though either can be given explicitly). With a single argument the parentheses are optional. `A -> B` is the type of a function from `A` to `B`. Function literals capture references from the enclosing scope, forming closures: an immutable `let` is captured by value (a snapshot at the point the literal is constructed); a `let mut` is captured by reference, so the closure and the outer scope share one live variable that either side can read or reassign. An anonymous function refers to itself through the `rec` keyword:
+Functions are first-class values. A function literal has the same shape without a name, but its argument and return types are generally *inferred* — from the body and from the context the literal is used in — so they are usually written without annotations (though either can be given explicitly). With a single argument the parentheses are optional. `A -> B` is the type of a function from `A` to `B`. A function *type* — and so a function literal, or a named function referred to as a value — has at most 16 parameters; a named function itself has no such limit, since it need never be represented as a function-type value. Function literals capture references from the enclosing scope, forming closures: an immutable `let` is captured by value (a snapshot at the point the literal is constructed); a `let mut` is captured by reference, so the closure and the outer scope share one live variable that either side can read or reassign. An anonymous function refers to itself through the `rec` keyword:
 
 ```ghul
 let twice = x => x * 2;
@@ -625,7 +636,7 @@ enum Status is
 si
 ```
 
-Enum values compare with the relational operators as well as for equality, so they order by their underlying integer. An individual member can be imported by name — `use Some.Namespace.Suit.HEARTS;` — as well as reached through the type.
+Enum values compare with the relational operators as well as for equality (`=~` and `==`), so they order by their underlying integer. `=~` over an optional enum is not supported; narrow the value first. An individual member can be imported by name — `use Some.Namespace.Suit.HEARTS;` — as well as reached through the type.
 
 ### partial and impl blocks
 
@@ -702,7 +713,7 @@ if name? then
 fi
 ```
 
-Optionals cover reference and value types alike. There are three lowerings — a plain nullable reference, `Nullable[T]` for a value type, and `MAYBE[T]` for an unconstrained type parameter, so `T?` is spellable even where `T` could be either kind. Which one is in play is an implementation detail: all three behave the same way and interconvert. A non-optional `T` is assignable to a `T?` without ceremony; the other direction is a hard rejection. To use a `T?` where a non-optional `T` is expected, the caller must narrow first — `if x?` / `if let` flow-narrow inside the guarded region, `x!` asserts present (throws if absent), and `x ?? _` falls back to a non-optional value. Reading a member, iterating (`for x in xs`), or indexing (`xs[i]`) through an optional receiver the flow analysis has not proven present — an un-narrowed local or member path, a call result — draws a `null-deref` warning; narrowing first (`if xs?` / `if let`), `x?.y`, `x.has_value`, and `x!` are the warning-free ways through (`--suppress null-deref` opts out project-wide). Applying `!` to a value that was never optional is an error (`cannot unwrap this`) — there is nothing to unwrap. Where flow analysis has already proven a value present — inside an `if x?` / `if let` region — a further `!`, `?`, or `?.` on it draws a redundancy warning (`redundant-unwrap`, `redundant-presence-test`, or `redundant-coalesce`); the fix is to drop the operator. Suppress via `@suppress("<code>")` per declaration or per file, or with `--suppress <code>` project-wide. `--warn-as-error`, `--warn-as-info` and `--warn-as-hint` reclassify a slug's severity the same way. A `?` or `?.` applied to a never-optional *value type* is an error too — a struct can never be null, so the test has nothing to check. On a never-optional *reference* a `?` presence test is redundant by its static type and draws a `presence-test-non-optional` warning, since the type already guarantees presence — though not inside an `assert` condition, where the test is taken as deliberate; a `?.` stays legal, reading as a defensive null test for the case where null can still arrive despite the static type, for example from reflected .NET APIs. Types that provide `has_value` and `value` properties are treated as optional-shaped, and `?` / `!` on them consult those properties and are never flagged.
+Optionals cover reference and value types alike. There are three lowerings — a plain nullable reference, `Nullable[T]` for a value type, and `MAYBE[T]` for an unconstrained type parameter, so `T?` is spellable even where `T` could be either kind. Which one backs a given `T?` is an implementation detail: all three behave the same way and interconvert. A non-optional `T` is assignable to a `T?` without ceremony; the other direction is a hard rejection. To use a `T?` where a non-optional `T` is expected, the caller must narrow first — `if x?` / `if let` flow-narrow inside the guarded region, `x!` asserts present (throws if absent), and `x ?? _` falls back to a non-optional value. Reading a member, iterating (`for x in xs`), or indexing (`xs[i]`) through an optional receiver the flow analysis has not proven present — an un-narrowed local or member path, a call result — draws a `null-deref` warning; narrowing first (`if xs?` / `if let`), `x?.y`, `x.has_value`, and `x!` are the warning-free ways through (`--suppress null-deref` opts out project-wide). Applying `!` to a value that was never optional is an error (`cannot unwrap this`) — there is nothing to unwrap. Where flow analysis has already proven a value present — inside an `if x?` / `if let` region — a further `!`, `?`, or `?.` on it draws a redundancy warning (`redundant-unwrap`, `redundant-presence-test`, or `redundant-coalesce`); the fix is to drop the operator. Suppress via `@suppress("<code>")` per declaration or per file, or with `--suppress <code>` project-wide. `--warn-as-error`, `--warn-as-info` and `--warn-as-hint` reclassify a slug's severity the same way. A `?` or `?.` applied to a never-optional *value type* is an error too — a struct can never be null, so the test has nothing to check. On a never-optional *reference* a `?` presence test is redundant by its static type and draws a `presence-test-non-optional` warning, since the type already guarantees presence — though not inside an `assert` condition, where the test is taken as deliberate; a `?.` stays legal, reading as a defensive null test for the case where null can still arrive despite the static type, for example from reflected .NET APIs. Types that provide `has_value` and `value` properties are treated as optional-shaped: `?` consults those properties on any such type, while `!` does so only on a struct.
 
 The `?.` operator is *coalescing* member access: `a?.b` reads `b` from `a` when `a` is present, otherwise yields the optional null. The result is always optional — a non-optional member type `U` is widened to `U?`, an already-optional `U?` stays `U?`. Receivers may be reference- or value-type optional (`T?` backed by `Nullable[T]`). A flow-narrowed non-optional receiver always takes the present branch and draws a `redundant-coalesce` warning — a plain `.` does the same job. A receiver that was never optional is an error for a value type (`receiver is not optional`); a never-optional reference receiver stays legal as a defensive null test.
 
@@ -827,7 +838,7 @@ if let (name, _) = lookup(id) then
 fi
 ```
 
-A destructure leaf can also be a literal — an integer, float, string, character or boolean literal, `null`, or a qualified enum-member name. The leaf is then an equality test against the source position rather than a declaration; the arm only runs when every literal leaf matches and every named leaf binds. The test is value-equality for the value-type kinds (int / float / char / bool / enum); strings and `null` test by reference, so string-literal leaves rely on interning to work for inline literals — for arbitrary runtime strings, use a `/\`-guard with `=~`:
+A destructure leaf can also be a literal — an integer, float, string, character or boolean literal, `null`, or a qualified enum-member name. The leaf is then an equality test against the source position rather than a declaration; the arm only runs when every literal leaf matches and every named leaf binds. The test compares the way `=~` would, so a string leaf matches by content rather than by identity, and a leaf against an optional source position never matches an absent value. A `null` leaf is a presence test rather than a comparison, and matches absence across all three optional representations. This is the same comparison a `case` `when` label makes:
 
 ```ghul
 if let (1, name) = pair then
@@ -944,6 +955,8 @@ else
 esac
 ```
 
+An expression-list `when` matches its labels by value: `case` compares the scrutinee to each label the way `=~` would (falling back to `<>`), so a `string` scrutinee and a user type that declares `=~` both compare their labels by content rather than by identity. An optional scrutinee compares the same way — `=~` is null-safe, so a `T?` scrutinee matches a non-null label only when it holds a value-equal value, and never throws on an absent one. A `when null` label matches absence — a null reference for a reference-type `T`, an absent `Nullable[T]`/`MAYBE[T]` for a value-type or generic `T` — across all three optional representations.
+
 `case` is also an expression: the last expression of each arm body becomes the arm's value, and the `case` evaluates to whichever arm matched. An expression-position `case` needs either an `else` arm, arms that cover the scrutinee's closed domain (a union's full variant set, both bool branches, etc.), or — over an open-domain scrutinee with an expected type that has a default value (value type or `T?`) — none of the above, in which case the `case` produces `default(T)` on the no-match path and `case-needs-else` warns:
 
 ```ghul
@@ -991,6 +1004,8 @@ esac
 ```
 
 A failing guard falls through to the next arm, exactly as if the pattern itself hadn't matched. A guarded arm never counts towards exhaustiveness — it can decline to run even when its pattern matches, so `non-exhaustive-case` still fires for a variant only ever matched by a guarded arm.
+
+An arm's narrowing works like `if let`'s: an ascribed `when v: T` narrows the scrutinee to `T` inside the arm body, and a guard's own test — a `?` presence test or an `isa` — narrows within the body too. Arm narrowing is local; nothing an arm proves reaches a sibling arm or the code after the `case`.
 
 ### val ... lav
 
@@ -1154,7 +1169,7 @@ let sum = numbers | .reduce(0, (acc, x) => acc + x);
 
 Lazy and infinite sequences are built with `Ghul.Pipes.stream(initial, advance)`, where `advance` steps from the current state to the next element and state. Nothing forces `advance` to be free of side effects, but it is called lazily and on demand, so it is much easier to reason about when it is. The `||` infix is the step expression — `value || next_state`. A `stream(...)` is an ordinary `Pipe[T]`, so the pipe combinators chain straight onto it. See <https://ghul.dev/functional-programming.html#lazy-sequences>.
 
-The thread-first operator `|>` calls a function with the left value threaded in as its first argument: `x |> f(a)` is `f(x, a)`, and `x |> f()` is `f(x)`. The right-hand side is resolved exactly as an ordinary call, so it can be a free function, a method on an explicit receiver (`x |> box.combine(a)` is `box.combine(x, a)`), or a generic whose type argument is inferred from the left value. Chains associate left to right, so `x |> f(a) |> g(b)` is `g(f(x, a), b)`. Unlike `|`, which wraps its operand in a `Pipe[T]` and calls pipe combinators on it, `|>` is a plain call, and its right-hand side must be a function call:
+The thread-first operator `|>` calls a function with the left value threaded in as its first argument: `x |> f(a)` is `f(x, a)`, and `x |> f()` is `f(x)`. The right-hand side is resolved exactly as an ordinary call, so it can be a free function, a method on an explicit receiver (`x |> box.combine(a)` is `box.combine(x, a)`), or a generic whose type argument is inferred from the left value. Chains associate left to right, so `x |> f(a) |> g(b)` is `g(f(x, a), b)`. Unlike `|`, which wraps its operand in a `Pipe[T]` and calls pipe combinators on it, `|>` is a plain call, and its right-hand side must be a function call or the name of a function spelled as an operator:
 
 ```ghul
 double(x: int) -> int => x * 2;
@@ -1164,6 +1179,17 @@ let a = 5 |> double();           // double(5) is 10
 let b = 5 |> add(3);             // add(5, 3) is 8
 let c = 5 |> double() |> add(1); // add(double(5), 1) is 11
 ```
+
+A function named with an operator is the one right-hand side that can be written without an argument list, since there is nothing else the bare name could mean. The threaded value is then the only argument, and an argument list is still accepted alongside it:
+
+```ghul
+$(o: object?) -> string => "<{o}>";
+
+let d = 5 |> $;                  // $(5)
+let e = 5 |> $();                // the same call, written out
+```
+
+The operator and the `|>` have to be separated by a space. A run of operator characters scans as a single token, so `5 |>$` is one operator named `|>$` rather than two.
 
 ## generics
 
@@ -1180,7 +1206,7 @@ struct BOX[T] is
 si
 ```
 
-A value of an unbounded generic argument type is largely opaque — it can be stored, passed, returned, and have the methods of `object` called on it, but little else. Giving the parameter a **bound** — `[T: Bound]` — makes the value behave as its bound, so the bound's members are reachable:
+A value of an unbounded generic argument type is largely opaque — it can be stored, passed, returned, compared with `=~`, and have the methods of `object` called on it, but little else. Giving the parameter a **bound** — `[T: Bound]` — makes the value behave as its bound, so the bound's members are reachable:
 
 ```ghul
 trait Named is name: string; si
@@ -1250,6 +1276,10 @@ Defining `=~` also settles how .NET itself compares the type, provided `get_hash
 
 Both halves are needed because .NET requires values that compare equal to hash equal, and a hash-based collection consults the hash first. A type that defines neither is consistent as it stands, comparing and hashing by identity, so defining only `=~` is reported as `equality-without-hash` and leaves the type alone rather than breaking that pair. The hash is not generated for you: an operator is free to ignore some of the fields it reads, and a memberwise hash would then disagree with it.
 
+`a =~ b` on a bare, unconstrained type parameter compiles by going through `EqualityComparer[T].Default.Equals`, the same route .NET collections use for a generic instantiation. That reaches the `Equals(object)` bridge above, so the comparison follows whatever the actual type argument does: a type declaring `=~` and `get_hash_code` answers through its own operator, a class declaring neither compares by reference, and a struct, enum, or scalar gets the runtime's ordinary value equality for that type. A bound that itself declares `=~` (`[T: Named]` where `Named` declares the operator) resolves the bound's operator directly and never reaches the comparer.
+
+A member `=~` or `<>` must be `pure` — declared or provably store-free — a compile error otherwise. Both operators are trusted on an operand whose type isn't known until later — a lambda parameter, for instance — and `=~` is trusted again through the `EqualityComparer[T].Default` route above. Nothing at either of those call sites can check what the implementation actually does, so an implementation that could store would make that trust unsound rather than merely unproven. Most bodies — field and property comparisons, delegating to another type's `=~`/`<>` — are provably store-free without any annotation; add `pure` when the body itself is more than the analysis can trace (a loop, a call the analysis doesn't otherwise bound). Overriding a pure `=~`/`<>` requires the override to be pure too, the same rule that governs overriding any other [pure function](#type-narrowing).
+
 An identifier that collides with a ghūl keyword is escaped with a backtick — `` `class `` is the identifier `class`.
 
 An operator is an ordinary member and can be called as one, which is occasionally clearer than the operator spelling and is how a completion list offers it. The dot needs separating from the operator's name, because a run of operator characters is scanned as a single token and `.` is one of them — so `a.=~(b)` is read as an operator named `.=~` rather than as a member access. A space does it, and so does the backtick escape:
@@ -1259,9 +1289,17 @@ a. =~(b)
 a.`=~(b)
 ```
 
-Both are the same call, and both are a plain method call rather than another spelling of the operator. Where the two differ, they differ quietly. The null handling around `a =~ b` is written around the *operator*, so the member call receives an absent operand instead of being answered before it is reached. And an operator that lowers to an IL instruction has no member behind it: on the scalar types the arithmetic and relational operators are instructions, so `a. +(b)` on an `int` reports that `+` is not a member — while `=~` and `<>` on those types, and on `string`, do reach the .NET method the name maps to, which is not the same thing the operator does. Member syntax is worth reaching for on a type whose operators you wrote; it is not a general substitute for writing the operator.
+Both are the same call, and both are a plain method call rather than another spelling of the operator. Where the two differ, they differ quietly. The null handling around `a =~ b` is written around the *operator*, so the member call receives an absent operand instead of being answered before it is reached. And an operator that lowers to an IL instruction has no member behind it: on the scalar types the arithmetic and relational operators are instructions, so `a. +(b)` on an `int` reports that `+` is not a member — while `=~` and `<>` on those types, and on `string`, do reach the .NET method the name maps to, which is not the same thing the operator does. Member syntax is fine to use on a type whose operators you wrote; it is not a general substitute for writing the operator.
 
 A static property or field takes `snake_case` however constant-like it reads, since only enum members become `MACRO_CASE` — `CancellationToken.None` is `System.Threading.CancellationToken.none`.
+
+An **indexer** is the one member reached only through its own syntax. .NET does not fix its name — the property carries whatever its declaring language chose, and the type nominates the real one, so `System.String` and `System.Text.StringBuilder` both call theirs `Chars` — but the name never has to be written: `[` and `]` find it whatever it is.
+
+```ghul
+let initial = name[0];
+```
+
+The accessors behind it are not members in their own right, so naming one directly is an error rather than another way in.
 
 A **nested** .NET type is not addressed through its enclosing type. It lives in the enclosing type's namespace under a name joining the segments with `_`, so `System.Environment.SpecialFolder` is written:
 
