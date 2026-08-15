@@ -207,7 +207,7 @@ class CUSTOMER(name: string, contact: CONTACT?);
 
 class CONTACT(email: string);
 
-// case over a union: a binding pattern (`when v: T`) narrows the
+// case over a union: a binding pattern (when v: T) narrows the
 // scrutinee's static type for the rest of the arm
 
 union SHAPE is
@@ -235,14 +235,14 @@ area(s: SHAPE) -> double =>
     esac;
 
 is_round(s: SHAPE) -> string =>
-    // `when _: T` narrows the scrutinee itself without binding a new
-    // name, so `s` reads as SHAPE.CIRCLE inside this arm
+    // when _: T narrows the scrutinee itself without binding a new
+    // name, so s reads as SHAPE.CIRCLE inside this arm
     case s
     when _: SHAPE.CIRCLE then "round, radius {s.radius}"
     else "not round"
     esac;
 
-// a trailing `/\` guard gates entry on an extra condition, evaluated
+// a trailing '/\' guard gates entry on an extra condition, evaluated
 // after the pattern matches; a failing guard falls through to the
 // next clause, exactly as if the pattern itself hadn't matched
 if_let_guards() is
@@ -307,7 +307,7 @@ describe_day(name: string) -> string =>
     esac;
 
 label_optional(n: int?) -> string =>
-    // a `when null` label matches absence, whichever of the three
+    // a when null label matches absence, whichever of the three
     // optional representations backs the scrutinee's type
     case n
     when 42 then "forty-two"
@@ -344,7 +344,7 @@ sum_link(head: LINK?) -> int =>
         let current mut = head;
 
         // a bare optional local narrows on its own presence test,
-        // the same as in an if condition - no `let` needed here
+        // the same as in an if condition - no let needed here
         while current? do
             total = total + current.value;
             current = current.next;
@@ -373,7 +373,7 @@ count_chain(head: LINK) -> int =>
         let total mut = 1;
         let node mut = head;
 
-        // the path shorthand declares `next`, matching while it holds
+        // the path shorthand declares next, matching while it holds
         while let node.next do
             total = total + 1;
             node = next;
