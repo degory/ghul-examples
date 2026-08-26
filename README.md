@@ -150,6 +150,6 @@ The ghūl language extension for Visual Studio Code provides a few features that
 
 Feel free to contribute new ghūl language examples by raising a PR.
 
-## issues and feedback
+## issues
 
-I want to ensure that this examples project is as low friction and as useful as possible. If you have any problems at all using it, please [open an issue in the GitHub repo](https://github.com/degory/ghul-examples/issues/new/choose) and I'll do my best to help.
+[View open issues](https://github.com/degory/ghul/issues?q=is%3Aopen+is%3Aissue+label%3Aghul-examples) or [raise a new one](https://github.com/degory/ghul/issues/new?labels=ghul-examples).
