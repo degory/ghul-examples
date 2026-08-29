@@ -10,5 +10,11 @@
   <ItemGroup>
     <GhulSources Include="examples/**/*.ghul" />
     <GhulSources Include="root/**/*.ghul" />
+
+    <!-- Terminator-free sources; error on CI so stray `;` cannot creep
+         back in, warning locally. The per-test projects compile the same
+         files via symlinks, so this umbrella is the single gate. -->
+    <GhulOptions Include="--warn redundant-semicolon" />
+    <GhulOptions Include="--warn-as-error redundant-semicolon" Condition="'$(CI)' != ''" />
   </ItemGroup>
 </Project>

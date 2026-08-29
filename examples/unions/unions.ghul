@@ -1,9 +1,9 @@
-use IO.Std.write_line;
+use IO.Std.write_line
 
 entry() is
-    shape_areas();
-    labelling_shapes();
-    describing_shapes();
+    shape_areas()
+    labelling_shapes()
+    describing_shapes()
     lookups();
 si
 
@@ -13,14 +13,14 @@ si
 // '..' alongside its own fields. a variant that adds no fields of its
 // own drops the parentheses entirely - the '..' splice is then implied.
 union Shape(name: string) is
-    RECTANGLE(.., width: int, height: int);
-    SQUARE(.., side: int);
+    RECTANGLE(.., width: int, height: int)
+    SQUARE(.., side: int)
     POINT;
 si
 
-use Shape.RECTANGLE;
-use Shape.SQUARE;
-use Shape.POINT;
+use Shape.RECTANGLE
+use Shape.SQUARE
+use Shape.POINT
 
 // a union body holds only variants, so methods are added in a partial
 // block. a case over a union matches its variants exhaustively: every
@@ -40,7 +40,7 @@ shape_areas() is
         RECTANGLE("billboard", 6, 3),
         SQUARE("tile", 4),
         POINT("pixel")
-    ];
+    ]
 
     for shape in shapes do
         // name is a shared field, readable on any variant
@@ -49,7 +49,7 @@ shape_areas() is
 si
 
 labelling_shapes() is
-    write_line(label(SQUARE("badge", 2)));
+    write_line(label(SQUARE("badge", 2)))
     write_line(label(POINT("dot")));
 si
 
@@ -62,7 +62,7 @@ label(shape: Shape) -> string =>
         "{shape.name} is a {shape.width}x{shape.height} rectangle"
     else
         "{shape.name} is a point"
-    fi;
+    fi
 
 // a separate impl block makes the union satisfy a trait without
 // naming it in the union header. inside the block self is a Shape, so
@@ -79,10 +79,10 @@ si
 describing_shapes() is
     // Shape satisfies Describable, so Shape values flow wherever a
     // Describable is expected
-    let items = Collections.LIST[Describable]();
+    let items = Collections.LIST[Describable]()
 
-    items.add(SQUARE("stamp", 2));
-    items.add(RECTANGLE("card", 5, 2));
+    items.add(SQUARE("stamp", 2))
+    items.add(RECTANGLE("card", 5, 2))
 
     for item in items do
         write_line(item.describe());
@@ -92,15 +92,15 @@ si
 // a union with a single field-carrying variant is option shaped: '?'
 // tests for that variant and '!' unwraps its field.
 union Lookup is
-    FOUND(port: int);
+    FOUND(port: int)
     MISSING;
 si
 
-use Lookup.FOUND;
-use Lookup.MISSING;
+use Lookup.FOUND
+use Lookup.MISSING
 
 lookups() is
-    write_line(port_message("http", find_port("http")));
+    write_line(port_message("http", find_port("http")))
     write_line(port_message("smtp", find_port("smtp")));
 si
 

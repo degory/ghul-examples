@@ -1,9 +1,9 @@
-use IO.Std.write_line;
+use IO.Std.write_line
 
 entry() is
-    reading_optionals();
-    presence_narrowing();
-    coalescing();
+    reading_optionals()
+    presence_narrowing()
+    coalescing()
     safe_member_access();
 si
 
@@ -23,11 +23,11 @@ lookup_port(scheme: string) -> int? =>
     when "https" then 443
     when "ssh" then 22
     else null
-    esac;
+    esac
 
 reading_optionals() is
-    let http = lookup_port("http");
-    let smtp = lookup_port("smtp");
+    let http = lookup_port("http")
+    let smtp = lookup_port("smtp")
 
     // if let enters its branch only when a value is present, and
     // gives the present value a non-optional name to read directly
@@ -43,7 +43,7 @@ reading_optionals() is
 si
 
 presence_narrowing() is
-    let ssh = lookup_port("ssh");
+    let ssh = lookup_port("ssh")
 
     // the '?' presence test narrows the optional to non-optional for
     // the rest of the branch, so it reads without any unwrapping
@@ -57,23 +57,23 @@ coalescing() is
     // evaluates the right side when it is needed. '??' is right
     // associative, so a chain stays optional until a non-optional
     // value closes it - here the literal 21 makes the result an int
-    let ftp_port = lookup_port("ftp") ?? lookup_port("ftps") ?? 21;
+    let ftp_port = lookup_port("ftp") ?? lookup_port("ftps") ?? 21
 
     write_line("ftp falls back to port {ftp_port}");
 si
 
 // manager is optional: the head of the tree reports to nobody
-class EMPLOYEE(name: string, manager: EMPLOYEE?);
+class EMPLOYEE(name: string, manager: EMPLOYEE?)
 
 safe_member_access() is
-    let ceo = EMPLOYEE("Ada", null);
-    let lead = EMPLOYEE("Bjarne", ceo);
-    let dev = EMPLOYEE("Grace", lead);
+    let ceo = EMPLOYEE("Ada", null)
+    let lead = EMPLOYEE("Bjarne", ceo)
+    let dev = EMPLOYEE("Grace", lead)
 
     // '?.' reads a member when the receiver is present and yields
     // nothing when it is absent. the result is always optional and
     // chains left to right, so a break anywhere short-circuits the
     // rest. '??' then closes each chain with a plain string
-    write_line("Grace's skip manager is {dev.manager?.manager?.name ?? "nobody"}");
+    write_line("Grace's skip manager is {dev.manager?.manager?.name ?? "nobody"}")
     write_line("Bjarne's skip manager is {lead.manager?.manager?.name ?? "nobody"}");
 si
