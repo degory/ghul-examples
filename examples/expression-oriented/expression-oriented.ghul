@@ -128,7 +128,7 @@ sign_label(n: int) -> string => (
     fi;
     if n == 0 then
         return "zero";
-    fi
+    fi;
     "pos"
 );
 
