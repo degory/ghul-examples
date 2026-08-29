@@ -338,49 +338,46 @@ si
 
 class LINK(value: int, next: LINK?);
 
-sum_link(head: LINK?) -> int =>
-    (
-        let total mut = 0;
-        let current mut = head;
+sum_link(head: LINK?) -> int => (
+    let total mut = 0;
+    let current mut = head;
 
-        // a bare optional local narrows on its own presence test,
-        // the same as in an if condition - no let needed here
-        while current? do
-            total = total + current.value;
-            current = current.next;
-        od;
+    // a bare optional local narrows on its own presence test,
+    // the same as in an if condition - no let needed here
+    while current? do
+        total = total + current.value;
+        current = current.next;
+    od;
 
-        total
-    );
+    total
+);
 
-sum_until_negative(head: LINK?) -> int =>
-    (
-        let total mut = 0;
-        let current mut = head;
+sum_until_negative(head: LINK?) -> int => (
+    let total mut = 0;
+    let current mut = head;
 
-        // while let with a name and a guard: the loop stops as soon
-        // as either the chain ends or the guard fails
-        while let c = current /\ c.value >= 0 do
-            total = total + c.value;
-            current = c.next;
-        od;
+    // while let with a name and a guard: the loop stops as soon
+    // as either the chain ends or the guard fails
+    while let c = current /\ c.value >= 0 do
+        total = total + c.value;
+        current = c.next;
+    od;
 
-        total
-    );
+    total
+);
 
-count_chain(head: LINK) -> int =>
-    (
-        let total mut = 1;
-        let node mut = head;
+count_chain(head: LINK) -> int => (
+    let total mut = 1;
+    let node mut = head;
 
-        // the path shorthand declares next, matching while it holds
-        while let node.next do
-            total = total + 1;
-            node = next;
-        od;
+    // the path shorthand declares next, matching while it holds
+    while let node.next do
+        total = total + 1;
+        node = next;
+    od;
 
-        total
-    );
+    total
+);
 
 while_let_examples() is
     let chain = LINK(1, LINK(2, LINK(3, LINK(-1, LINK(4, null)))));

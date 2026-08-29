@@ -74,36 +74,33 @@ si
 // value is the value of the last one. it can be used anywhere a value
 // is needed:
 block_expressions() is
-    let hypotenuse_squared =
-        (
-            let a = 3;
-            let b = 4;
-            a * a + b * b
-        );
+    let hypotenuse_squared = (
+        let a = 3;
+        let b = 4;
+        a * a + b * b
+    );
     write_line("3,4 -> {hypotenuse_squared}");
 si
 
 // a block can run a loop that updates a mut variable, then end
 // with that variable as its value:
 loop_as_expression() is
-    let sum =
-        (
-            let acc mut = 0;
-            for i in 1..11 do
-                acc = acc + i;
-            od;
-            acc
-        );
+    let sum = (
+        let acc mut = 0;
+        for i in 1..11 do
+            acc = acc + i;
+        od;
+        acc
+    );
     write_line("sum 1..10: {sum}");
 
-    let factorial =
-        (
-            let product mut = 1;
-            for i in 1..6 do
-                product = product * i;
-            od;
-            product
-        );
+    let factorial = (
+        let product mut = 1;
+        for i in 1..6 do
+            product = product * i;
+        od;
+        product
+    );
     write_line("5!: {factorial}");
 si
 
@@ -111,31 +108,29 @@ si
 // exits the block, not the function: it sets the block's value, and
 // the code after the block still runs:
 return_from_block() is
-    let first_positive =
-        (
-            for x in [-3, -1, 4, 9] do
-                if x > 0 then
-                    return "{x}";
-                fi
-            od;
-            "none"
-        );
+    let first_positive = (
+        for x in [-3, -1, 4, 9] do
+            if x > 0 then
+                return "{x}";
+            fi
+        od;
+        "none"
+    );
     write_line("first positive: {first_positive}");
 si
 
 // when a block is the whole '=>' body it works like a normal
 // block body: return exits the function, and the trailing expression
 // supplies the value for any path that does not return early:
-sign_label(n: int) -> string =>
-    (
-        if n < 0 then
-            return "neg";
-        fi;
-        if n == 0 then
-            return "zero";
-        fi
-        "pos"
-    );
+sign_label(n: int) -> string => (
+    if n < 0 then
+        return "neg";
+    fi;
+    if n == 0 then
+        return "zero";
+    fi
+    "pos"
+);
 
 block_as_function_body() is
     write_line("sign_label(-5): {sign_label(-5)}");
