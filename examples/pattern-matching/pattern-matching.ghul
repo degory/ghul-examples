@@ -339,7 +339,7 @@ si
 class LINK(value: int, next: LINK?);
 
 sum_link(head: LINK?) -> int =>
-    val
+    (
         let total mut = 0;
         let current mut = head;
 
@@ -351,10 +351,10 @@ sum_link(head: LINK?) -> int =>
         od;
 
         total
-    lav;
+    );
 
 sum_until_negative(head: LINK?) -> int =>
-    val
+    (
         let total mut = 0;
         let current mut = head;
 
@@ -366,10 +366,10 @@ sum_until_negative(head: LINK?) -> int =>
         od;
 
         total
-    lav;
+    );
 
 count_chain(head: LINK) -> int =>
-    val
+    (
         let total mut = 1;
         let node mut = head;
 
@@ -380,7 +380,7 @@ count_chain(head: LINK) -> int =>
         od;
 
         total
-    lav;
+    );
 
 while_let_examples() is
     let chain = LINK(1, LINK(2, LINK(3, LINK(-1, LINK(4, null)))));
