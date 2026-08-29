@@ -1,17 +1,17 @@
-use IO.Std.write_line;
-use Collections.LIST;
+use IO.Std.write_line
+use Collections.LIST
 
 // note the various 'i's and 'g's in this example - there are no name clashes
 // because each 'i' and 'g' is in a different scope.
 entry() is
     // f is an anonymous function:
-    let f = i => i * 2;
+    let f = i => i * 2
 
     // its type is int -> int
-    assert f.get_type() == typeof int -> int;
+    assert f.get_type() == typeof int -> int
 
     // it returns its integer argument times two:
-    assert f(123) == 123 * 2;
+    assert f(123) == 123 * 2
 
     for i in 1::10 do
         write_line("f({i}) = {f(i)}");
@@ -20,20 +20,20 @@ entry() is
     // list_of_gs is a list of 2-tuples, each one having an integer and a function element.
     // its element type doesn't need to be written out - the compiler infers it from the
     // add() call below:
-    let list_of_gs = LIST();
+    let list_of_gs = LIST()
 
     for i in 1::10 do
         // create a function that captures a value - in this case the loop variable i
-        let g = () => i;
+        let g = () => i
 
         // g is a parameterless function that returns an int:
-        assert g.get_type() == typeof () -> int;
+        assert g.get_type() == typeof () -> int
 
         // when we call g, it returns the value of i when g was created:
-        assert g() == i;
+        assert g() == i
 
         // store that function in our list for use later:
-        list_of_gs.add((i, g));
+        list_of_gs.add((i, g))
 
         // the last value in the list is the tuple we just added:
         assert list_of_gs[list_of_gs.count-1] == (i, g);
@@ -42,7 +42,7 @@ entry() is
     for (i, g) in list_of_gs do
         // each saved g still returns the same value of i that
         // it captured when it was created:
-        assert i == g();
+        assert i == g()
 
         write_line("g that captured i when it was {i} is a {g} that returns {g()}");
     od
@@ -51,20 +51,20 @@ entry() is
     // scope. counter is declared mut, so bump and peek share the same
     // live counter rather than each holding a snapshot of its value at the
     // time the closure was constructed.
-    let counter mut = 0;
+    let counter mut = 0
 
     let bump = n is
         counter = counter + n;
-    si;
+    si
 
-    let peek = () => counter;
+    let peek = () => counter
 
-    bump(1);
-    bump(2);
-    bump(3);
+    bump(1)
+    bump(2)
+    bump(3)
 
-    assert peek() == 6;
-    assert counter == 6;
+    assert peek() == 6
+    assert counter == 6
 
     write_line("counter = {counter}, peek() = {peek()}");
 si

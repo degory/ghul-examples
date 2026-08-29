@@ -1,4 +1,4 @@
-use IO.Std.write_line;
+use IO.Std.write_line
 
 // This is the entry point for the root project. It is a dummy project that allows all the examples to be loaded
 // in the same VSCode workspace without giving errors about duplicate entry points. If you do `dotnet run` in the

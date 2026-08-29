@@ -1,9 +1,9 @@
-use IO.Std.write_line;
-use Collections.LIST;
-use Collections.MAP;
-use Ghul.Pipes.map;
-use Ghul.Pipes.filter;
-use Ghul.Pipes.reduce;
+use IO.Std.write_line
+use Collections.LIST
+use Collections.MAP
+use Ghul.Pipes.map
+use Ghul.Pipes.filter
+use Ghul.Pipes.reduce
 
 // ghūl performs a fair amount of type inference, so most of the time
 // you don't need to write explicit types for local variables, lambda
@@ -11,36 +11,36 @@ use Ghul.Pipes.reduce;
 // of inference the compiler supports.
 
 entry() is
-    local_variables();
-    constructors();
-    array_and_tuple_literals();
-    destructuring();
-    for_loop_variables();
-    type_args_from_later_use();
-    lambdas_from_call_context();
-    lambda_return_types();
-    iterative_inference();
-    bidirectional_convergence();
-    closures_and_currying();
-    generic_function_arguments();
+    local_variables()
+    constructors()
+    array_and_tuple_literals()
+    destructuring()
+    for_loop_variables()
+    type_args_from_later_use()
+    lambdas_from_call_context()
+    lambda_return_types()
+    iterative_inference()
+    bidirectional_convergence()
+    closures_and_currying()
+    generic_function_arguments()
     union_narrowing();
 si
 
 // === local variables ===
 // a let variable takes its type from its initializer:
 local_variables() is
-    let an_int = 42;
-    let a_single = 3.14;
-    let a_double = 3.14D;
-    let a_string = "hello";
-    let a_char = 'g';
-    let a_bool = true;
+    let an_int = 42
+    let a_single = 3.14
+    let a_double = 3.14D
+    let a_string = "hello"
+    let a_char = 'g'
+    let a_bool = true
 
-    write_line("an_int is a {an_int.get_type()}");
-    write_line("a_single is a {a_single.get_type()}");
-    write_line("a_double is a {a_double.get_type()}");
-    write_line("a_string is a {a_string.get_type()}");
-    write_line("a_char is a {a_char.get_type()}");
+    write_line("an_int is a {an_int.get_type()}")
+    write_line("a_single is a {a_single.get_type()}")
+    write_line("a_double is a {a_double.get_type()}")
+    write_line("a_string is a {a_string.get_type()}")
+    write_line("a_char is a {a_char.get_type()}")
     write_line("a_bool is a {a_bool.get_type()}");
 si
 
@@ -57,38 +57,38 @@ class BOX[T] is
         _value = value;
     si
 
-    _value: T;
+    _value: T
     value: T => _value;
 si
 
 class PAIR[A, B] is
     init(first: A, second: B) is
-        _first = first;
+        _first = first
         _second = second;
     si
 
-    _first: A;
-    _second: B;
-    first: A => _first;
+    _first: A
+    _second: B
+    first: A => _first
     second: B => _second;
 si
 
 // generic class constructors infer their type arguments from their actual
 // arguments, so explicit [T] / [A, B] type arguments are not needed:
 constructors() is
-    let int_box = BOX(42);
-    let string_box = BOX("hello");
-    let pair = PAIR(123, "hello");
+    let int_box = BOX(42)
+    let string_box = BOX("hello")
+    let pair = PAIR(123, "hello")
 
-    write_line("int_box.value: {int_box.value}");
-    write_line("string_box.value: {string_box.value}");
-    write_line("pair: ({pair.first}, {pair.second})");
+    write_line("int_box.value: {int_box.value}")
+    write_line("string_box.value: {string_box.value}")
+    write_line("pair: ({pair.first}, {pair.second})")
 
     // inference nests through the call tree:
-    let nested = BOX(BOX(7));
-    write_line("nested.value.value: {nested.value.value}");
+    let nested = BOX(BOX(7))
+    write_line("nested.value.value: {nested.value.value}")
 
-    let mixed = PAIR(BOX(1), BOX("two"));
+    let mixed = PAIR(BOX(1), BOX("two"))
     write_line("mixed: ({mixed.first.value}, {mixed.second.value})");
 si
 
@@ -98,18 +98,18 @@ array_and_tuple_literals() is
     // of its element types — homogeneous elements collapse to that
     // element type; mixed elements with a common supertype collapse
     // to that supertype:
-    let ints = [1, 2, 3];
-    let strings = ["one", "two", "three"];
+    let ints = [1, 2, 3]
+    let strings = ["one", "two", "three"]
 
-    write_line("ints: {ints |> $}");
-    write_line("strings: {strings |> $}");
+    write_line("ints: {ints |> $}")
+    write_line("strings: {strings |> $}")
 
     // a tuple's element types come from its element expressions:
-    let person = ("alice", 30);
-    write_line("person: ({person.`0}, {person.`1})");
+    let person = ("alice", 30)
+    write_line("person: ({person.`0}, {person.`1})")
 
     // nested:
-    let nested = (("alice", 30), [1, 2, 3]);
+    let nested = (("alice", 30), [1, 2, 3])
     write_line("nested.`0.`0: {nested.`0.`0}");
 si
 
@@ -117,12 +117,12 @@ si
 // destructuring propagates types from the right-hand side into each
 // named variable:
 destructuring() is
-    let person = ("alice", 30);
-    let (name, age) = person;
-    write_line("name: {name} ({name.get_type()}), age: {age} ({age.get_type()})");
+    let person = ("alice", 30)
+    let (name, age) = person
+    write_line("name: {name} ({name.get_type()}), age: {age} ({age.get_type()})")
 
     // works for nested tuples too:
-    let ((first, second), third) = (("a", "b"), "c");
+    let ((first, second), third) = (("a", "b"), "c")
     write_line("first: {first}, second: {second}, third: {third}");
 si
 
@@ -142,7 +142,7 @@ for_loop_variables() is
     // destructuring composes with loop-variable inference: the
     // iterable's element type is resolved as a tuple, and the
     // tuple's slot types then flow into name and value:
-    let pairs = [("a", 1), ("b", 2), ("c", 3)];
+    let pairs = [("a", 1), ("b", 2), ("c", 3)]
     for (name, value) in pairs do
         write_line("{name} = {value}");
     od
@@ -157,23 +157,23 @@ type_args_from_later_use() is
     // a user-defined generic class. T is resolved from the .set()
     // call below — there's no [int] written anywhere, and the
     // no-arg constructor doesn't pin T either:
-    let b = BOX();
-    b.set(42);
-    write_line("b.value: {b.value}");
+    let b = BOX()
+    b.set(42)
+    write_line("b.value: {b.value}")
 
     // standard collections work via exactly the same mechanism —
     // T from .add() calls:
-    let xs = LIST();
-    xs.add(1);
-    xs.add(2);
-    xs.add(3);
-    write_line("xs: {xs |> $}, count: {xs.count}");
+    let xs = LIST()
+    xs.add(1)
+    xs.add(2)
+    xs.add(3)
+    write_line("xs: {xs |> $}, count: {xs.count}")
 
     // K and V from indexed assignments:
-    let m = MAP();
-    m["one"] = 1;
-    m["two"] = 2;
-    m["three"] = 3;
+    let m = MAP()
+    m["one"] = 1
+    m["two"] = 2
+    m["three"] = 3
     write_line("m[\"two\"]: {m["two"]}, count: {m.count}");
 si
 
@@ -184,19 +184,19 @@ si
 // |> is one common way to write such call sites:
 lambdas_from_call_context() is
     // map[T,U](source: Iterable[T], mapper: T -> U) - x: int comes from the source element type:
-    let doubled = [1, 2, 3] |> map(x => x * 2);
-    write_line("doubled: {doubled}");
+    let doubled = [1, 2, 3] |> map(x => x * 2)
+    write_line("doubled: {doubled}")
 
     // filter[T](source: Iterable[T], predicate: T -> bool):
-    let even = [1, 2, 3, 4, 5, 6] |> filter(x => x % 2 == 0);
-    write_line("even: {even}");
+    let even = [1, 2, 3, 4, 5, 6] |> filter(x => x % 2 == 0)
+    write_line("even: {even}")
 
     // reduce[T,TRunning](source, seed, accumulator: (TRunning, T) -> TRunning) - acc and x are both inferred:
-    let sum = [1, 2, 3, 4, 5] |> reduce(0, (acc, x) => acc + x);
-    write_line("sum: {sum}");
+    let sum = [1, 2, 3, 4, 5] |> reduce(0, (acc, x) => acc + x)
+    write_line("sum: {sum}")
 
     // chained calls keep flowing the inferred types through:
-    let labelled = [1, 2, 3] |> map(n => "[{n}]") |> reduce("", (acc, s) => "{acc}{s}");
+    let labelled = [1, 2, 3] |> map(n => "[{n}]") |> reduce("", (acc, s) => "{acc}{s}")
     write_line("labelled: {labelled}");
 si
 
@@ -204,8 +204,8 @@ si
 // if a lambda has explicit parameter types but no explicit return type,
 // the return type comes from the body expression:
 lambda_return_types() is
-    let to_message = (name: string, age: int) => "{name} is {age} years old";
-    write_line(to_message("ghūl", 12));
+    let to_message = (name: string, age: int) => "{name} is {age} years old"
+    write_line(to_message("ghūl", 12))
 
     // a lambda with a block body has its return type inferred
     // from the LUB of every reachable return expression — all
@@ -219,10 +219,10 @@ lambda_return_types() is
         else
             return "negative";
         fi
-    si;
+    si
 
-    write_line("summarise(0): {summarise(0)}");
-    write_line("summarise(7): {summarise(7)}");
+    write_line("summarise(0): {summarise(0)}")
+    write_line("summarise(7): {summarise(7)}")
     write_line("summarise(-3): {summarise(-3)}");
 si
 
@@ -232,15 +232,15 @@ si
 // parameter types when its body alone wouldn't be enough:
 iterative_inference() is
     // add's signature pins x and y to int:
-    let add = (x: int, y: int) => x + y;
+    let add = (x: int, y: int) => x + y
 
     // here y has no explicit type but it's passed to add as the second
     // argument, so its type is inferred from add's signature:
-    let add_5 = y => add(5, y);
-    write_line("add_5(3): {add_5(3)}");
+    let add_5 = y => add(5, y)
+    write_line("add_5(3): {add_5(3)}")
 
     // back-propagation through a list literal:
-    let lengths = ["one", "fourteen", "five"] |> map(s => s.length);
+    let lengths = ["one", "fourteen", "five"] |> map(s => s.length)
     write_line("lengths: {lengths}");
 si
 
@@ -255,7 +255,7 @@ si
 // constraint on its own would leave x ambiguous; the intersection
 // pins it precisely:
 bidirectional_convergence() is
-    let f = x => x.length;
+    let f = x => x.length
     write_line("f(\"hello\"): {f("hello")}");
 si
 
@@ -267,41 +267,41 @@ closures_and_currying() is
     // the outer call curried_add(5) pins a to int from its int
     // argument; the inner call add_5(3) then pins b to int from
     // its argument. Neither parameter type is written anywhere:
-    let curried_add = a => b => a + b;
-    let add_5 = curried_add(5);
-    write_line("add_5(3): {add_5(3)}");
-    write_line("add_5(20): {add_5(20)}");
+    let curried_add = a => b => a + b
+    let add_5 = curried_add(5)
+    write_line("add_5(3): {add_5(3)}")
+    write_line("add_5(20): {add_5(20)}")
 
     // a factory that captures its argument and returns a closure.
     // x is resolved from x * n (n is already int) and the outer
     // return signature pins the lambda's shape:
-    let times_7 = make_multiplier(7);
-    write_line("times_7(6): {times_7(6)}");
+    let times_7 = make_multiplier(7)
+    write_line("times_7(6): {times_7(6)}")
 
     // a lambda whose body is a generic constructor with no type
     // arguments: BOX's T is inferred from the constructor argument,
     // and the lambda's return type follows from there:
-    let make_box = n => BOX(n);
-    let boxed = make_box(42);
+    let make_box = n => BOX(n)
+    let boxed = make_box(42)
     write_line("boxed.value: {boxed.value}");
 si
 
 make_multiplier(n: int) -> int -> int =>
-    x => x * n;
+    x => x * n
 
 // === generic function type arguments ===
 // generic free functions infer their type arguments from their actual
 // arguments, so explicit [T] is rarely needed at the call site:
-apply[T](f: T -> T, x: T) -> T => f(x);
-transform[A, B](f: A -> B, x: A) -> B => f(x);
+apply[T](f: T -> T, x: T) -> T => f(x)
+transform[A, B](f: A -> B, x: A) -> B => f(x)
 
 generic_function_arguments() is
     // T = int from times_2 and 5:
-    let times_2 = x => x * 2;
-    write_line("apply(times_2, 5): {apply(times_2, 5)}");
+    let times_2 = x => x * 2
+    write_line("apply(times_2, 5): {apply(times_2, 5)}")
 
     // A = int, B = string from the lambda and the value:
-    let stringified = transform(n => "<{n}>", 42);
+    let stringified = transform(n => "<{n}>", 42)
     write_line("transform(...): {stringified}");
 si
 
@@ -314,12 +314,12 @@ si
 // a union, whose shared members remain reachable but
 // variant-specific fields do not:
 union Shape is
-    CIRCLE(radius: double);
+    CIRCLE(radius: double)
     SQUARE(side: double);
 si
 
-use Shape.CIRCLE;
-use Shape.SQUARE;
+use Shape.CIRCLE
+use Shape.SQUARE
 
 describe(s: Shape) -> string =>
     if isa CIRCLE(s) then
@@ -328,9 +328,9 @@ describe(s: Shape) -> string =>
     else
         // two variants, so the else branch narrows s to SQUARE — .side is accessible:
         "square of side {s.side}"
-    fi;
+    fi
 
 union_narrowing() is
-    write_line(describe(CIRCLE(3.0D)));
+    write_line(describe(CIRCLE(3.0D)))
     write_line(describe(SQUARE(4.0D)));
 si

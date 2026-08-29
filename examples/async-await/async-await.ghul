@@ -1,4 +1,4 @@
-use IO.Std.write_line;
+use IO.Std.write_line
 
 // An async function returns Tasks.TASK[T] (or Tasks.TASK for no result).
 // All the tasks below complete synchronously — Tasks.TASK.from_result
@@ -8,17 +8,17 @@ use IO.Std.write_line;
 
 // Returning a bare T from a function whose return type is Tasks.TASK[T]
 // is wrapped with Tasks.TASK.from_result implicitly.
-double_async(x: int) -> Tasks.TASK[int] => x * 2;
+double_async(x: int) -> Tasks.TASK[int] => x * 2
 
-add_async(x: int, y: int) -> Tasks.TASK[int] => x + y;
+add_async(x: int, y: int) -> Tasks.TASK[int] => x + y
 
 // let x = await e; waits for e to complete; x is then initialized to its
 // result and the rest of the function continues. The source reads
 // top-to-bottom even though execution is asynchronous.
 compute() -> Tasks.TASK[int] is
-    let a = await double_async(10);   // a = 20
-    let b = await double_async(a);    // b = 40
-    let c = await add_async(a, b);    // c = 60
+    let a = await double_async(10)   // a = 20
+    let b = await double_async(a)    // b = 40
+    let c = await add_async(a, b)    // c = 60
 
     return c;
 si
@@ -26,7 +26,7 @@ si
 // return after let x = await ... returns from the enclosing async
 // function, just as it would in a synchronous function.
 classify(n: int) -> Tasks.TASK[string] is
-    let doubled = await double_async(n);
+    let doubled = await double_async(n)
 
     if doubled > 50 then
         return "big";
@@ -39,14 +39,14 @@ si
 // for the task to complete and discards the result. Use it when you
 // only care that the work has finished.
 side_effect(label: string) -> Tasks.TASK is
-    write_line("side effect: {label}");
+    write_line("side effect: {label}")
 
     return Tasks.TASK.completed_task;
 si
 
 run_side_effects() -> Tasks.TASK is
-    await side_effect("first");
-    await side_effect("second");
+    await side_effect("first")
+    await side_effect("second")
 
     return;
 si
@@ -55,10 +55,10 @@ si
 // The loop iterates, awaiting and resuming once per iteration; a
 // return from the body propagates out through the loop as usual.
 sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
-    let total mut = 0;
+    let total mut = 0
 
     for x in xs do
-        let y = await double_async(x);
+        let y = await double_async(x)
         total = total + y;
     od
 
@@ -83,32 +83,32 @@ checked_divide(a: int, b: int) -> Tasks.TASK[int] is
 si
 
 divide_then_double(a: int, b: int) -> Tasks.TASK[int] is
-    let q = await checked_divide(a, b);
-    let result = await double_async(q);
+    let q = await checked_divide(a, b)
+    let result = await double_async(q)
 
     return result;
 si
 
 entry() is
-    write_line("compute() = {compute().result}");
+    write_line("compute() = {compute().result}")
 
-    write_line("classify(10) = {classify(10).result}");
-    write_line("classify(100) = {classify(100).result}");
+    write_line("classify(10) = {classify(10).result}")
+    write_line("classify(100) = {classify(100).result}")
 
-    run_side_effects().wait();
+    run_side_effects().wait()
 
-    write_line("sum_doubled = {sum_doubled([1, 2, 3, 4]).result}");
+    write_line("sum_doubled = {sum_doubled([1, 2, 3, 4]).result}")
 
-    write_line("divide_then_double(20, 5) = {divide_then_double(20, 5).result}");
+    write_line("divide_then_double(20, 5) = {divide_then_double(20, 5).result}")
 
     // Reading .result on a faulted task throws a wrapped
     // System.AggregateException; get_base_exception unwraps it to
     // the original cause.
     try
-        let result = divide_then_double(10, 0).result;
+        let result = divide_then_double(10, 0).result
         write_line("divide_then_double(10, 0) unexpected: {result}");
     catch ex: System.AggregateException
-        let cause = ex.get_base_exception();
+        let cause = ex.get_base_exception()
 
         write_line("divide_then_double(10, 0) caught: {cause.message}");
     yrt
