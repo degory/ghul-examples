@@ -1,11 +1,11 @@
 namespace Test is
-    use Std = IO.Std;
+    use Std = IO.Std
 
     class Main is
         entry() static is
-            
 
-            return;
+
+            return
         si
     si
 si

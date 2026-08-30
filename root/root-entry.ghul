@@ -13,5 +13,5 @@ root_entry() =>
         "This root project is a dummy to allow all the examples to be loaded in the same VSCode workspace.\n"
         "You need to build and run each example subproject individually. For example: \n\n"
         "    dotnet run --project examples/hello-world"
-    );
+    )
 

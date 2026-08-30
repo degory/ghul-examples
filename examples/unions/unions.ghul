@@ -115,4 +115,4 @@ port_message(scheme: string, result: Lookup) -> string =>
         "{scheme} is on port {result!}"
     else
         "{scheme} has no known port"
-    fi;
+    fi
