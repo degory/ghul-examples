@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "ghul.test": {
-      "version": "3.0.18",
+      "version": "3.0.19",
       "commands": [
         "ghul-test"
       ],
