@@ -168,4 +168,4 @@ entry() is
 si
 
 is_odd(i: int) -> bool => i & 1 != 0
-is_even(i: int) -> bool => i & 1 == 0;
+is_even(i: int) -> bool => i & 1 == 0
