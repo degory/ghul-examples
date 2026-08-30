@@ -29,7 +29,7 @@ entry() is
     union_examples()
     currying_examples()
     partial_application_examples()
-    stream_examples();
+    stream_examples()
 si
 
 first_class_functions() is
@@ -37,7 +37,7 @@ first_class_functions() is
 
     let g = f
 
-    write_line("g(123) is {g(123)}");
+    write_line("g(123) is {g(123)}")
 si
 
 // map filter reduce
@@ -54,7 +54,7 @@ map_filter_reduce_examples() is
 
     // reduce
     let sum = [1, 2, 3, 4, 5] |> reduce(0, (acc, x) => acc + x)
-    write_line("sum: {sum}");
+    write_line("sum: {sum}")
 si
 
 // expression bodied functions and let-in
@@ -111,7 +111,7 @@ pure_examples() is
     write_line("classifyNumber(-3): {classify(-3)}")
     write_line("classifyNumber(0): {classify(0)}")
     write_line("classifyNumber(4): {classify(4)}")
-    write_line("classifyNumber(25): {classify(25)}");
+    write_line("classifyNumber(25): {classify(25)}")
 si
 
 // self recursion with anonymous functions:
@@ -136,7 +136,7 @@ self_recursion_examples() is
                 rec(n - 1) + rec(n - 2)
             fi
 
-    write_line("fibonacci(5): {fibonacci(5)}");
+    write_line("fibonacci(5): {fibonacci(5)}")
 si
 
 // mutual recursion is slightly awkward for anonymous functions because
@@ -147,7 +147,7 @@ mutual_recursion_by_argument() is
     let is_odd = n rec => if n == 0 then false else is_even(n - 1, rec) fi
 
     write_line("even(10): {is_even(10, is_odd)}")
-    write_line("odd(10): {is_odd(10)}");
+    write_line("odd(10): {is_odd(10)}")
 si
 
 // another way is to declare one of the functions as a mutable variable
@@ -159,7 +159,7 @@ mutual_recursion_by_forward_reference() is
     is_odd = n => if n == 0 then false else is_even(n - 1) fi
 
     write_line("even(10): {is_even(10)}")
-    write_line("odd(10): {is_odd(10)}");
+    write_line("odd(10): {is_odd(10)}")
 si
 
 // mutual recursion with named functions, doesn't require any workarounds:
@@ -178,7 +178,7 @@ immutable_data_structures_and_pure_functions() is
 
     // pure functions
     let add = (x, y) => x + y
-    write_line("add(5, 3): {add(5, 3)}");
+    write_line("add(5, 3): {add(5, 3)}")
 si
 
 // higher-order functions:
@@ -196,7 +196,7 @@ class HIGHER_ORDER_FUNCTIONS[T] is
         f(x)
 
     apply_if(f: T -> T, x: T, predicate: T -> bool) -> T static =>
-        if predicate(x) then f(x) else x fi;
+        if predicate(x) then f(x) else x fi
 si
 
 // higher order non-genericly typed anonymous functions:
@@ -215,7 +215,7 @@ higher_order_functions_examples() is
     let create_apply_twice = f => x => f(f(x))
     let apply_twice_times_2 = create_apply_twice(times_2)
 
-    write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}");
+    write_line("apply_twice_times_2(5): {apply_twice_times_2(5)}")
 si
 
 // define a custom operator
@@ -231,7 +231,7 @@ custom_operator() is
     write_line("times_2_then_add_1(5): {times_2_then_add_1(5)}")
 
     let pipeline = times_2 >> add_1 >> x => "[{x}]"
-    write_line("pipeline(5): {pipeline(5)}");
+    write_line("pipeline(5): {pipeline(5)}")
 si
 
 // if and case expressions
@@ -268,7 +268,7 @@ if_and_case_expressions() is
     write_line("describe(-1): {describe(-1)}")
     write_line("describe(2): {describe(2)}")
     write_line("describe(7): {describe(7)}")
-    write_line("describe(42): {describe(42)}");
+    write_line("describe(42): {describe(42)}")
 si
 
 // unions
@@ -278,22 +278,22 @@ union_examples() is
     write_line(list_example([1, 2, 3]))
     write_line(list_example(["A", "B", "C"]))
     write_line(tree_example([1, 2, 3, 4]))
-    write_line(tree_example(["A", "B", "C", "D"]));
+    write_line(tree_example(["A", "B", "C", "D"]))
 si
 
 union Option[T] is
     NONE
-    SOME(value: T);
+    SOME(value: T)
 si
 
 union List[T] is
     NIL
-    CONS(head: T, tail: List[T]);
+    CONS(head: T, tail: List[T])
 si
 
 union Tree[T] is
     LEAF(value: T)
-    NODE(left: Tree[T], right: Tree[T]);
+    NODE(left: Tree[T], right: Tree[T])
 si
 
 use Option.SOME
@@ -316,7 +316,7 @@ option_example() is
         fi
 
     write_line(stringify_option(some_int))
-    write_line(stringify_option(none_int));
+    write_line(stringify_option(none_int))
 si
 
 list_example[T](elements: Collections.List[T]) -> string =>
@@ -381,7 +381,7 @@ currying_examples() is
     write_line("add_5(3): {add_5(3)}")
 
     let add_10 = curried_add(10)
-    write_line("add_10(3): {add_10(3)}");
+    write_line("add_10(3): {add_10(3)}")
 si
 
 // partial application
@@ -392,7 +392,7 @@ partial_application_examples() is
     write_line("add_5(3): {add_5(3)}")
 
     let add_10 = y => add(10, y)
-    write_line("add_10(3): {add_10(3)}");
+    write_line("add_10(3): {add_10(3)}")
 si
 
 // stream(initial, advance) builds a lazy Pipe[T] from a start state and
@@ -440,6 +440,6 @@ stream_examples() is
 
     for (i, (fib, fact)) in fibonacci |> zip(factorial) |> take(10) |> index() do
         write_line("fibonacci {i} is {fib}")
-        write_line("factorial {i} is {fact}");
-    od;
+        write_line("factorial {i} is {fact}")
+    od
 si

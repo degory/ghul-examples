@@ -4,7 +4,7 @@ entry() is
     shape_areas()
     labelling_shapes()
     describing_shapes()
-    lookups();
+    lookups()
 si
 
 // a union is a reference type that holds one of a fixed, closed set
@@ -15,7 +15,7 @@ si
 union Shape(name: string) is
     RECTANGLE(.., width: int, height: int)
     SQUARE(.., side: int)
-    POINT;
+    POINT
 si
 
 use Shape.RECTANGLE
@@ -32,7 +32,7 @@ partial Shape is
         when r: RECTANGLE then r.width * r.height
         when s: SQUARE then s.side * s.side
         when _: POINT then 0
-        esac;
+        esac
 si
 
 shape_areas() is
@@ -44,13 +44,13 @@ shape_areas() is
 
     for shape in shapes do
         // name is a shared field, readable on any variant
-        write_line("{shape.name} has area {shape.area()}");
+        write_line("{shape.name} has area {shape.area()}")
     od
 si
 
 labelling_shapes() is
     write_line(label(SQUARE("badge", 2)))
-    write_line(label(POINT("dot")));
+    write_line(label(POINT("dot")))
 si
 
 label(shape: Shape) -> string =>
@@ -68,12 +68,12 @@ label(shape: Shape) -> string =>
 // naming it in the union header. inside the block self is a Shape, so
 // its shared fields and partial-block methods are in scope.
 trait Describable is
-    describe() -> string;
+    describe() -> string
 si
 
 impl Describable for Shape is
     describe() -> string =>
-        "{name}: area {area()}";
+        "{name}: area {area()}"
 si
 
 describing_shapes() is
@@ -85,7 +85,7 @@ describing_shapes() is
     items.add(RECTANGLE("card", 5, 2))
 
     for item in items do
-        write_line(item.describe());
+        write_line(item.describe())
     od
 si
 
@@ -93,7 +93,7 @@ si
 // tests for that variant and '!' unwraps its field.
 union Lookup is
     FOUND(port: int)
-    MISSING;
+    MISSING
 si
 
 use Lookup.FOUND
@@ -101,13 +101,13 @@ use Lookup.MISSING
 
 lookups() is
     write_line(port_message("http", find_port("http")))
-    write_line(port_message("smtp", find_port("smtp")));
+    write_line(port_message("smtp", find_port("smtp")))
 si
 
 find_port(scheme: string) -> Lookup is
     if scheme == "http" then return FOUND(80); fi
 
-    return MISSING;
+    return MISSING
 si
 
 port_message(scheme: string, result: Lookup) -> string =>

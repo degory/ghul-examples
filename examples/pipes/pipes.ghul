@@ -21,7 +21,7 @@ entry() is
     let h = (k: int) is
         let result mut = "k is "
         result = "{result}{k}"
-        return result; // return type is inferred here
+        return result // return type is inferred here
     si
 
     write_line("h(789) = {h(789)}")
@@ -38,10 +38,10 @@ entry() is
         let middle = () is
             let inner = () => message
 
-            return inner;
+            return inner
         si
 
-        return middle;
+        return middle
     si
 
     let hello_inner_from_outer = outer()()()
@@ -91,7 +91,7 @@ entry() is
 
     // pipes are iterable, so you can loop over them with 'for':
     for (position, value) in [1, 2, 3] |> map(i => i * 3) |> index() do
-        write_line("result #{position + 1} is {value}");
+        write_line("result #{position + 1} is {value}")
     od
 
     // strings are iterable:
@@ -164,7 +164,7 @@ entry() is
     // index() tags each element with its 0-based index in the sequence:
     let indexed = ["cat", "dog", "fish", "zebra", "ameoba"] |> index()
 
-    write_line("indexed: {indexed}");
+    write_line("indexed: {indexed}")
 si
 
 is_odd(i: int) -> bool => i & 1 != 0

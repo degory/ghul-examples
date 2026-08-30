@@ -20,7 +20,7 @@ compute() -> Tasks.TASK[int] is
     let b = await double_async(a)    // b = 40
     let c = await add_async(a, b)    // c = 60
 
-    return c;
+    return c
 si
 
 // return after let x = await ... returns from the enclosing async
@@ -29,10 +29,10 @@ classify(n: int) -> Tasks.TASK[string] is
     let doubled = await double_async(n)
 
     if doubled > 50 then
-        return "big";
+        return "big"
     fi
 
-    return "small";
+    return "small"
 si
 
 // await EXPR; as a bare statement is the value-less form — it waits
@@ -41,14 +41,14 @@ si
 side_effect(label: string) -> Tasks.TASK is
     write_line("side effect: {label}")
 
-    return Tasks.TASK.completed_task;
+    return Tasks.TASK.completed_task
 si
 
 run_side_effects() -> Tasks.TASK is
     await side_effect("first")
     await side_effect("second")
 
-    return;
+    return
 si
 
 // await may also appear inside the body of a for or while loop.
@@ -59,10 +59,10 @@ sum_doubled(xs: Collections.List[int]) -> Tasks.TASK[int] is
 
     for x in xs do
         let y = await double_async(x)
-        total = total + y;
+        total = total + y
     od
 
-    return total;
+    return total
 si
 
 // A faulted task short-circuits any chain that awaits it: the
@@ -76,17 +76,17 @@ checked_divide(a: int, b: int) -> Tasks.TASK[int] is
     if b == 0 then
         return Tasks.TASK.from_exception(
             System.InvalidOperationException("division by zero")
-        );
+        )
     fi
 
-    return a / b;
+    return a / b
 si
 
 divide_then_double(a: int, b: int) -> Tasks.TASK[int] is
     let q = await checked_divide(a, b)
     let result = await double_async(q)
 
-    return result;
+    return result
 si
 
 entry() is
@@ -106,10 +106,10 @@ entry() is
     // the original cause.
     try
         let result = divide_then_double(10, 0).result
-        write_line("divide_then_double(10, 0) unexpected: {result}");
+        write_line("divide_then_double(10, 0) unexpected: {result}")
     catch ex: System.AggregateException
         let cause = ex.get_base_exception()
 
-        write_line("divide_then_double(10, 0) caught: {cause.message}");
+        write_line("divide_then_double(10, 0) caught: {cause.message}")
     yrt
 si

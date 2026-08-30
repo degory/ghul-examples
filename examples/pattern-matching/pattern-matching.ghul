@@ -13,12 +13,12 @@ entry() is
     case_arm_guards()
     match_by_value()
     while_let_examples()
-    nested_destructuring();
+    nested_destructuring()
 si
 
 optional_matching() is
     write_line(greet(find_cat("Felix")))
-    write_line(greet(find_cat("Nobody")));
+    write_line(greet(find_cat("Nobody")))
 si
 
 greet(maybe_a_cat: CAT?) -> string =>
@@ -28,9 +28,9 @@ greet(maybe_a_cat: CAT?) -> string =>
     // if let with no pattern matches if a value is present
     if let definitely_a_cat = maybe_a_cat then
         // definitely_a_cat is a CAT
-        definitely_a_cat.meow();
+        definitely_a_cat.meow()
     else
-        "no such cat";
+        "no such cat"
     fi
 
 
@@ -44,24 +44,24 @@ find_cat(name: string) -> CAT? =>
 type_matching() is
     write_line(describe(CAT("Felix")))
     write_line(describe(DOG("Rex")))
-    write_line(describe(ANIMAL("Gerald")));
+    write_line(describe(ANIMAL("Gerald")))
 si
 
 describe(a: ANIMAL) -> string =>
     // if let with a type matches if the value is of a compatible type
     if let cat: CAT = a then
-        cat.meow();
+        cat.meow()
     elif let dog: DOG = a then
-        dog.bark();
+        dog.bark()
     else
-        "{a.name} is some other animal";
+        "{a.name} is some other animal"
     fi
 
 destructuring() is
     write_line(show(SCORE("Alice", 10)))
     write_line(show(null))
     write_line(show(pick_winner(SCORE("Bob", 99), SCORE("Alice", 10))))
-    write_line(show(pick_winner(SCORE("Alice", 99), SCORE("Bob", 99))));
+    write_line(show(pick_winner(SCORE("Alice", 99), SCORE("Bob", 99))))
 si
 
 show(score: SCORE?) -> string =>
@@ -89,7 +89,7 @@ literal_patterns() is
     write_line(label(("nothing", 0)))
     write_line(label(("life the universe and everything", 42)))
     write_line(label(("lucky", 7)))
-    write_line(label(null));
+    write_line(label(null))
 si
 
 label(pair: (name: string, value: int)?) -> string =>
@@ -97,13 +97,13 @@ label(pair: (name: string, value: int)?) -> string =>
     // the value is present and the corresponding elements
     // of the value match
     if let (name, 0) = pair then
-        "{name} is zero";
+        "{name} is zero"
     elif let (name, 42) = pair then
-        "{name} is the answer";
+        "{name} is the answer"
     elif let (name, n) = pair then
-        "{name} is {n}";
+        "{name} is {n}"
     else
-        "nothing";
+        "nothing"
     fi
 
 chained_clauses() is
@@ -116,7 +116,7 @@ chained_clauses() is
     write_line(reach(guest))
 
     write_line(who(full))
-    write_line(who(guest));
+    write_line(who(guest))
 si
 
 reach(order: ORDER) -> string =>
@@ -124,18 +124,18 @@ reach(order: ORDER) -> string =>
     // must be present for the then-arm to run, and a later clause can
     // use the locals declared by an earlier one
     if let customer = order.customer, contact = customer.contact then
-        "order {order.id}: reach {customer.name} at {contact.email}";
+        "order {order.id}: reach {customer.name} at {contact.email}"
     else
-        "order {order.id}: no contact on file";
+        "order {order.id}: no contact on file"
     fi
 
 who(order: ORDER) -> string =>
     // the path shorthand declares a local named after the path's last
     // member, and matches when the whole path is present
     if let order.customer then
-        customer.name;
+        customer.name
     else
-        "guest";
+        "guest"
     fi
 
 case_expressions() is
@@ -147,7 +147,7 @@ case_expressions() is
     write_line(classify((0, 0)))
     write_line(classify((0, 5)))
     write_line(classify((3, 0)))
-    write_line(classify((3, 4)));
+    write_line(classify((3, 4)))
 si
 
 describe_int(n: int) -> string =>
@@ -174,13 +174,13 @@ classify(p: (int, int)) -> string =>
     // so we can destructure the value and match on the elements
     case p
     when (0, 0) then
-        "origin";
+        "origin"
     when (0, y) then
-        "on y axis at {y}";
+        "on y axis at {y}"
     when (x, 0) then
-        "on x axis at {x}";
+        "on x axis at {x}"
     when (x, y) then
-        "({x}, {y})";
+        "({x}, {y})"
     esac
 
 class ANIMAL(name: string)
@@ -189,14 +189,14 @@ class CAT(name: string): ANIMAL is
     super(name)
 
     meow() -> string =>
-        "{name} says meow";
+        "{name} says meow"
 si
 
 class DOG(name: string): ANIMAL is
     super(name)
 
     bark() -> string =>
-        "{name} says woof";
+        "{name} says woof"
 si
 
 class SCORE(who: string, points: int)
@@ -213,7 +213,7 @@ class CONTACT(email: string)
 union SHAPE is
     CIRCLE(radius: double)
     SQUARE(side: double)
-    TRIANGLE(base: double, height: double);
+    TRIANGLE(base: double, height: double)
 si
 
 case_binding_patterns() is
@@ -222,7 +222,7 @@ case_binding_patterns() is
     write_line("area of a triangle: {area(SHAPE.TRIANGLE(4.0D, 5.0D))}")
 
     write_line(is_round(SHAPE.CIRCLE(2.0D)))
-    write_line(is_round(SHAPE.SQUARE(3.0D)));
+    write_line(is_round(SHAPE.SQUARE(3.0D)))
 si
 
 area(s: SHAPE) -> double =>
@@ -249,20 +249,20 @@ if_let_guards() is
     let a_shape: SHAPE = SHAPE.CIRCLE(5.0D)
 
     if let c: SHAPE.CIRCLE = a_shape /\ c.radius > 1.0D then
-        write_line("if let guard: big enough, radius {c.radius}");
+        write_line("if let guard: big enough, radius {c.radius}")
     fi
 
     if let c: SHAPE.CIRCLE = a_shape /\ c.radius > 100.0D then
-        write_line("unreachable");
+        write_line("unreachable")
     else
-        write_line("if let guard: not big enough");
+        write_line("if let guard: not big enough")
     fi
 si
 
 case_arm_guards() is
     write_line(describe_shape(SHAPE.CIRCLE(20.0D)))
     write_line(describe_shape(SHAPE.CIRCLE(2.0D)))
-    write_line(describe_shape(SHAPE.SQUARE(3.0D)));
+    write_line(describe_shape(SHAPE.SQUARE(3.0D)))
 si
 
 describe_shape(s: SHAPE) -> string =>
@@ -286,11 +286,11 @@ class POINT is
 
     init(x: int, y: int) is
         self.x = x
-        self.y = y;
+        self.y = y
     si
 
     =~(other: POINT) -> bool => x == other.x /\ y == other.y
-    get_hash_code() -> int => x * 397 + y;
+    get_hash_code() -> int => x * 397 + y
 si
 
 classify_point(p: POINT) -> string =>
@@ -330,7 +330,7 @@ match_by_value() is
 
     write_line(label_optional(42))
     write_line(label_optional(null))
-    write_line(label_optional(7));
+    write_line(label_optional(7))
 si
 
 // while let repeats the if let clause on every iteration, with the
@@ -347,7 +347,7 @@ sum_link(head: LINK?) -> int =>
         // the same as in an if condition - no let needed here
         while current? do
             total = total + current.value
-            current = current.next;
+            current = current.next
         od
 
         total
@@ -362,7 +362,7 @@ sum_until_negative(head: LINK?) -> int =>
         // as either the chain ends or the guard fails
         while let c = current /\ c.value >= 0 do
             total = total + c.value
-            current = c.next;
+            current = c.next
         od
 
         total
@@ -376,7 +376,7 @@ count_chain(head: LINK) -> int =>
         // the path shorthand declares next, matching while it holds
         while let node.next do
             total = total + 1
-            node = next;
+            node = next
         od
 
         total
@@ -387,7 +387,7 @@ while_let_examples() is
 
     write_line("sum: {sum_link(chain)}")
     write_line("sum until negative: {sum_until_negative(chain)}")
-    write_line("chain length: {count_chain(chain)}");
+    write_line("chain length: {count_chain(chain)}")
 si
 
 // pattern arms nest to any depth: a tuple scrutinee's elements can
@@ -403,7 +403,7 @@ si
 
 union TREE is
     EMPTY
-    NODE(colour: COLOUR, left: TREE, value: int, right: TREE);
+    NODE(colour: COLOUR, left: TREE, value: int, right: TREE)
 si
 
 balance(colour: COLOUR, left: TREE, value: int, right: TREE) -> TREE =>
@@ -469,11 +469,11 @@ is_leaf(t: TREE) -> string =>
 nested_destructuring() is
     let t: TREE mut = TREE.EMPTY
     for v in [10, 5, 20, 3, 7, 15, 25, 1, 30, 12] do
-        t = insert_value(t, v);
+        t = insert_value(t, v)
     od
 
     write_line("tree size: {count(t)}")
     write_line("black height: {black_height(t)}")
     write_line(is_leaf(TREE.EMPTY))
-    write_line(is_leaf(t));
+    write_line(is_leaf(t))
 si
