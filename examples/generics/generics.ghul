@@ -11,7 +11,7 @@ entry() is
     demonstrate_sack(SACK(), int_things)
     demonstrate_sack(SACK(), string_things)
 
-    bounded_type_parameters();
+    bounded_type_parameters()
 si
 
 bounded_type_parameters() is
@@ -19,19 +19,19 @@ bounded_type_parameters() is
     write_line(announce(DOG("Rex")))
 
     write_line(kind_of(CAT("Felix")))
-    write_line(kind_of(DOG("Rex")));
+    write_line(kind_of(DOG("Rex")))
 si
 
 trait Animal is
-    speak() -> string;
+    speak() -> string
 si
 
 class CAT(name: string): Animal is
-    speak() -> string => "{name} says meow";
+    speak() -> string => "{name} says meow"
 si
 
 class DOG(name: string): Animal is
-    speak() -> string => "{name} says woof";
+    speak() -> string => "{name} says woof"
 si
 
 // a type bound [T: Animal] constrains T to types that derive from
@@ -54,36 +54,36 @@ count_things[E](things: Iterable[E]) -> int is
     let count mut = 0
 
     for thing in things do
-        count = count + 1;
+        count = count + 1
     od
 
-    return count;
+    return count
 si
 
 trait Sack[T] is
     add(thing: T)
-    count() -> int;
+    count() -> int
 si
 
 class SACK[T]: Sack[T] is
     _things: MutableList[T]
 
     init() is
-        _things = LIST();
+        _things = LIST()
     si
 
     add(thing: T) =>
         _things.add(thing)
 
     count() -> int =>
-        _things.count;
+        _things.count
 si
 
 demonstrate_sack[T](sack: Sack[T], things: Iterable[T]) is
     for thing in things do
-        sack.add(thing);
+        sack.add(thing)
     od
 
-    write_line("sack has {sack.count()} things");
+    write_line("sack has {sack.count()} things")
 si
 

@@ -23,7 +23,7 @@ entry() is
     bidirectional_convergence()
     closures_and_currying()
     generic_function_arguments()
-    union_narrowing();
+    union_narrowing()
 si
 
 // === local variables ===
@@ -41,36 +41,36 @@ local_variables() is
     write_line("a_double is a {a_double.get_type()}")
     write_line("a_string is a {a_string.get_type()}")
     write_line("a_char is a {a_char.get_type()}")
-    write_line("a_bool is a {a_bool.get_type()}");
+    write_line("a_bool is a {a_bool.get_type()}")
 si
 
 // === constructors ===
 class BOX[T] is
     init(value: T) is
-        _value = value;
+        _value = value
     si
 
     init() is
     si
 
     set(value: T) is
-        _value = value;
+        _value = value
     si
 
     _value: T
-    value: T => _value;
+    value: T => _value
 si
 
 class PAIR[A, B] is
     init(first: A, second: B) is
         _first = first
-        _second = second;
+        _second = second
     si
 
     _first: A
     _second: B
     first: A => _first
-    second: B => _second;
+    second: B => _second
 si
 
 // generic class constructors infer their type arguments from their actual
@@ -89,7 +89,7 @@ constructors() is
     write_line("nested.value.value: {nested.value.value}")
 
     let mixed = PAIR(BOX(1), BOX("two"))
-    write_line("mixed: ({mixed.first.value}, {mixed.second.value})");
+    write_line("mixed: ({mixed.first.value}, {mixed.second.value})")
 si
 
 // === array and tuple literals ===
@@ -110,7 +110,7 @@ array_and_tuple_literals() is
 
     // nested:
     let nested = (("alice", 30), [1, 2, 3])
-    write_line("nested.`0.`0: {nested.`0.`0}");
+    write_line("nested.`0.`0: {nested.`0.`0}")
 si
 
 // === destructuring ===
@@ -123,7 +123,7 @@ destructuring() is
 
     // works for nested tuples too:
     let ((first, second), third) = (("a", "b"), "c")
-    write_line("first: {first}, second: {second}, third: {third}");
+    write_line("first: {first}, second: {second}, third: {third}")
 si
 
 // === for-loop variables ===
@@ -131,12 +131,12 @@ si
 for_loop_variables() is
     // i: int from the range:
     for i in 1::3 do
-        write_line("range value i: {i}");
+        write_line("range value i: {i}")
     od
 
     // c: char from the string iterator:
     for c in "ghul" do
-        write_line("string char c: {c}");
+        write_line("string char c: {c}")
     od
 
     // destructuring composes with loop-variable inference: the
@@ -144,7 +144,7 @@ for_loop_variables() is
     // tuple's slot types then flow into name and value:
     let pairs = [("a", 1), ("b", 2), ("c", 3)]
     for (name, value) in pairs do
-        write_line("{name} = {value}");
+        write_line("{name} = {value}")
     od
 si
 
@@ -174,7 +174,7 @@ type_args_from_later_use() is
     m["one"] = 1
     m["two"] = 2
     m["three"] = 3
-    write_line("m[\"two\"]: {m["two"]}, count: {m.count}");
+    write_line("m[\"two\"]: {m["two"]}, count: {m.count}")
 si
 
 // === lambda parameter types from call-site context ===
@@ -197,7 +197,7 @@ lambdas_from_call_context() is
 
     // chained calls keep flowing the inferred types through:
     let labelled = [1, 2, 3] |> map(n => "[{n}]") |> reduce("", (acc, s) => "{acc}{s}")
-    write_line("labelled: {labelled}");
+    write_line("labelled: {labelled}")
 si
 
 // === lambda return types from the body ===
@@ -213,17 +213,17 @@ lambda_return_types() is
     // type is string:
     let summarise = (n: int) is
         if n == 0 then
-            return "zero";
+            return "zero"
         elif n > 0 then
-            return "positive";
+            return "positive"
         else
-            return "negative";
+            return "negative"
         fi
     si
 
     write_line("summarise(0): {summarise(0)}")
     write_line("summarise(7): {summarise(7)}")
-    write_line("summarise(-3): {summarise(-3)}");
+    write_line("summarise(-3): {summarise(-3)}")
 si
 
 // === iterative inference ===
@@ -241,7 +241,7 @@ iterative_inference() is
 
     // back-propagation through a list literal:
     let lengths = ["one", "fourteen", "five"] |> map(s => s.length)
-    write_line("lengths: {lengths}");
+    write_line("lengths: {lengths}")
 si
 
 // === bidirectional convergence ===
@@ -256,7 +256,7 @@ si
 // pins it precisely:
 bidirectional_convergence() is
     let f = x => x.length
-    write_line("f(\"hello\"): {f("hello")}");
+    write_line("f(\"hello\"): {f("hello")}")
 si
 
 // === closures and curried lambdas ===
@@ -283,7 +283,7 @@ closures_and_currying() is
     // and the lambda's return type follows from there:
     let make_box = n => BOX(n)
     let boxed = make_box(42)
-    write_line("boxed.value: {boxed.value}");
+    write_line("boxed.value: {boxed.value}")
 si
 
 make_multiplier(n: int) -> int -> int =>
@@ -302,7 +302,7 @@ generic_function_arguments() is
 
     // A = int, B = string from the lambda and the value:
     let stringified = transform(n => "<{n}>", 42)
-    write_line("transform(...): {stringified}");
+    write_line("transform(...): {stringified}")
 si
 
 // === union variant narrowing ===
@@ -315,7 +315,7 @@ si
 // variant-specific fields do not:
 union Shape is
     CIRCLE(radius: double)
-    SQUARE(side: double);
+    SQUARE(side: double)
 si
 
 use Shape.CIRCLE
@@ -332,5 +332,5 @@ describe(s: Shape) -> string =>
 
 union_narrowing() is
     write_line(describe(CIRCLE(3.0D)))
-    write_line(describe(SQUARE(4.0D)));
+    write_line(describe(SQUARE(4.0D)))
 si

@@ -4,7 +4,7 @@ entry() is
     reading_optionals()
     presence_narrowing()
     coalescing()
-    safe_member_access();
+    safe_member_access()
 si
 
 // an optional type T? holds either a value of type T or nothing.
@@ -32,13 +32,13 @@ reading_optionals() is
     // if let enters its branch only when a value is present, and
     // gives the present value a non-optional name to read directly
     if let port = http then
-        write_line("http listens on port {port}");
+        write_line("http listens on port {port}")
     fi
 
     if let port = smtp then
-        write_line("smtp listens on port {port}");
+        write_line("smtp listens on port {port}")
     else
-        write_line("smtp has no well-known port");
+        write_line("smtp has no well-known port")
     fi
 si
 
@@ -48,7 +48,7 @@ presence_narrowing() is
     // the '?' presence test narrows the optional to non-optional for
     // the rest of the branch, so it reads without any unwrapping
     if ssh? then
-        write_line("ssh listens on port {ssh}");
+        write_line("ssh listens on port {ssh}")
     fi
 si
 
@@ -59,7 +59,7 @@ coalescing() is
     // value closes it - here the literal 21 makes the result an int
     let ftp_port = lookup_port("ftp") ?? lookup_port("ftps") ?? 21
 
-    write_line("ftp falls back to port {ftp_port}");
+    write_line("ftp falls back to port {ftp_port}")
 si
 
 // manager is optional: the head of the tree reports to nobody
@@ -75,5 +75,5 @@ safe_member_access() is
     // chains left to right, so a break anywhere short-circuits the
     // rest. '??' then closes each chain with a plain string
     write_line("Grace's skip manager is {dev.manager?.manager?.name ?? "nobody"}")
-    write_line("Bjarne's skip manager is {lead.manager?.manager?.name ?? "nobody"}");
+    write_line("Bjarne's skip manager is {lead.manager?.manager?.name ?? "nobody"}")
 si

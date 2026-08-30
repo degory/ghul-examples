@@ -14,7 +14,7 @@ entry() is
     assert f(123) == 123 * 2
 
     for i in 1::10 do
-        write_line("f({i}) = {f(i)}");
+        write_line("f({i}) = {f(i)}")
     od
 
     // list_of_gs is a list of 2-tuples, each one having an integer and a function element.
@@ -36,7 +36,7 @@ entry() is
         list_of_gs.add((i, g))
 
         // the last value in the list is the tuple we just added:
-        assert list_of_gs[list_of_gs.count-1] == (i, g);
+        assert list_of_gs[list_of_gs.count-1] == (i, g)
     od
 
     for (i, g) in list_of_gs do
@@ -44,7 +44,7 @@ entry() is
         // it captured when it was created:
         assert i == g()
 
-        write_line("g that captured i when it was {i} is a {g} that returns {g()}");
+        write_line("g that captured i when it was {i} is a {g} that returns {g()}")
     od
 
     // a closure can also read and reassign a mutable variable from an outer
@@ -54,7 +54,7 @@ entry() is
     let counter mut = 0
 
     let bump = n is
-        counter = counter + n;
+        counter = counter + n
     si
 
     let peek = () => counter
@@ -66,5 +66,5 @@ entry() is
     assert peek() == 6
     assert counter == 6
 
-    write_line("counter = {counter}, peek() = {peek()}");
+    write_line("counter = {counter}, peek() = {peek()}")
 si
