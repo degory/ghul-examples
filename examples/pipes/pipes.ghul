@@ -50,9 +50,8 @@ entry() is
     // '[' and ']' construct an immutable list (Collections.List[T], where T is inferred from the element type):
     let list = [1, 2, 3, 4, 5, 6]
 
-    // a bare trailing '|' converts any Collections.Iterable[T] to a Pipes.Pipe[T] -
-    // which is how a sequence picks up a comma-joined string representation:
-    write_line("list: {list | }")
+    // '$' renders any Collections.Iterable[T] as a string:
+    write_line("list: {list |> $}")
 
     // '..' constructs an iterable integer range, inclusive of the first element and exclusive of the last:
     let exclusive_range = 0..10
