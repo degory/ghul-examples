@@ -3,7 +3,7 @@ g(456) = j is 456
 h(789) = k is 789
 captured values: i is 111, j is 222, k is 333
 call inner() returned by outer(): hello
-list: 1, 2, 3, 4, 5, 6
+list: [1, 2, 3, 4, 5, 6]
 exclusive int range: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 inclusive int range: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 even numbers: 2, 4, 6, 8
