@@ -36,7 +36,7 @@ entry() is
         list_of_gs.add((i, g))
 
         // the last value in the list is the tuple we just added:
-        assert list_of_gs[list_of_gs.count-1] == (i, g)
+        assert list_of_gs[list_of_gs.count-1] =~ (i, g)
     od
 
     for (i, g) in list_of_gs do
