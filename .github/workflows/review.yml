@@ -8,6 +8,7 @@ name: Code review
 # running when a new one starts.
 on:
   pull_request:
+    branches: [ main ]
     types: [opened, synchronize, reopened, ready_for_review, edited]
 
 jobs:
