@@ -1,5 +1,4 @@
 // make a type available in this scope without qualification
-use Ghul
 use Collections.Iterable
 
 // and a static method:
