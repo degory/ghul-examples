@@ -1,6 +1,6 @@
 g(123) is 246
-doubled: 2, 4, 6, 8, 10
-evens: 2, 4
+doubled: [2, 4, 6, 8, 10]
+evens: [2, 4]
 sum: 15
 classifyNumber(-10): Negative even and multiple of 5
 classifyNumber(-3): Negative odd
@@ -9,10 +9,10 @@ classifyNumber(4): Positive even
 classifyNumber(25): Positive odd and multiple of 5
 factorial(5): 120
 fibonacci(5): 5
-even(10): True
-odd(10): False
-even(10): True
-odd(10): False
+even(10): true
+odd(10): false
+even(10): true
+odd(10): false
 list: [1, 2, 3, 4, 5]
 add(5, 3): 8
 apply(times_2, 5): 10
@@ -38,11 +38,11 @@ add_5(3): 8
 add_10(3): 13
 add_5(3): 8
 add_10(3): 13
-counting down from 5: 5, 4, 3, 2, 1
-chars of hello: h, e, l, l, o
-first 10 fibonacci numbers: 1, 2, 3, 5, 8, 13, 21, 34, 55, 89
-first 10 factorial numbers: 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800
-first 10 even fibonacci numbers: 2, 8, 34, 144, 610, 2584, 10946, 46368, 196418, 832040
+counting down from 5: [5, 4, 3, 2, 1]
+chars of hello: [h, e, l, l, o]
+first 10 fibonacci numbers: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+first 10 factorial numbers: [2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800]
+first 10 even fibonacci numbers: [2, 8, 34, 144, 610, 2584, 10946, 46368, 196418, 832040]
 fibonacci 0 is 1
 factorial 0 is 2
 fibonacci 1 is 2
