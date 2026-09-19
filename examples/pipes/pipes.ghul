@@ -66,7 +66,7 @@ entry() is
     // 'x |> f(a) |> g(b)' is 'g(f(x, a), b)'
 
     // filter passes only those elements that meet a supplied filter condition:
-    let even = (1::8) |> filter(i => is_even(i))
+    let even = 1::8 |> filter(i => is_even(i))
     write_line("even numbers: {even}")
 
     // you generally don't need explicit argument types for anonymous functions when they're
@@ -79,7 +79,7 @@ entry() is
     write_line("times 3: {times_3}")
 
     // if you hover the mouse over the call to map, you'll see the full inferred function signature:
-    let strings = (1..9) |> map(i => "'{i}'")
+    let strings = 1..9 |> map(i => "'{i}'")
     write_line("map to strings: {strings}")
 
     let strings_with_lengths =
